@@ -6,7 +6,7 @@ import { logout } from '../../Store/Slices/AuthSlice';
 export const createApi = () => {
 	const dispatch = useDispatch();
 	const api = axios.create({
-		baseURL: import.meta.env.VITE_SERVER_BASE_URL,
+		baseURL: import.meta.env.VITE_BASE_URL,
 	});
 
 	// Request interceptor to add the access token

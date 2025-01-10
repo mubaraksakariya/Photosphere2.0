@@ -21,11 +21,16 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-from Users.views import SignupView
+from Users.CustomTokenObtain import CustomTokenObtainPairView
+from Users.views import ResendOTPView, SignupView, VerifyOTPView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/signin/', CustomTokenObtainPairView.as_view(),
+         name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/signup/', SignupView.as_view(), name='signup'),
+    path('api/verify/', VerifyOTPView.as_view(), name='verify'),
+    path('api/resend-otp/', ResendOTPView.as_view(), name='resend_otp'),
+
 ]

@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.utils.timezone import now
+from datetime import timedelta
 
 
 class UserManager(BaseUserManager):
@@ -12,6 +14,7 @@ class UserManager(BaseUserManager):
         user = self.model(email=email, username=username, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
+        print(user)
         return user
 
     def create_superuser(self, email, username, password=None, **extra_fields):
@@ -27,13 +30,30 @@ class User(AbstractBaseUser):
     last_name = models.CharField(max_length=30)
     date_of_birth = models.DateField()
     is_active = models.BooleanField(default=True)
+    is_verified = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'date_of_birth']
+    REQUIRED_FIELDS = ['username',
+                       'first_name', 'last_name', 'date_of_birth']
 
     def __str__(self):
         return f"{self.username} ({self.email})"
+
+
+def default_expires_at():
+    return now() + timedelta(minutes=5)
+
+
+class OTP(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='otp')
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(default=default_expires_at)
+
+    def is_valid(self):
+        return now() < self.expires_at

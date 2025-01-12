@@ -5,3 +5,6 @@ Venv/
 ENV/
 env/
 .Venv/
+# Ignore database files
+.media/
+media/

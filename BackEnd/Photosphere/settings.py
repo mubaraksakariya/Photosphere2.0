@@ -137,6 +137,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'Users.User'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # CORS_ALLOWED_ORIGINS
 
@@ -161,3 +163,4 @@ EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL")
 DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_HOST_USER")
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")

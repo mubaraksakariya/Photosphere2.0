@@ -17,8 +17,8 @@ export const useResendOtp = () => {
 		onSuccess: () => {
 			console.log('OTP resent successfully');
 		},
-		onError: (error) => {
-			console.error('Error resending OTP:', error.detail || error);
-		},
+		// onError: (error) => {
+		// 	console.error('Error resending OTP:', error.detail || error);
+		// },
 	});
 };

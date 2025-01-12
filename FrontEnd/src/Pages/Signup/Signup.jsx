@@ -2,6 +2,7 @@ import React from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useSignupLogic } from './useSignupLogic';
 import { useNavigate } from 'react-router';
+import GoogleSignin from '../../Components/GoogleSignin/GoogleSignin';
 
 function Signup() {
 	const navigate = useNavigate();
@@ -30,10 +31,7 @@ function Signup() {
 					Sign up to see photos and videos from your friends.
 				</p>
 				<div className='flex justify-center mb-4'>
-					<GoogleLogin
-						onSuccess={handleGoogleSignup}
-						onError={() => console.log('Login Failed')}
-					/>
+					<GoogleSignin />
 				</div>
 				<p className='text-center text-gray-500 my-4'>OR</p>
 				<form onSubmit={handleSubmit} className='space-y-4'>

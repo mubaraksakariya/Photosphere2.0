@@ -16,8 +16,6 @@ const useSignin = () => {
 		onSuccess: (response) => {
 			console.log('User signed in successfully');
 			const { refresh, access, user } = response.data;
-
-			// Dispatch login action to update Redux state
 			dispatch(login({ user, token: { refresh, access } }));
 		},
 		// onError: (error) => {

@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router';
+import { Navigate, Route, Routes, useNavigate } from 'react-router';
 import './App.css';
 import Home from './Pages/Home/Home';
 import Signup from './Pages/Signup/Signup';
@@ -6,6 +6,16 @@ import Signin from './Pages/Login/Signin';
 import { ApiProvider } from './Contexts/ApiContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import VerifyOtp from './Pages/OtpVerification/VerifyOtp';
+import { useSelector } from 'react-redux';
+
+function PublicRoute({ children }) {
+	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+	return isAuthenticated ? <Navigate to='/' replace /> : children;
+}
+function PrivateRoute({ children }) {
+	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+	return !isAuthenticated ? <Navigate to='/signin' replace /> : children;
+}
 
 function App() {
 	const queryClient = new QueryClient();
@@ -24,10 +34,38 @@ function App() {
 function User() {
 	return (
 		<Routes>
-			<Route path='/' element={<Home />} />
-			<Route path='/signup' element={<Signup />} />
-			<Route path='/signin' element={<Signin />} />
-			<Route path='/verify' element={<VerifyOtp />} />
+			<Route
+				path='/'
+				element={
+					<PrivateRoute>
+						<Home />
+					</PrivateRoute>
+				}
+			/>
+			<Route
+				path='/signup'
+				element={
+					<PublicRoute>
+						<Signup />
+					</PublicRoute>
+				}
+			/>
+			<Route
+				path='/signin'
+				element={
+					<PublicRoute>
+						<Signin />
+					</PublicRoute>
+				}
+			/>
+			<Route
+				path='/verify'
+				element={
+					<PublicRoute>
+						<VerifyOtp />
+					</PublicRoute>
+				}
+			/>
 		</Routes>
 	);
 }

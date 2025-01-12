@@ -1,11 +1,21 @@
 from django.core.mail import send_mail
 from django.conf import settings
+from django.db.models import Q
+
 import random
 import string
 from django.utils.timezone import now
 from datetime import timedelta
+from rest_framework.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 
-from Users.models import OTP
+from Users.models import OTP, User
+
+import google.auth.transport.requests
+import google.oauth2.id_token
+from google.auth import exceptions
+from google.oauth2.id_token import verify_oauth2_token
+from google.auth.transport.requests import Request
 
 
 def send_email(subject, message, recipient_list):
@@ -48,3 +58,57 @@ def send_otp_email(user):
     subject = 'Your OTP for Email Verification'
     message = f'Hello {user.username},\n\nYour OTP for verification is: {otp.code}\n\nPlease use this to complete your signup.'
     send_email(subject, message, [user.email])
+
+
+def validate_otp(user, code):
+    """Validate the OTP for the given user or raise ValidationError."""
+    try:
+        otp = OTP.objects.get(user=user, code=code)
+        if not otp.is_valid():
+            raise ValidationError("OTP has expired.")
+        otp.delete()  # Delete OTP after successful validation
+    except OTP.DoesNotExist:
+        raise ValidationError("Invalid OTP.")
+
+
+def get_user(identifier):
+    """Fetch user by email or username or raise ValidationError."""
+    try:
+        return User.objects.get(Q(email=identifier) | Q(username=identifier))
+    except User.DoesNotExist:
+        raise ValidationError(
+            "User with this email or username does not exist.")
+
+
+def verify_google_id_token(token):
+    """Verifies a Google ID token.
+
+    Args:
+        token: The ID token string.
+
+    Returns:
+        A dictionary containing the token claims (decoded payload) if valid,
+        or None if invalid.
+    """
+    try:
+        CLIENT_ID = settings.GOOGLE_CLIENT_ID
+
+        # Verify the token
+        id_info = verify_oauth2_token(token, Request(), CLIENT_ID)
+
+        # Check if the token is issued to your application
+        if id_info['aud'] != CLIENT_ID:
+            raise ValueError('Audience mismatch.')
+
+        # Optional: Check if the token is issued by Google
+        if id_info['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+            raise ValueError('Invalid token issuer.')
+
+        return id_info
+
+    except ValueError as e:
+        print(f"Token verification error: {e}")
+        return None
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        return None

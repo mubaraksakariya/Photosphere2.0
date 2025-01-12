@@ -16,21 +16,27 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.conf.urls.static import static
+from django.conf import settings
+from rest_framework import routers
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-
 from Users.CustomTokenObtain import CustomTokenObtainPairView
-from Users.views import ResendOTPView, SignupView, VerifyOTPView
+from Users.views import GoogleSignInView, ResendOTPView, SignupView, UserViewSet, VerifyOTPView
+
+router = routers.DefaultRouter()
+router.register(r'api/users', UserViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/signin/', CustomTokenObtainPairView.as_view(),
          name='token_obtain_pair'),
+    path('api/google-signin/', GoogleSignInView.as_view(), name='google_signin'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/signup/', SignupView.as_view(), name='signup'),
     path('api/verify/', VerifyOTPView.as_view(), name='verify'),
     path('api/resend-otp/', ResendOTPView.as_view(), name='resend_otp'),
 
-]
+]+router.urls + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

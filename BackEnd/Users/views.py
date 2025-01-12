@@ -2,12 +2,19 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from Users.models import OTP, User
-from Users.services import send_otp_email
+from Users.models import User
+from Users.services import get_user, send_otp_email, validate_otp, verify_google_id_token
 from .serializers import UserSerializer
 from rest_framework.exceptions import ValidationError
 from django.db import IntegrityError
 import logging
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated
+import requests
+from rest_framework_simplejwt.tokens import RefreshToken
+
 
 # Set up logging for the view
 logger = logging.getLogger(__name__)
@@ -37,8 +44,6 @@ class SignupView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         except ValidationError as e:
-            # Handle validation errors (e.g., database issues, etc.)
-            logger.error(f"ValidationError: {e}")
             return Response({"message": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
@@ -50,39 +55,119 @@ class SignupView(APIView):
 
 class VerifyOTPView(APIView):
     def post(self, request):
-        email = request.data.get('email')
-        code = request.data.get('otp')
-        print(email, code)
         try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
-            return Response({"error": "User with this email does not exist."}, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            otp = OTP.objects.get(user=user, code=code)
-            if not otp.is_valid():
-                raise ValidationError("OTP has expired.")
-            user.is_verified = True  # Mark the user as verified
-            # OTP is valid, delete after use
-            otp.delete()
+            email = request.data.get('email')
+            code = request.data.get('otp')
+
+            if not email or not code:
+                raise ValidationError("Email and OTP are required.")
+
+            # Fetch user by email
+            user = get_user(email)
+            if user.is_verified:
+                raise ValidationError("User is already verified.")
+            # Validate OTP
+            validate_otp(user, code)
+
+            # Mark user as verified
+            user.is_verified = True
+            user.save()
+
             return Response({"message": "OTP verified successfully."}, status=status.HTTP_200_OK)
-        except OTP.DoesNotExist:
-            return Response({"error": "Invalid OTP."}, status=status.HTTP_400_BAD_REQUEST)
+
+        except ValidationError as ve:
+            return Response({"detail": ve.detail}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class ResendOTPView(APIView):
     def post(self, request):
-        email = request.data.get('email')
-        print(email)
         try:
-            user = User.objects.get(email=email)
+            email = request.data.get('email')
+            if not email:
+                raise ValidationError("Email is required.")
+
+            user = get_user(email)
             if user.is_verified:
-                return Response({"message": "User is already verified."}, status=status.HTTP_400_BAD_REQUEST)
-            # Send OTP email through service
+                raise ValidationError("User is already verified.")
+
             send_otp_email(user)
             return Response({"message": "OTP resent successfully."}, status=status.HTTP_200_OK)
-        except User.DoesNotExist:
-            return Response({"error": "User with this email does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+
+        except ValidationError as ve:
+            print(ve.__str__())
+            return Response({"detail": ve.detail}, status=status.HTTP_400_BAD_REQUEST)
+
         except Exception as e:
-            logger.exception(f"Unexpected error occurred: {e}")
-            return Response({"message": "An unexpected error occurred. Please try again later."},
-                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"detail": "An unexpected error occurred. Please try again later."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+class GoogleSignInView(APIView):
+    def post(self, request):
+        try:
+            token = request.data.get('token')
+            if not token:
+                raise ValidationError("ID token is required.")
+
+            id_info = verify_google_id_token(token)
+            if id_info:
+                email = id_info.get('email')
+                first_name = id_info.get('given_name') or 'first_name'
+                last_name = id_info.get('last_name') or 'last_name'
+                profile_image_url = id_info.get("picture")
+                birthdate = id_info.get('birthdate')
+
+                if not birthdate:
+                    birthdate = None
+
+                # Get or create user
+                user, created = User.objects.get_or_create(username=email, defaults={
+                    'email': email,
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'date_of_birth': birthdate,
+                })
+
+                if profile_image_url:
+                    # stream for larger files
+                    response = requests.get(profile_image_url, stream=True)
+                    if response.status_code == 200:
+                        content = response.raw.read()  # read the content once
+                        # Check if user has default image or no image
+                        if not user.profile_image or user.profile_image.name == 'profile_images/default_profile.png':
+                            # use content and a name
+                            file = ContentFile(content, name=f"{email}.jpg")
+                            user.profile_image = file
+                            user.save()  # important to save the user after the profile picture update
+
+                user.is_verified = id_info.get('email_verified')
+                user.save()
+
+                refresh = RefreshToken.for_user(user)
+                return Response({
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                    'user': UserSerializer(user).data
+                })
+            else:
+                return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+        except ValidationError as ve:
+            return Response({"detail": ve.detail}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            # Print full exception for debugging
+            print(f"Error in GoogleSignInView: {e}")
+            return Response({"detail": "An error occurred during sign in."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class UserViewSet(ModelViewSet):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = User.objects.all()
+
+    def get_queryset(self):
+        return User.objects.filter(id=self.request.user.id)

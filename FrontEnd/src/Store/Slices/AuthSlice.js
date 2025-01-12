@@ -27,7 +27,7 @@ const persistedState = loadStateFromLocalStorage();
 
 const authSlice = createSlice({
 	name: 'auth',
-	initialState: persistedState, // Use persisted state from localStorage
+	initialState: persistedState,
 	reducers: {
 		login: (state, action) => {
 			state.isAuthenticated = true;
@@ -46,6 +46,7 @@ const authSlice = createSlice({
 			// Remove user data and token from localStorage
 			localStorage.removeItem('user');
 			localStorage.removeItem('token');
+			window.location.reload();
 		},
 	},
 });

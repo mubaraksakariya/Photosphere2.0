@@ -1,10 +1,12 @@
 import axios from 'axios';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { requestNewToken } from './axiosHelpers';
 import { logout } from '../../Store/Slices/AuthSlice';
 
 export const createApi = () => {
 	const dispatch = useDispatch();
+	const accessToken = useSelector((state) => state.auth.token?.access);
+	const refreshToken = useSelector((state) => state.auth.token?.refresh);
 	const api = axios.create({
 		baseURL: import.meta.env.VITE_BASE_URL,
 	});
@@ -12,7 +14,6 @@ export const createApi = () => {
 	// Request interceptor to add the access token
 	api.interceptors.request.use(
 		(config) => {
-			const accessToken = localStorage.getItem('accessToken');
 			if (accessToken) {
 				config.headers.Authorization = `Bearer ${accessToken}`;
 			}
@@ -29,7 +30,6 @@ export const createApi = () => {
 			if (error.response?.status === 401 && !originalRequest._retry) {
 				originalRequest._retry = true;
 				try {
-					const refreshToken = localStorage.getItem('refreshToken');
 					localStorage.removeItem('accessToken');
 					if (refreshToken) {
 						const newAccessToken = await requestNewToken(

@@ -7,6 +7,7 @@ import { ApiProvider } from './Contexts/ApiContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import VerifyOtp from './Pages/OtpVerification/VerifyOtp';
 import { useSelector } from 'react-redux';
+import { ModalProvider } from './Contexts/ModalProvider';
 
 function PublicRoute({ children }) {
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -22,10 +23,13 @@ function App() {
 	return (
 		<ApiProvider>
 			<QueryClientProvider client={queryClient}>
-				<Routes>
-					<Route path='/*' element={<User />} />
-					<Route exact path='/admin/*' element={<Admin />} />
-				</Routes>
+				<ModalProvider>
+					<Routes>
+						<Route path='/*' element={<User />} />
+
+						<Route exact path='/admin/*' element={<Admin />} />
+					</Routes>
+				</ModalProvider>
 			</QueryClientProvider>
 		</ApiProvider>
 	);

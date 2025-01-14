@@ -2,24 +2,25 @@ import React, { useRef } from 'react';
 
 const FileUploadSection = ({ file, handleFileChange, handleRemoveFile }) => {
 	const fileInputRef = useRef(null);
-	const isImage = file && file.type.startsWith('image/');
-	const isVideo = file && file.type.startsWith('video/');
+	const isImage = file && file.type.startsWith('image');
+	const isVideo = file && file.type.startsWith('video');
 
 	const handleClick = () => {
 		if (fileInputRef.current) {
-			fileInputRef.current.click(); // Only call click if ref is available
+			fileInputRef.current.click();
 		}
 	};
 
 	return (
-		<div>
+		<div className='p-4 bg-lightMode-background dark:bg-darkMode-background rounded-md shadow-light dark:shadow-dark'>
 			{/* If there's no file selected, show the upload placeholder */}
 			{!file ? (
 				<div
-					className='mb-4 cursor-pointer border-2 border-dashed border-gray-300 h-[400px] flex justify-center items-center text-gray-500'
-					onClick={handleClick} // Use handleClick to safely trigger the file input
-				>
-					<span>Click to upload image/video</span>
+					className='mb-4 cursor-pointer border-2 border-dashed border-lightMode-textPrimary dark:border-darkMode-textPrimary h-[45vh] max-h-[70vh] flex justify-center items-center text-lightMode-textPrimary dark:text-darkMode-textPrimary transition-all'
+					onClick={handleClick}>
+					<span className='text-center text-lg'>
+						Click to upload image/video
+					</span>
 				</div>
 			) : (
 				<div className='mb-4'>
@@ -29,24 +30,24 @@ const FileUploadSection = ({ file, handleFileChange, handleRemoveFile }) => {
 							<img
 								src={file.preview}
 								alt='Preview'
-								className='max-w-full h-[390px] max-h-[400px] object-contain rounded'
+								className='w-full max-h-[40vh] object-contain rounded-md shadow-light dark:shadow-dark'
 							/>
 						) : isVideo ? (
 							<video
 								controls
-								className='max-w-full max-h-[400px] object-contain rounded'>
+								className='w-full max-h-[40vh] object-contain rounded-md shadow-light dark:shadow-dark'>
 								<source src={file.preview} type='video/mp4' />
 								Your browser does not support the video tag.
 							</video>
 						) : (
-							<p className='text-red-500'>
+							<p className='text-red-500 text-center'>
 								Unsupported file type
 							</p>
 						)}
 					</div>
 					<button
-						onClick={handleRemoveFile} // Trigger file removal
-						className='mt-2 text-red-500 hover:underline'>
+						onClick={handleRemoveFile}
+						className='mt-2 text-red-600 dark:text-red-400 hover:underline text-sm block mx-auto'>
 						Remove File
 					</button>
 				</div>
@@ -57,7 +58,7 @@ const FileUploadSection = ({ file, handleFileChange, handleRemoveFile }) => {
 				type='file'
 				accept='image/*,video/*'
 				onChange={handleFileChange}
-				ref={fileInputRef} // Assign ref to file input
+				ref={fileInputRef}
 				className='hidden'
 			/>
 		</div>

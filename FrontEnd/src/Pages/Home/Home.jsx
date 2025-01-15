@@ -1,6 +1,7 @@
 import React from 'react';
 import LeftNav from '../../Components/Home/LeftNav/LeftNav';
 import Posts from '../../Components/Posts/Posts';
+import RightNav from '../../Components/Home/RightNav/RightNav';
 
 function Home() {
 	return (
@@ -20,13 +21,13 @@ function Home() {
 				</div>
 
 				{/* Posts Section */}
-				<div className='flex-[4] bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark p-4 rounded-lg '>
+				<div className='flex-[4] bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark p-4 rounded-lg'>
 					<Posts />
 				</div>
 
 				{/* Right Navigation */}
 				<div className='flex-[1] hidden lg:block bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark p-4 rounded-lg'>
-					<div className='font-medium'>Right Nav</div>
+					<RightNav />
 				</div>
 			</div>
 		</div>

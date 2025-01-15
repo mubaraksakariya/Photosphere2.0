@@ -1,0 +1,36 @@
+import { useState } from 'react';
+import FollowButton from './FollowButton/FollowButton';
+
+const ProfileCard = ({ user }) => {
+	return (
+		<div
+			className='flex gap-2 items-center bg-lightMode-background dark:bg-darkMode-background border border-lightMode-textPrimary dark:border-darkMode-textPrimary rounded-lg shadow-light dark:shadow-dark p-4 max-w-lg mx-auto transition-colors'
+			title={user.email}>
+			{/* Profile Image */}
+			<div className='flex-[1] w-10 h-10 aspect-square '>
+				<img
+					src={user.profile_image}
+					alt={user.username}
+					className='w-10 h-10 rounded-full object-cover'
+				/>
+			</div>
+
+			{/* User Info */}
+			<div className='flex-[5]'>
+				<h4 className='font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary text-base truncate'>
+					{user.username.length > 15
+						? `${user.username.slice(0, 15)}...`
+						: user.username}
+				</h4>
+				<p className='text-xs text-lightMode-accent dark:text-darkMode-accent'>
+					{user.email}
+				</p>
+			</div>
+
+			{/* Follow Icon */}
+			<FollowButton user={user} />
+		</div>
+	);
+};
+
+export default ProfileCard;

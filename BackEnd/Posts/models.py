@@ -56,6 +56,10 @@ class Like(models.Model):
     def __str__(self):
         return self.user.username
 
+    class Meta:
+        # This ensures that a user can only like a post once
+        unique_together = ('user', 'post')
+
 
 class Share(models.Model):
     user = models.ForeignKey('Users.User', on_delete=models.CASCADE)

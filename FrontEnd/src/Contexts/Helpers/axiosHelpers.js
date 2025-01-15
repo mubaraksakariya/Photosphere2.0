@@ -3,7 +3,7 @@ import axios from 'axios';
 export const requestNewToken = async (refreshToken) => {
 	try {
 		const response = await axios.post(
-			`${import.meta.env.VITE_SERVER_BASE_URL}/token/refresh/`,
+			`${import.meta.env.VITE_BASE_URL}token/refresh/`,
 			{
 				refresh: refreshToken,
 			}

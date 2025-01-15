@@ -161,7 +161,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,  # Adjust the number of items per page
 }
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
 }
 

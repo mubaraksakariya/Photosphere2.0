@@ -13,7 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'username', 'last_name',
+        fields = ['id', 'email', 'first_name', 'username', 'last_name',
                   'date_of_birth', 'password', 'profile_image']
 
     # Validate password length and strength

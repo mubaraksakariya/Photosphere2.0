@@ -9,13 +9,15 @@ from datetime import timedelta
 from rest_framework.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
 
-from Users.models import OTP, User
+from Users.models import OTP, Follow, User
 
 import google.auth.transport.requests
 import google.oauth2.id_token
 from google.auth import exceptions
 from google.oauth2.id_token import verify_oauth2_token
 from google.auth.transport.requests import Request
+
+from Users.serializers import UserSerializer
 
 
 def send_email(subject, message, recipient_list):
@@ -112,3 +114,25 @@ def verify_google_id_token(token):
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
         return None
+
+
+def get_suggested_users(user):
+    latest_users = User.objects.filter(
+        is_superuser=False, is_staff=False).exclude(email=user.email).order_by('-created_at')[:5]
+    return latest_users
+
+
+def follow_user(follower, followed):
+    if follower == followed:
+        raise ValueError("A user cannot follow themselves.")
+
+    follow, created = Follow.objects.get_or_create(
+        follower=follower,
+        followed=followed
+    )
+
+    if not created:
+        follow.delete()
+        return {"status": "unfollowed", "follow": None}
+
+    return {"status": "followed", "follow": follow}

@@ -2,8 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from Users.models import User
-from Users.services import get_user, send_otp_email, validate_otp, verify_google_id_token
+from Users.models import Follow, User
+from Users.services import follow_user, get_suggested_users, get_user, send_otp_email, validate_otp, verify_google_id_token
 from .serializers import UserSerializer
 from rest_framework.exceptions import ValidationError
 from django.db import IntegrityError
@@ -14,6 +14,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 import requests
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.decorators import action
 
 
 # Set up logging for the view
@@ -171,3 +172,41 @@ class UserViewSet(ModelViewSet):
 
     def get_queryset(self):
         return User.objects.filter(id=self.request.user.id)
+
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated], url_path='suggested_users')
+    def suggested_users(self, request, *args, **kwargs):
+        current_user = request.user
+        users = get_suggested_users(current_user)
+        suggested_users = self.get_serializer(users, many=True).data
+
+        return Response({'suggested_users': suggested_users}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated], url_path='toggle-follow')
+    def toggle_follow_user(self, request):
+        current_user = request.user
+        user_id = request.data.get('user_id')
+
+        if not user_id:
+            return Response({'error': 'User ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user_to_follow = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        follow_data = follow_user(
+            follower=current_user, followed=user_to_follow)
+
+        is_following = follow_data.get('status') == 'followed'
+        return Response({'is_following': is_following}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated], url_path='check-follow')
+    def is_following(self, request, pk=None):
+        try:
+            followed = User.objects.get(id=pk)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        is_following = Follow.objects.filter(
+            follower=request.user, followed=followed).exists()
+        return Response({'is_following': is_following}, status=status.HTTP_200_OK)

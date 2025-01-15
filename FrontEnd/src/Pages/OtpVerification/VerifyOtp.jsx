@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import maskEmail from '../../Utitlities/maskEmail';
+import maskEmail from '../../Utilities/maskEmail';
 import ResendOtp from './ResendOtp';
 import SubmitOtp from './SubmitOtp';
 

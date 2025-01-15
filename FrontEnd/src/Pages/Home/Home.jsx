@@ -1,5 +1,6 @@
 import React from 'react';
 import LeftNav from '../../Components/Home/LeftNav/LeftNav';
+import Posts from '../../Components/Posts/Posts';
 
 function Home() {
 	return (
@@ -19,8 +20,8 @@ function Home() {
 				</div>
 
 				{/* Posts Section */}
-				<div className='flex-[4] bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark p-4 rounded-lg'>
-					<div className='font-medium'>Posts</div>
+				<div className='flex-[4] bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark p-4 rounded-lg '>
+					<Posts />
 				</div>
 
 				{/* Right Navigation */}

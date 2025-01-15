@@ -6,7 +6,9 @@ const createPost = async (postData, api) => {
 
 	// Append description, hashtags, and file to FormData
 	formData.append('description', postData.description);
-	formData.append('hashtags', postData.hashtags);
+	postData.hashtags.forEach((tag) => {
+		formData.append('hashtags', tag);
+	});
 	formData.append('media', postData.media.original); // The file is attached here
 	formData.append('media_type', postData.media.type);
 

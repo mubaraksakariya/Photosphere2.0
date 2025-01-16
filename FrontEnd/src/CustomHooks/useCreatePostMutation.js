@@ -12,7 +12,7 @@ const createPost = async (postData, api) => {
 	formData.append('media', postData.media.original); // The file is attached here
 	formData.append('media_type', postData.media.type);
 
-	const { data } = await api.post('posts/', formData, {
+	const { data } = await api.post('api/posts/', formData, {
 		headers: {
 			'Content-Type': 'multipart/form-data',
 		},

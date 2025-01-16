@@ -2,7 +2,7 @@ import { useApi } from '../Contexts/ApiContext';
 import { useMutation } from '@tanstack/react-query';
 
 const signupUser = async (userData, api) => {
-	const { data } = await api.post('signup/', userData);
+	const { data } = await api.post('api/signup/', userData);
 	return data;
 };
 

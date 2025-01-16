@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useApi } from '../Contexts/ApiContext';
 
 const GetSuggestedUsers = async (api) => {
-	const response = await api.get('users/suggested_users');
+	const response = await api.get('api/users/suggested_users');
 	return response.data;
 };
 

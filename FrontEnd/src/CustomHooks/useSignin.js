@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { login } from '../Store/Slices/AuthSlice';
 
 const signinUser = (data, api) => {
-	return api.post('signin/', data);
+	return api.post('api/signin/', data);
 };
 
 const useSignin = () => {

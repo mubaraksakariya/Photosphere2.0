@@ -1,17 +1,36 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useApi } from '../Contexts/ApiContext';
 
-const getPosts = async (api, pageNumber = 1) => {
-	const { data } = await api.get(`/posts/?page=${pageNumber}`);
-	return data;
+const fetchPosts = async (
+	api,
+	{
+		pageParam = '/posts/?page=1', // Default path without the base URL
+	}
+) => {
+	const response = await api.get(pageParam);
+	return response.data; // The data structure includes count, next, previous, and results
 };
 
-const usePosts = (pageNumber = 1) => {
+const usePosts = () => {
 	const api = useApi();
-	return useQuery({
-		queryKey: ['posts', pageNumber],
-		queryFn: () => getPosts(api, pageNumber),
-		keepPreviousData: true,
+	return useInfiniteQuery({
+		queryKey: ['posts'],
+		queryFn: ({ pageParam = 'api/posts/?page=1' }) =>
+			fetchPosts(api, { pageParam }),
+
+		initialPageParam: 'api/posts/?page=1',
+		getNextPageParam: (lastPage, allPages) => {
+			// Extract only the part after the base URL (i.e., the path and query)
+			const nextPageUrl = lastPage.next;
+			if (nextPageUrl) {
+				const url = new URL(nextPageUrl);
+				const nextPagePath = url.pathname + url.search;
+				console.log(nextPagePath);
+
+				return nextPagePath || undefined;
+			}
+			return undefined;
+		},
 	});
 };
 

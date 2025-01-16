@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 
 const submitOtp = async (api, data) => {
 	try {
-		const response = await api.post('verify/', data);
+		const response = await api.post('api/verify/', data);
 		return response.data;
 	} catch (error) {
 		throw error.response?.data || error;

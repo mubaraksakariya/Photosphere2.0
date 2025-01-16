@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useApi } from '../Contexts/ApiContext';
 
 const toggleFollow = (api, user_id) => {
-	return api.post('/users/toggle-follow/', { user_id });
+	return api.post('api/users/toggle-follow/', { user_id });
 };
 
 const useToggleFollow = () => {

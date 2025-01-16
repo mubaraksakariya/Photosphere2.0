@@ -1,20 +1,51 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useInView } from 'react-intersection-observer';
 import usePosts from '../../CustomHooks/usePosts';
 import PostCard from './Card/PostCard';
 
 function Posts() {
-	const [pageNumber, setPageNumber] = useState(1);
-	const { data, isLoading, isError } = usePosts(pageNumber);
-	// console.log(data);
+	const {
+		data,
+		isLoading,
+		isError,
+		isFetchingNextPage,
+		fetchNextPage,
+		hasNextPage,
+		error,
+	} = usePosts();
 
-	if (isLoading) return <p>Loading...</p>;
-	if (isError) return <p>Error loading posts</p>;
+	const { ref, inView } = useInView();
+
+	React.useEffect(() => {
+		if (inView && hasNextPage) {
+			fetchNextPage();
+		}
+		if (error) console.error(error);
+	}, [inView, hasNextPage, fetchNextPage, error]);
+
+	if (isLoading && !data) return <p>Loading...</p>;
+	if (isError)
+		return (
+			<p className='text-red-500'>
+				Failed to load posts. Please try again later.
+			</p>
+		);
 
 	return (
 		<div className='max-h-[85dvh] overflow-y-auto'>
-			{data.results.map((post) => (
-				<PostCard key={post.id} post={post} />
-			))}
+			{data.pages.map((page) =>
+				page.results.map((post) => (
+					<PostCard key={post.id} post={post} />
+				))
+			)}
+
+			{isFetchingNextPage && (
+				<div className='flex justify-center py-4'>
+					<span>Loading more posts...</span>
+				</div>
+			)}
+
+			<div ref={ref} className='h-10'></div>
 		</div>
 	);
 }

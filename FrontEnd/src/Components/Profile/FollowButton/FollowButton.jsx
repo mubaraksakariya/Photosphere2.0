@@ -38,7 +38,7 @@ function FollowButton({ user }) {
 	return (
 		<div
 			onClick={handleToggleFollow}
-			className=' flex-1 cursor-pointer text-lightMode-accent dark:text-darkMode-accent hover:text-lightMode-textPrimary dark:hover:text-darkMode-textPrimary transition-colors'>
+			className='flex justify-end cursor-pointer text-lightMode-accent dark:text-darkMode-accent hover:text-lightMode-textPrimary dark:hover:text-darkMode-textPrimary transition-colors'>
 			{isFollowing ? (
 				<svg
 					xmlns='http://www.w3.org/2000/svg'

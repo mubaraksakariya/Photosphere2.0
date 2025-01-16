@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useApi } from '../Contexts/ApiContext';
 
 const toggleLike = (api, postId) => {
-	return api.post(`/likes/${postId}/toggle/`);
+	return api.post(`api/likes/${postId}/toggle/`);
 };
 
 const useToggleLike = () => {

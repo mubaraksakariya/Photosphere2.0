@@ -4,7 +4,7 @@ import FollowButton from './FollowButton/FollowButton';
 const ProfileCard = ({ user }) => {
 	return (
 		<div
-			className='flex gap-2 items-center bg-lightMode-background dark:bg-darkMode-background border border-lightMode-textPrimary dark:border-darkMode-textPrimary rounded-lg shadow-light dark:shadow-dark p-4 max-w-lg mx-auto transition-colors'
+			className='flex gap-2 w-full items-center bg-lightMode-background dark:bg-darkMode-background border border-lightMode-textPrimary dark:border-darkMode-textPrimary rounded-lg shadow-light dark:shadow-dark p-4 max-w-lg mx-auto transition-colors'
 			title={user.email}>
 			{/* Profile Image */}
 			<div className='flex-[1] w-10 h-10 aspect-square '>
@@ -28,7 +28,9 @@ const ProfileCard = ({ user }) => {
 			</div>
 
 			{/* Follow Icon */}
-			<FollowButton user={user} />
+			<div className='flex-[0]'>
+				<FollowButton user={user} />
+			</div>
 		</div>
 	);
 };

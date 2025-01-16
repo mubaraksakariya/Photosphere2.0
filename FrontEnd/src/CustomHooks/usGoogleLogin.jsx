@@ -4,9 +4,9 @@ import { useDispatch } from 'react-redux';
 import { login } from '../Store/Slices/AuthSlice';
 
 const googleLogin = async (api, credential) => {
-	console.log(credential);
+	// console.log(credential);
 
-	return await api.post('google-signin/', credential);
+	return await api.post('api/google-signin/', credential);
 };
 
 const useGoogleLogin = () => {
@@ -15,8 +15,8 @@ const useGoogleLogin = () => {
 	return useMutation({
 		mutationFn: (credential) => googleLogin(api, credential),
 		onSuccess: (response) => {
-			console.log(response.data);
-			console.log('User signed in successfully:', response.data);
+			// console.log(response.data);
+			// console.log('User signed in successfully:', response.data);
 			const { refresh, access, user } = response.data;
 			dispatch(login({ user, token: { refresh, access } }));
 		},

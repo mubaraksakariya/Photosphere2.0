@@ -2,7 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useApi } from '../Contexts/ApiContext';
 
 const fetchPostComments = async (api, postId) => {
-	const { data } = await api.get(`/comments/${postId}/recent-post-comments`);
+	const { data } = await api.get(
+		`api/comments/${postId}/recent-post-comments`
+	);
 	return data;
 };
 

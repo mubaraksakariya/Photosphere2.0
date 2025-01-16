@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useApi } from '../Contexts/ApiContext';
 
 const isFollowing = async (api, user_id) => {
-	const { data } = await api.get(`/users/${user_id}/check-follow/`);
+	const { data } = await api.get(`api/users/${user_id}/check-follow/`);
 	return data;
 };
 

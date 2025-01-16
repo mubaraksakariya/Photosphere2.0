@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 
 const resendOtp = async (api, email) => {
 	try {
-		const response = await api.post('resend-otp/', { email });
+		const response = await api.post('api/resend-otp/', { email });
 		return response.data;
 	} catch (error) {
 		throw error.response?.data || error;

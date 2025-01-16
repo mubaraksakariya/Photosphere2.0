@@ -1,6 +1,6 @@
 const MediaContent = ({ media, mediaType }) => {
 	return (
-		<div className='w-full h-[30vh] sm:h-[40vh] bg-lightMode-section dark:bg-darkMode-section'>
+		<div className='w-full h-[50vh] bg-lightMode-section dark:bg-darkMode-section'>
 			{mediaType === 'image' ? (
 				<img
 					src={media}

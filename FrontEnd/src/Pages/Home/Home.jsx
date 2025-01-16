@@ -2,16 +2,15 @@ import React from 'react';
 import LeftNav from '../../Components/Home/LeftNav/LeftNav';
 import Posts from '../../Components/Posts/Posts';
 import RightNav from '../../Components/Home/RightNav/RightNav';
+import StoryNav from '../../Components/Home/StoryNav/StoryNav';
 
 function Home() {
 	return (
-		<div className='min-h-screen flex flex-col bg-lightMode-background dark:bg-darkMode-background text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
+		<div className='min-h-[100dvh] flex flex-col bg-lightMode-background dark:bg-darkMode-background text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
 			{/* Story Nav */}
-			<div className='flex gap-4 px-4 md:px-6 lg:px-8'>
+			<div className='px-4 md:px-6 lg:px-8'>
 				<div className='bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark py-4 px-6'>
-					<div className='text-lightMode-accent dark:text-darkMode-accent font-semibold'>
-						Story Nav
-					</div>
+					<StoryNav />
 				</div>
 			</div>
 

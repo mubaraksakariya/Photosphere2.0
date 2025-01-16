@@ -6,12 +6,15 @@ from .models import Like, Post, Comment
 from .serializers import CommentSerializer, LikeSerializer, PostSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import action
+from rest_framework.filters import OrderingFilter
 
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     pagination_class = CustomPagination
+    # filter_backends = [OrderingFilter]
+    # ordering = ['-created_at']
 
     def get_permissions(self):
         """

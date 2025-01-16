@@ -16,6 +16,9 @@ class Post(models.Model):
     def __str__(self):
         return self.description
 
+    class Meta:
+        ordering = ['-created_at']
+
 
 class PostHashtag(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)

@@ -16,6 +16,12 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'email', 'first_name', 'username', 'last_name',
                   'date_of_birth', 'password', 'profile_image']
 
+    # def get_profile_picture(self, obj):
+    #     request = self.context.get('request')
+    #     if obj.profile_picture and request:
+    #         return request.build_absolute_uri(obj.profile_picture.url)
+    #     return None
+
     # Validate password length and strength
     def validate_password(self, value):
         """

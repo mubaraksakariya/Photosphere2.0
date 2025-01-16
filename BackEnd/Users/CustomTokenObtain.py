@@ -12,6 +12,7 @@ class CustomTokenObtainPairSerializer(serializers.Serializer):
     password = serializers.CharField()
 
     def validate(self, attrs):
+        request = self.context.get('request')
         username = attrs.get('username')
         password = attrs.get('password')
         if not username or not password:
@@ -28,9 +29,9 @@ class CustomTokenObtainPairSerializer(serializers.Serializer):
             raise AuthenticationFailed('Invalid credentials....')
 
         refresh = RefreshToken.for_user(user)
-        serialized_user = UserSerializer(user).data
+
         return {
-            'user': serialized_user,
+            'user': UserSerializer(user, context={'request': request}).data,
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }

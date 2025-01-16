@@ -153,7 +153,7 @@ class GoogleSignInView(APIView):
                 return Response({
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
-                    'user': UserSerializer(user).data
+                    'user': UserSerializer(user, context={'request': request}).data
                 })
             else:
                 return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)

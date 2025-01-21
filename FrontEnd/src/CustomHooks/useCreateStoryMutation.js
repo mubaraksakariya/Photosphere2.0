@@ -2,17 +2,15 @@ import { useApi } from '../Contexts/ApiContext';
 import { useMutation } from '@tanstack/react-query';
 
 const createPost = async (postData, api) => {
+	console.log(postData.media.original);
 	const formData = new FormData();
 
 	// Append description, hashtags, and file to FormData
-	formData.append('description', postData.description);
-	postData.hashtags.forEach((tag) => {
-		formData.append('hashtags', tag);
-	});
-	formData.append('media', postData.media.original);
+	formData.append('caption', postData.caption);
+	formData.append('media_file', postData.media.original);
 	formData.append('media_type', postData.media.type);
 
-	const { data } = await api.post('api/posts/', formData, {
+	const { data } = await api.post('api/stories/', formData, {
 		headers: {
 			'Content-Type': 'multipart/form-data',
 		},

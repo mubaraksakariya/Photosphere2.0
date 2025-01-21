@@ -24,6 +24,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 from Posts.views import CommentViewSet, LikeViewSet, PostViewSet
+from Stories.views import StoryViewSet
 from Users.CustomTokenObtain import CustomTokenObtainPairView
 from Users.views import GoogleSignInView, ResendOTPView, SignupView, UserViewSet, VerifyOTPView
 
@@ -32,6 +33,7 @@ router.register(r'api/users', UserViewSet)
 router.register(r'api/posts', PostViewSet, basename='post')
 router.register(r'api/likes', LikeViewSet, basename='like')
 router.register(r'api/comments', CommentViewSet, basename='comment')
+router.register(r'api/stories', StoryViewSet, basename='story')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

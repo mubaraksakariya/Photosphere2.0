@@ -1,25 +1,20 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useApi } from '../Contexts/ApiContext';
 
-const fetchPosts = async (
-	api,
-	{
-		pageParam = '/posts/?page=1', // Default path without the base URL
-	}
-) => {
+const fetchStories = async (api, { pageParam = '/stories/?page=1' }) => {
 	const response = await api.get(pageParam);
 	return response.data; // The data structure includes count, next, previous, and results
 };
 
-const usePosts = () => {
+const useStories = () => {
 	const api = useApi();
 	return useInfiniteQuery({
-		queryKey: ['posts'],
-		queryFn: ({ pageParam = 'api/posts/?page=1' }) =>
-			fetchPosts(api, { pageParam }),
+		queryKey: ['stories'],
+		queryFn: ({ pageParam = 'api/stories/?page=1' }) =>
+			fetchStories(api, { pageParam }),
 
-		initialPageParam: 'api/posts/?page=1',
-		getNextPageParam: (lastPage, allPages) => {
+		initialPageParam: 'api/stories/?page=1',
+		getNextPageParam: (lastPage) => {
 			// Extract only the part after the base URL (i.e., the path and query)
 			const nextPageUrl = lastPage.next;
 			if (nextPageUrl) {
@@ -32,4 +27,4 @@ const usePosts = () => {
 	});
 };
 
-export default usePosts;
+export default useStories;

@@ -1,19 +1,29 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { openViewStoryModal } from '../../../Store/Slices/ModalSlice';
 
-function StoryButton() {
-	const currentUser = useSelector((state) => state.auth.user);
+function StoryButton({ story }) {
+	const dispatch = useDispatch();
+	const manageStoryRead = () => {
+		dispatch(openViewStoryModal({ story: story }));
+	};
 
 	return (
 		<div className='flex items-center justify-center'>
 			<button
+				onClick={manageStoryRead}
 				type='button'
-				className='w-16 aspect-square flex justify-center items-center rounded-full overflow-hidden bg-lightMode-background dark:bg-darkMode-background shadow-light dark:shadow-dark transition-transform hover:scale-105'>
+				aria-label={`View story of ${story?.user?.username}`}
+				className={`w-16 aspect-square flex justify-center items-center rounded-full overflow-hidden transition-transform hover:scale-105 ${
+					story?.is_viewed
+						? ''
+						: 'ring-4 ring-lightMode-highlight dark:ring-darkMode-highlight'
+				} hover:shadow-light dark:hover:shadow-dark`}>
 				<span className='w-14 aspect-square block rounded-full overflow-hidden'>
 					<img
-						src={currentUser.profile_image}
-						alt={`${currentUser.username}'s profile`}
-						className='w-full h-full object-cover'
+						src={story?.user?.profile_image}
+						alt={`${story?.user?.username}'s profile`}
+						className='w-full h-full object-cover border border-lightMode-shadow dark:border-darkMode-shadow'
 					/>
 				</span>
 			</button>

@@ -6,7 +6,6 @@ function CreateStoryBtn() {
 	const dispatch = useDispatch();
 
 	const manageCreateStory = () => {
-		console.log('create story');
 		dispatch(openCreateStoryModal());
 	};
 

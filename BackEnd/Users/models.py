@@ -26,27 +26,39 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=30, unique=True)
-    first_name = models.CharField(max_length=30, default='first_name')
-    last_name = models.CharField(max_length=30, default='last_name')
-    profile_image = models.ImageField(
-        upload_to='profile_images/', default='profile_images/default_profile.png', blank=True, null=True)
-    date_of_birth = models.DateField(
-        null=True, blank=True, default='2000-01-01')
     is_active = models.BooleanField(default=True)
-    is_verified = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    is_verified = models.BooleanField(default=False)
+    date_joined = models.DateTimeField(auto_now_add=True)
 
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username',
-                       'first_name', 'last_name', 'date_of_birth']
+    REQUIRED_FIELDS = ['username']
 
     def __str__(self):
-        return f"{self.username} ({self.email})"
+        return self.username
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='profile')
+    first_name = models.CharField(max_length=30, blank=True, null=True)
+    last_name = models.CharField(max_length=30, blank=True, null=True)
+    profile_image = models.ImageField(
+        upload_to='profile_images/', default='profile_images/default_profile.png', blank=True
+    )
+
+    bio = models.TextField(blank=True, null=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    followers_count = models.PositiveIntegerField(default=0)
+    following_count = models.PositiveIntegerField(default=0)
+    post_count = models.PositiveIntegerField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s Profile"
 
 
 def default_expires_at():

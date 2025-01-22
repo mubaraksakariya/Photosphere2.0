@@ -1,7 +1,8 @@
-import { useState } from 'react';
 import FollowButton from './FollowButton/FollowButton';
 
 const ProfileCard = ({ user }) => {
+	console.log(user);
+
 	return (
 		<div
 			className='flex gap-2 w-full items-center bg-lightMode-background dark:bg-darkMode-background border border-lightMode-textPrimary dark:border-darkMode-textPrimary rounded-lg shadow-light dark:shadow-dark p-4 max-w-lg mx-auto transition-colors'
@@ -9,7 +10,7 @@ const ProfileCard = ({ user }) => {
 			{/* Profile Image */}
 			<div className='flex-[1] w-10 h-10 aspect-square '>
 				<img
-					src={user.profile_image}
+					src={user?.profile?.profile_image}
 					alt={user.username}
 					className='w-10 h-10 rounded-full object-cover'
 				/>

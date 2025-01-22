@@ -2,9 +2,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from Users.models import Follow, User
+from Users.models import Follow, Profile, User
 from Users.services import follow_user, get_suggested_users, get_user, send_otp_email, validate_otp, verify_google_id_token
-from .serializers import UserSerializer
+from .serializers import UserProfileSerializer, UserSerializer
 from rest_framework.exceptions import ValidationError
 from django.db import IntegrityError
 import logging
@@ -23,32 +23,54 @@ logger = logging.getLogger(__name__)
 
 class SignupView(APIView):
     def post(self, request):
-        serializer = UserSerializer(data=request.data)
+        user_data = {
+            'email': request.data.get('email'),
+            'username': request.data.get('username'),
+            'password': request.data.get('password'),
+        }
+        profile_data = {
+            'first_name': request.data.get('first_name', ''),
+            'last_name': request.data.get('last_name', ''),
+            'profile_image': request.data.get('profile_image', None),
+        }
+
+        serializer = UserSerializer(data=user_data)
 
         try:
             if serializer.is_valid():
                 # Save the user to the database if valid
                 user = serializer.save()
+
+                # Update profile with additional data
+                profile = user.profile  # Automatically created by signal
+                profile.first_name = profile_data['first_name']
+                profile.last_name = profile_data['last_name']
+                if profile_data['profile_image']:
+                    profile.profile_image = profile_data['profile_image']
+                profile.save()
+
                 # Send OTP email through service
                 send_otp_email(user)
+
                 return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)
+
             else:
-                # Log the validation errors for debugging purposes
-                logger.error(f"Validation failed: {serializer.errors}")
+                # Return validation errors
                 return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
         except IntegrityError as e:
-            # Handle duplicate email error or any other unique constraint violations
+            # Handle duplicate email or username errors
             logger.error(f"IntegrityError: {e}")
-            print(e)
-            return Response({"errors": {'email': ["This email is already registered"]}},
+            return Response({"errors": {"email": ["This email is already registered"]}},
                             status=status.HTTP_400_BAD_REQUEST)
 
         except ValidationError as e:
-            return Response({"message": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
+            # Handle custom validation exceptions
+            logger.error(f"ValidationError: {e}")
+            return Response({"errors": {"message": "Invalid data provided."}}, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
-            # General exception handling (database issues, other errors)
+            # Handle unexpected errors
             logger.exception(f"Unexpected error occurred: {e}")
             return Response({"message": "An unexpected error occurred. Please try again later."},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -111,58 +133,101 @@ class ResendOTPView(APIView):
 class GoogleSignInView(APIView):
     def post(self, request):
         try:
-            token = request.data.get('token')
-            if not token:
-                raise ValidationError("ID token is required.")
+            token = self.get_token(request)
+            id_info = self.verify_token(token)
+            if not id_info:
+                return self.invalid_token_response()
 
-            id_info = verify_google_id_token(token)
-            if id_info:
-                email = id_info.get('email')
-                first_name = id_info.get('given_name') or 'first_name'
-                last_name = id_info.get('last_name') or 'last_name'
-                profile_image_url = id_info.get("picture")
-                birthdate = id_info.get('birthdate')
+            email, first_name, last_name, profile_image_url, birthdate = self.extract_user_info(
+                id_info)
+            user, profile = self.get_or_create_user(
+                email, first_name, last_name, birthdate)
 
-                if not birthdate:
-                    birthdate = None
+            self.update_profile_image(user, profile_image_url)
+            self.update_user_verified_status(user, id_info)
 
-                # Get or create user
-                user, created = User.objects.get_or_create(username=email, defaults={
-                    'email': email,
-                    'first_name': first_name,
-                    'last_name': last_name,
-                    'date_of_birth': birthdate,
-                })
+            refresh = RefreshToken.for_user(user)
+            return self.generate_response(user, refresh)
 
-                if profile_image_url:
-                    # stream for larger files
-                    response = requests.get(profile_image_url, stream=True)
-                    if response.status_code == 200:
-                        content = response.raw.read()  # read the content once
-                        # Check if user has default image or no image
-                        if not user.profile_image or user.profile_image.name == 'profile_images/default_profile.png':
-                            # use content and a name
-                            file = ContentFile(content, name=f"{email}.jpg")
-                            user.profile_image = file
-                            user.save()  # important to save the user after the profile picture update
-
-                user.is_verified = id_info.get('email_verified')
-                user.save()
-
-                refresh = RefreshToken.for_user(user)
-                return Response({
-                    'refresh': str(refresh),
-                    'access': str(refresh.access_token),
-                    'user': UserSerializer(user, context={'request': request}).data
-                })
-            else:
-                return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
         except ValidationError as ve:
-            return Response({"detail": ve.detail}, status=status.HTTP_400_BAD_REQUEST)
+            return self.validation_error_response(ve)
         except Exception as e:
-            # Print full exception for debugging
-            print(f"Error in GoogleSignInView: {e}")
-            return Response({"detail": "An error occurred during sign in."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return self.general_error_response(e)
+
+    def get_token(self, request):
+        """Extract token from the request data"""
+        token = request.data.get('token')
+        if not token:
+            raise ValidationError("ID token is required.")
+        return token
+
+    def verify_token(self, token):
+        """Verify the Google ID token and return the info"""
+        return verify_google_id_token(token)
+
+    def invalid_token_response(self):
+        """Return an error response for invalid token"""
+        return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def extract_user_info(self, id_info):
+        """Extract relevant user info from the Google ID token"""
+        email = id_info.get('email')
+        first_name = id_info.get('given_name', 'first_name')
+        last_name = id_info.get('last_name', 'last_name')
+        profile_image_url = id_info.get("picture")
+        birthdate = id_info.get('birthdate') or None
+        return email, first_name, last_name, profile_image_url, birthdate
+
+    def get_or_create_user(self, email, first_name, last_name, birthdate):
+        """Get or create the user and profile"""
+        user, created = User.objects.get_or_create(
+            username=email, defaults={'email': email})
+
+        if created:
+            profile = user.profile  # Automatically created by signal
+            profile.first_name = first_name
+            profile.last_name = last_name
+            profile.date_of_birth = birthdate
+            profile.save()
+        else:
+            profile = user.profile  # In case profile needs to be updated
+
+        return user, profile
+
+    def update_profile_image(self, user, profile_image_url):
+        """Update the profile image if available"""
+        if profile_image_url:
+            response = requests.get(profile_image_url, stream=True)
+            if response.status_code == 200:
+                content = response.raw.read()
+                # Check if user has default image or no image
+                if not user.profile.profile_image or user.profile.profile_image.name == 'profile_images/default_profile.png':
+                    file = ContentFile(content, name=f"{user.email}.jpg")
+                    user.profile.profile_image = file
+                    user.profile.save()  # Save after profile picture update
+
+    def update_user_verified_status(self, user, id_info):
+        """Update user's verification status"""
+        user.is_verified = id_info.get('email_verified', False)
+        user.save()
+
+    def generate_response(self, user, refresh):
+        """Generate the response with user info and JWT tokens"""
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            # Assuming you want user profile
+            'user': UserProfileSerializer(user, context={'request': None}).data
+        })
+
+    def validation_error_response(self, ve):
+        """Handle validation errors"""
+        return Response({"detail": ve.detail}, status=status.HTTP_400_BAD_REQUEST)
+
+    def general_error_response(self, e):
+        """Handle other exceptions"""
+        print(f"Error in GoogleSignInView: {e}")
+        return Response({"detail": "An error occurred during sign in."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class UserViewSet(ModelViewSet):
@@ -210,3 +275,7 @@ class UserViewSet(ModelViewSet):
         is_following = Follow.objects.filter(
             follower=request.user, followed=followed).exists()
         return Response({'is_following': is_following}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated], url_path='user-profile')
+    def user_profile(self, request, pk=None):
+        user = User.objects.get(id=pk)

@@ -116,6 +116,7 @@ export const useSignupLogic = () => {
 			},
 			onError: (error) => {
 				setIsLoading(false);
+				console.log(error);
 
 				console.log(error.response?.data?.errors);
 

@@ -118,7 +118,7 @@ def verify_google_id_token(token):
 
 def get_suggested_users(user):
     latest_users = User.objects.filter(
-        is_superuser=False, is_staff=False).exclude(email=user.email).order_by('-created_at')[:5]
+        is_superuser=False, is_staff=False).exclude(email=user.email).order_by('-date_joined')[:5]
     return latest_users
 
 

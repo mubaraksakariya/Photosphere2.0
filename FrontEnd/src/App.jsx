@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import VerifyOtp from './Pages/OtpVerification/VerifyOtp';
 import { useSelector } from 'react-redux';
 import { ModalProvider } from './Contexts/ModalProvider';
+import Profile from './Pages/Profile/Profile';
 
 function PublicRoute({ children }) {
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -68,6 +69,14 @@ function User() {
 					<PublicRoute>
 						<VerifyOtp />
 					</PublicRoute>
+				}
+			/>
+			<Route
+				path='/profile'
+				element={
+					<PrivateRoute>
+						<Profile />
+					</PrivateRoute>
 				}
 			/>
 		</Routes>

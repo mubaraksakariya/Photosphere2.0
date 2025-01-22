@@ -3,6 +3,7 @@ from rest_framework import serializers
 from Users.serializers import UserSerializer
 from .models import Like, Post, Hashtag, PostHashtag, Comment
 from django.db import transaction
+from rest_framework.exceptions import ValidationError
 
 
 class HashtagSerializer(serializers.ModelSerializer):
@@ -30,8 +31,10 @@ class CommentSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     hashtags = serializers.ListField(
         child=serializers.CharField(max_length=50),
+        required=False,
         write_only=True
     )
+
     user = UserSerializer(read_only=True)
 
     class Meta:
@@ -41,22 +44,19 @@ class PostSerializer(serializers.ModelSerializer):
         read_only_fields = ['user']
 
     def create(self, validated_data):
-        """
-        Handle creation of a post, including processing hashtags.
-        """
-        # Assign the user from the validated data
         user = self.context['request'].user
-        print(user)
-        if not user:
-            raise serializers.ValidationError("User is required")
+        if not user.is_authenticated:
+            raise ValidationError("User is not authenticated")
 
         hashtags = validated_data.pop('hashtags', [])
         print(hashtags)
         with transaction.atomic():
             post = Post.objects.create(user=user, **validated_data)
+
             for tag in hashtags:
                 hashtag_obj, _ = Hashtag.objects.get_or_create(tag=tag)
                 PostHashtag.objects.create(post=post, hashtag=hashtag_obj)
+
         return post
 
     def to_representation(self, instance):

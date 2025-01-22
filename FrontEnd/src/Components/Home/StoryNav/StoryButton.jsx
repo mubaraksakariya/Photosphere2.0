@@ -21,7 +21,7 @@ function StoryButton({ story }) {
 				} hover:shadow-light dark:hover:shadow-dark`}>
 				<span className='w-14 aspect-square block rounded-full overflow-hidden'>
 					<img
-						src={story?.user?.profile_image}
+						src={story?.user?.profile.profile_image}
 						alt={`${story?.user?.username}'s profile`}
 						className='w-full h-full object-cover border border-lightMode-shadow dark:border-darkMode-shadow'
 					/>

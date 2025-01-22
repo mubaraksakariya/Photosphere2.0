@@ -28,15 +28,18 @@ class PostViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
 
     def create(self, request, *args, **kwargs):
-        """
-        Custom create view logic where authentication and post creation are handled.
-        """
-        print(request.data)
+        hashtags_data = request.data.getlist('hashtags')
+        cleaned_hashtags = [tag.strip()
+                            for tag in hashtags_data if tag.strip()]
+
+        # Create a mutable copy of request.data
+        mutable_data = request.data.copy()
+        mutable_data.setlist('hashtags', cleaned_hashtags)
+
         serializer = self.get_serializer(
-            data=request.data, context={'request': request})
+            data=mutable_data, context={'request': request})
         if serializer.is_valid():
-            # Additional logic can go here before saving, such as checking user status, etc.
-            post = serializer.save()  # The save method triggers the create in the serializer
+            post = serializer.save()
             return Response(self.get_serializer(post).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

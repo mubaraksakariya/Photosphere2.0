@@ -55,7 +55,7 @@ function ViewStoryModal() {
 			<div className='bg-lightMode-background dark:bg-darkMode-background p-4 rounded-lg shadow-light dark:shadow-dark max-w-lg w-full h-[90dvh] flex flex-col'>
 				{/* Header */}
 				<UserHeader
-					profileImage={story.user.profile_image}
+					profileImage={story.user.profile.profile_image}
 					username={story.user.username}
 					email={story.user.email}
 					onClose={handleClose}

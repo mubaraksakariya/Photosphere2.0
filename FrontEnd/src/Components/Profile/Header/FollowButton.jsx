@@ -1,15 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import useCheckFollow from '../../../CustomHooks/useCheckFollow';
+import useToggleFollow from '../../../CustomHooks/useToggleFollow';
 
-function FollowButton({ user, onFollowToggle }) {
-	const [isFollowed, setIsFollowed] = useState(false);
+function FollowButton({ user }) {
+	const [isFollowed, setIsFollowed] = useState(
+		user?.profile?.is_followed || false
+	);
 
 	// Fetch the follow status using the custom hook
-	const { data, isLoading } = useCheckFollow(user?.id);
-
+	const { data, isLoading, refetch } = useCheckFollow(user?.id);
+	const {
+		mutate: toggleFollow,
+		isSuccess,
+		error,
+		isPending,
+	} = useToggleFollow();
 	// Update the follow state when data is fetched
 	useEffect(() => {
+		// console.log(isFollowed);
+		// console.log(user);
+
 		if (data) {
+			console.log(data);
+
 			setIsFollowed(data.is_followed);
 		}
 	}, [data]);
@@ -17,7 +30,16 @@ function FollowButton({ user, onFollowToggle }) {
 	// Handle button click
 	const handleToggle = () => {
 		setIsFollowed((prev) => !prev);
-		if (onFollowToggle) onFollowToggle(!isFollowed);
+		// if (onFollowToggle) onFollowToggle(!isFollowed);
+		toggleFollow(user.id, {
+			onSuccess: (response) => {
+				refetch();
+			},
+			onError: (error) => {
+				console.log(error.response.data.error);
+				refetch();
+			},
+		});
 	};
 
 	return (
@@ -25,14 +47,14 @@ function FollowButton({ user, onFollowToggle }) {
 			onClick={handleToggle}
 			disabled={isLoading}
 			aria-label={isFollowed ? 'Unfollow user' : 'Follow user'}
-			className={`px-4 py-2 rounded-lg text-sm font-medium transition-all 
+			className={`md:px-4 md:py-2 px-2 py-1 rounded-lg text-sm font-medium transition-all 
 				${
 					isFollowed
 						? 'bg-lightMode-section dark:bg-darkMode-section text-lightMode-textPrimary dark:text-darkMode-textPrimary hover:bg-lightMode-accent hover:text-white dark:hover:bg-darkMode-accent'
 						: 'bg-lightMode-accent dark:bg-darkMode-accent text-white hover:opacity-90'
 				}
 				${isLoading ? 'cursor-not-allowed opacity-50' : ''}`}>
-			{isLoading ? (
+			{isLoading || isPending ? (
 				<span className='flex items-center'>
 					<svg
 						className='animate-spin h-4 w-4 mr-2 text-lightMode-shadow dark:text-darkMode-shadow'
@@ -54,7 +76,7 @@ function FollowButton({ user, onFollowToggle }) {
 					Loading...
 				</span>
 			) : isFollowed ? (
-				'Following'
+				'Unfollow'
 			) : (
 				'Follow'
 			)}

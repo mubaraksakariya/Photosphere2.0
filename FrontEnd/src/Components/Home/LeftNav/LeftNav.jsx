@@ -1,20 +1,18 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../Store/Slices/AuthSlice';
-import { useNavigate } from 'react-router';
+import { data, useNavigate } from 'react-router';
 import { openCreatePostModal } from '../../../Store/Slices/ModalSlice';
-// import { HomeContext } from '../../Contexts/HomeContext';
-// import { axiosInstance } from '../../Contexts/AxioContext';
 
 function LeftNav() {
-	const { isPostModalOpen, isStoryModalOpen } = useSelector(
-		(state) => state.modal
-	);
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const [notificationCount, setNotificationCount] = useState(0);
 	const iconRef = useRef();
-
+	const user = useSelector((state) => state.auth.user);
+	const manageOpenProfile = () => {
+		navigate(`/profile/${user?.id}`);
+	};
 	// useEffect(() => {
 	// 	axiosInstance
 	// 		.get('notification/get-unread-notifications')
@@ -92,7 +90,7 @@ function LeftNav() {
 				{/* Profile */}
 				<div
 					className='flex items-center space-x-2 cursor-pointer hover:text-lightMode-accent dark:hover:text-darkMode-accent'
-					onClick={() => navigate('/profile')}>
+					onClick={manageOpenProfile}>
 					<i className='bi bi-person-circle text-xl'></i>
 					<span className='hidden md:inline'>Profile</span>
 				</div>

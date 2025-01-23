@@ -16,6 +16,7 @@ import google.oauth2.id_token
 from google.auth import exceptions
 from google.oauth2.id_token import verify_oauth2_token
 from google.auth.transport.requests import Request
+from django.db import IntegrityError
 
 from Users.serializers import UserSerializer
 
@@ -116,6 +117,22 @@ def verify_google_id_token(token):
         return None
 
 
+def get_or_create_user(email, first_name, last_name, birthdate):
+    """Get or create the user and profile"""
+    user, created = User.objects.get_or_create(
+        username=email, defaults={'email': email})
+    if created:
+        profile = user.profile  # Automatically created by signal
+        profile.first_name = first_name
+        profile.last_name = last_name
+        profile.date_of_birth = birthdate
+        profile.save()
+    else:
+        profile = user.profile  # In case profile needs to be updated
+
+    return user, profile
+
+
 def get_suggested_users(user):
     latest_users = User.objects.filter(
         is_superuser=False, is_staff=False).exclude(email=user.email).order_by('-date_joined')[:5]
@@ -124,13 +141,18 @@ def get_suggested_users(user):
 
 def follow_user(follower, followed):
     if follower == followed:
-        raise ValueError("A user cannot follow themselves.")
+        raise ValidationError("A user cannot follow themselves.")
 
-    follow, created = Follow.objects.get_or_create(
-        follower=follower,
-        followed=followed
-    )
+    try:
+        follow, created = Follow.objects.get_or_create(
+            follower=follower,
+            followed=followed
+        )
+    except IntegrityError:
+        raise ValidationError(
+            "An error occurred while trying to follow this user.")
 
+    # If the follow already exists, delete it (toggle unfollow)
     if not created:
         follow.delete()
         return {"status": "unfollowed", "follow": None}

@@ -4,7 +4,7 @@ function ProfileImage({ user }) {
 	return (
 		<div className='rounded-full overflow-hidden w-profileImage h-profileImage'>
 			<img
-				src={user.profile_image}
+				src={user?.profile?.profile_image}
 				className='w-full h-full object-cover'
 				alt={`${user.username}'s profile`}
 			/>

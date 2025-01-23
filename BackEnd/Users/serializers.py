@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from datetime import date
-from Users.models import Profile, User
+from Users.models import Follow, Profile, User
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -35,13 +35,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_is_followed(self, obj):
         request = self.context.get('request')
         if request and request.user.is_authenticated:
-            return request.user.followers.filter(follower=request.user).exists()
+            return Follow.objects.filter(follower=request.user, followed=obj.user).exists()
         return False
 
     def get_is_own_profile(self, obj):
         request = self.context.get('request')
         if request and request.user.is_authenticated:
-            return obj == request.user
+            return obj == request.user.profile
         return False
 
 

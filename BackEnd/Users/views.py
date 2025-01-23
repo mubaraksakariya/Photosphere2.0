@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from Users.models import Follow, Profile, User
-from Users.services import follow_user, get_suggested_users, get_user, send_otp_email, validate_otp, verify_google_id_token
+from Users.services import follow_user, get_or_create_user, get_suggested_users, get_user, send_otp_email, validate_otp, verify_google_id_token
 from .serializers import UserProfileSerializer, UserSerializer
 from rest_framework.exceptions import ValidationError
 from django.db import IntegrityError
@@ -15,6 +15,8 @@ from rest_framework.permissions import IsAuthenticated
 import requests
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import action
+from django.shortcuts import get_object_or_404
+from requests.exceptions import RequestException
 
 
 # Set up logging for the view
@@ -140,19 +142,27 @@ class GoogleSignInView(APIView):
 
             email, first_name, last_name, profile_image_url, birthdate = self.extract_user_info(
                 id_info)
-            user, profile = self.get_or_create_user(
+            user, profile = get_or_create_user(
                 email, first_name, last_name, birthdate)
-
             self.update_profile_image(user, profile_image_url)
             self.update_user_verified_status(user, id_info)
 
             refresh = RefreshToken.for_user(user)
-            return self.generate_response(user, refresh)
+            serializedUser = UserSerializer(
+                user, context={'request': request}).data
+            print(user.profile)
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+                'user': serializedUser
+            })
 
         except ValidationError as ve:
+            print(ve)
             return self.validation_error_response(ve)
         except Exception as e:
-            return self.general_error_response(e)
+            print(f"Error in GoogleSignInView: {e}")
+            return Response({"detail": "An error occurred during sign in."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get_token(self, request):
         """Extract token from the request data"""
@@ -178,56 +188,31 @@ class GoogleSignInView(APIView):
         birthdate = id_info.get('birthdate') or None
         return email, first_name, last_name, profile_image_url, birthdate
 
-    def get_or_create_user(self, email, first_name, last_name, birthdate):
-        """Get or create the user and profile"""
-        user, created = User.objects.get_or_create(
-            username=email, defaults={'email': email})
-
-        if created:
-            profile = user.profile  # Automatically created by signal
-            profile.first_name = first_name
-            profile.last_name = last_name
-            profile.date_of_birth = birthdate
-            profile.save()
-        else:
-            profile = user.profile  # In case profile needs to be updated
-
-        return user, profile
-
     def update_profile_image(self, user, profile_image_url):
         """Update the profile image if available"""
         if profile_image_url:
-            response = requests.get(profile_image_url, stream=True)
-            if response.status_code == 200:
-                content = response.raw.read()
-                # Check if user has default image or no image
-                if not user.profile.profile_image or user.profile.profile_image.name == 'profile_images/default_profile.png':
-                    file = ContentFile(content, name=f"{user.email}.jpg")
-                    user.profile.profile_image = file
-                    user.profile.save()  # Save after profile picture update
+            try:
+                response = requests.get(profile_image_url, stream=True)
+                if response.status_code == 200:
+                    content = response.raw.read()
+                    # Check if user has default image or no image
+                    if not user.profile or not user.profile.profile_image:
+                        file = ContentFile(content, name=f"{user.email}.jpg")
+                        user.profile.profile_image = file
+                        user.profile.save()  # Save after profile picture update
+                        user.save()
+            except RequestException as e:
+                print(f"Error downloading profile image: {e}")
+                # Log the error but don't propagate to the user
 
     def update_user_verified_status(self, user, id_info):
         """Update user's verification status"""
         user.is_verified = id_info.get('email_verified', False)
         user.save()
 
-    def generate_response(self, user, refresh):
-        """Generate the response with user info and JWT tokens"""
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-            # Assuming you want user profile
-            'user': UserProfileSerializer(user, context={'request': None}).data
-        })
-
     def validation_error_response(self, ve):
         """Handle validation errors"""
         return Response({"detail": ve.detail}, status=status.HTTP_400_BAD_REQUEST)
-
-    def general_error_response(self, e):
-        """Handle other exceptions"""
-        print(f"Error in GoogleSignInView: {e}")
-        return Response({"detail": "An error occurred during sign in."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class UserViewSet(ModelViewSet):
@@ -251,16 +236,24 @@ class UserViewSet(ModelViewSet):
         current_user = request.user
         user_id = request.data.get('user_id')
 
+        # Validate user_id presence
         if not user_id:
-            return Response({'error': 'User ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'User ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             user_to_follow = User.objects.get(id=user_id)
         except User.DoesNotExist:
-            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        except (ValueError, TypeError):
+            return Response({'error': 'Invalid User ID.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        follow_data = follow_user(
-            follower=current_user, followed=user_to_follow)
+        try:
+            follow_data = follow_user(
+                follower=current_user, followed=user_to_follow)
+        except ValidationError as e:
+            return Response({'error': e.detail}, status=status.HTTP_400_BAD_REQUEST)
+        except IntegrityError:
+            return Response({'error': 'An internal error occurred while processing the request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         is_following = follow_data.get('status') == 'followed'
         return Response({'is_following': is_following}, status=status.HTTP_200_OK)
@@ -274,8 +267,30 @@ class UserViewSet(ModelViewSet):
 
         is_following = Follow.objects.filter(
             follower=request.user, followed=followed).exists()
-        return Response({'is_following': is_following}, status=status.HTTP_200_OK)
+        return Response({'is_followed': is_following}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated], url_path='user-profile')
     def user_profile(self, request, pk=None):
-        user = User.objects.get(id=pk)
+        try:
+            # Attempt to retrieve the user by their ID
+            user = get_object_or_404(User, id=pk)
+
+            # Serialize the user data
+            serialized_user = self.get_serializer(user).data
+
+            # Return success response with serialized data
+            return Response({'user': serialized_user}, status=status.HTTP_200_OK)
+
+        except User.DoesNotExist:
+            # Explicitly handle the case where the user is not found (extra clarity)
+            return Response(
+                {'error': 'User not found.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        except Exception as e:
+            # Handle unexpected errors and log them for debugging purposes
+            return Response(
+                {'error': 'An unexpected error occurred.', 'details': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

@@ -79,6 +79,14 @@ function User() {
 					</PrivateRoute>
 				}
 			/>
+			<Route
+				path='/profile/:user_id'
+				element={
+					<PrivateRoute>
+						<Profile />
+					</PrivateRoute>
+				}
+			/>
 		</Routes>
 	);
 }

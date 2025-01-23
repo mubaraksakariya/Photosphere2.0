@@ -26,10 +26,10 @@ export default {
 				dark: '0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3)',
 			},
 			width: {
-				profileImage: 'clamp(110px, 15vw, 200px)',
+				profileImage: 'clamp(90px, 15vw, 200px)',
 			},
 			height: {
-				profileImage: 'clamp(110px, 15vw, 200px)',
+				profileImage: 'clamp(90px, 15vw, 200px)',
 			},
 		},
 	},

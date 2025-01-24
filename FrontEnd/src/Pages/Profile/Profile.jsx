@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Header from '../../Components/Profile/Header/Header';
 import { useParams } from 'react-router';
 import useProfile from '../../CustomHooks/useProfile';
+import UserPosts from '../../Components/Profile/UserPosts/UserPosts';
 
 function Profile() {
 	const { user_id } = useParams();
@@ -30,9 +31,9 @@ function Profile() {
 					<Header user={user} />
 				</div>
 			</div>
-			<div className='flex flex-1 gap-4 p-4 md:p-6 lg:p-8'>
+			<div className='flex-1 gap-4 p-4 md:p-6 lg:p-8'>
 				{/* Display user's posts or other content */}
-				Posts
+				<UserPosts user={user} />
 			</div>
 		</div>
 	);

@@ -12,7 +12,7 @@ function Header({ user }) {
 	const isOwnProfile = user?.profile?.is_own_profile;
 
 	return (
-		<div className='flex flex-col md:flex-row items-center gap-4 p-4 bg-lightMode-section dark:bg-darkMode-section  rounded-md max-w-5xl mx-auto'>
+		<div className='flex flex-col md:flex-row items-center gap-4 bg-lightMode-section dark:bg-darkMode-section  rounded-md max-w-5xl mx-auto'>
 			<div className='flex-shrink-0'>
 				<ProfileImage user={user} />
 			</div>

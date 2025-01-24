@@ -66,9 +66,11 @@ class PostSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         hashtags = instance.posthashtag_set.all().select_related('hashtag')
         likes_count = Like.objects.filter(post=instance).count()
+        comments_count = Comment.objects.filter(post=instance).count()
         representation['hashtags'] = [
             {'id': h.hashtag.id, 'tag': h.hashtag.tag} for h in hashtags
         ]
         representation['likes_count'] = likes_count
         representation['is_liked'] = is_liked
+        representation['comments_count'] = comments_count
         return representation

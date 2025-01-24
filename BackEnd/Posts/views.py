@@ -27,6 +27,13 @@ class PostViewSet(viewsets.ModelViewSet):
 
         return super().get_permissions()
 
+    def get_queryset(self):
+        user_id = self.request.query_params.get('user_id')
+        if user_id:
+            # Assuming Post has a foreign key to User
+            return Post.objects.filter(user_id=user_id)
+        return super().get_queryset()
+
     def create(self, request, *args, **kwargs):
         hashtags_data = request.data.getlist('hashtags')
         cleaned_hashtags = [tag.strip()

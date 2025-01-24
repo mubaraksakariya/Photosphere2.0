@@ -9,31 +9,19 @@ function FollowButton({ user }) {
 
 	// Fetch the follow status using the custom hook
 	const { data, isLoading, refetch } = useCheckFollow(user?.id);
-	const {
-		mutate: toggleFollow,
-		isSuccess,
-		error,
-		isPending,
-	} = useToggleFollow();
+	const { mutate: toggleFollow, isPending } = useToggleFollow();
 	// Update the follow state when data is fetched
 	useEffect(() => {
-		// console.log(isFollowed);
-		// console.log(user);
-
 		if (data) {
-			console.log(data);
-
 			setIsFollowed(data.is_followed);
 		}
 	}, [data]);
 
 	// Handle button click
 	const handleToggle = () => {
-		setIsFollowed((prev) => !prev);
-		// if (onFollowToggle) onFollowToggle(!isFollowed);
 		toggleFollow(user.id, {
 			onSuccess: (response) => {
-				refetch();
+				setIsFollowed(response.data.is_followed);
 			},
 			onError: (error) => {
 				console.log(error.response.data.error);
@@ -73,7 +61,7 @@ function FollowButton({ user }) {
 							fill='currentColor'
 							d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
 					</svg>
-					Loading...
+					Loading
 				</span>
 			) : isFollowed ? (
 				'Unfollow'

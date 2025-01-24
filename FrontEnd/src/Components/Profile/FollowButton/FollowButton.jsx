@@ -15,17 +15,15 @@ function FollowButton({ user }) {
 
 	// Sync initial following state from API response
 	useEffect(() => {
-		if (checkFollowData?.is_following !== undefined) {
-			setIsFollowing(checkFollowData.is_following);
+		if (checkFollowData?.is_followed !== undefined) {
+			setIsFollowing(checkFollowData.is_followed);
 		}
 	}, [checkFollowData]);
 
 	const handleToggleFollow = () => {
 		toggleFollow(user.id, {
 			onSuccess: (response) => {
-				console.log('following/unfollowing success', response);
-
-				setIsFollowing(response.data.is_following);
+				setIsFollowing(response.data.is_followed);
 			},
 			onError: (error) => {
 				console.error('Error toggling follow:', error);

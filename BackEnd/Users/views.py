@@ -256,7 +256,7 @@ class UserViewSet(ModelViewSet):
             return Response({'error': 'An internal error occurred while processing the request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         is_following = follow_data.get('status') == 'followed'
-        return Response({'is_following': is_following}, status=status.HTTP_200_OK)
+        return Response({'is_followed': is_following}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated], url_path='check-follow')
     def is_following(self, request, pk=None):

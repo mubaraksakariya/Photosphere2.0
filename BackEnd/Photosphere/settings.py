@@ -42,12 +42,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'rest_framework',
     'rest_framework_simplejwt',
     "corsheaders",
     'Users',
     'Posts',
     'Stories',
+    'Chat',
 ]
 
 MIDDLEWARE = [
@@ -174,3 +176,12 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL")
 DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_HOST_USER")
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [("127.0.0.1", 6379)],  # Redis server address and port
+        },
+    },
+}

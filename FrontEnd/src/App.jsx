@@ -9,6 +9,7 @@ import VerifyOtp from './Pages/OtpVerification/VerifyOtp';
 import { useSelector } from 'react-redux';
 import { ModalProvider } from './Contexts/ModalProvider';
 import Profile from './Pages/Profile/Profile';
+import ChatMainPage from './Pages/Chat/ChatMainPage';
 
 function PublicRoute({ children }) {
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -84,6 +85,14 @@ function User() {
 				element={
 					<PrivateRoute>
 						<Profile />
+					</PrivateRoute>
+				}
+			/>
+			<Route
+				path='/chat'
+				element={
+					<PrivateRoute>
+						<ChatMainPage />
 					</PrivateRoute>
 				}
 			/>

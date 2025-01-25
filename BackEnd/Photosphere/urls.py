@@ -23,6 +23,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from Chat.views import FavoriteChatListView, RecentChatUsersView
 from Posts.views import CommentViewSet, LikeViewSet, PostViewSet
 from Stories.views import StoryViewSet
 from Users.CustomTokenObtain import CustomTokenObtainPairView
@@ -44,5 +45,9 @@ urlpatterns = [
     path('api/signup/', SignupView.as_view(), name='signup'),
     path('api/verify/', VerifyOTPView.as_view(), name='verify'),
     path('api/resend-otp/', ResendOTPView.as_view(), name='resend_otp'),
+    path('api/chat/favorites/', FavoriteChatListView.as_view(),
+         name='favorite-chats'),
+    path('api/chat/recent/', RecentChatUsersView.as_view(),
+         name='recent-chats'),
 
 ]+router.urls + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

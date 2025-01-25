@@ -17,6 +17,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 from requests.exceptions import RequestException
+from django.db.models import Q
 
 
 # Set up logging for the view
@@ -221,7 +222,25 @@ class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
 
     def get_queryset(self):
-        return User.objects.filter(id=self.request.user.id)
+        """
+        Filters the queryset by excluding the current user and admin users.
+        Optionally filters by 'search' query parameter.
+        """
+        queryset = super().get_queryset()
+        current_user = self.request.user
+
+        # Exclude the current user and admin users
+        queryset = queryset.exclude(Q(id=current_user.id) | Q(
+            is_staff=True) | Q(is_superuser=True))
+
+        # Apply search filter if provided
+        search_query = self.request.query_params.get('search', None)
+        if search_query:
+            queryset = queryset.filter(
+                Q(username__icontains=search_query) |
+                Q(email__icontains=search_query)
+            )
+        return queryset
 
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated], url_path='suggested_users')
     def suggested_users(self, request, *args, **kwargs):
@@ -294,3 +313,17 @@ class UserViewSet(ModelViewSet):
                 {'error': 'An unexpected error occurred.', 'details': str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+    @action(detail=False, methods=['get'])
+    def search(self, request):
+        """
+        Custom action to search for users by username or email.
+        Excludes current user and admin users.
+        """
+        search_query = request.query_params.get('search', None)
+        if not search_query:
+            return Response({"error": "Please provide a search query parameter"}, status=400)
+
+        users = self.get_queryset()
+        serializer = self.get_serializer(users, many=True)
+        return Response(serializer.data)

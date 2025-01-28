@@ -5,13 +5,16 @@ import ChatMessages from '../../Components/Chat/ChatMessages';
 import ChatInput from '../../Components/Chat/ChatInput';
 import SearchedUsers from '../../Components/Chat/SearchedUsers';
 import ChatList from '../../Components/Chat/ChatList';
+import { useChat } from '../../Contexts/ChatContext';
+import NoChatSelected from '../../Components/Chat/NoChatSelected';
 function ChatMainPage() {
 	const [chatUsers, setChatUsers] = useState([]);
 	const [searchQuery, setSearchQuery] = useState('');
-
+	const { currentChat } = useChat();
 	const handleSearch = (e) => {
 		setSearchQuery(e.target.value);
 	};
+	// console.log(currentChat);
 
 	return (
 		<div className='flex h-screen'>
@@ -39,10 +42,16 @@ function ChatMainPage() {
 					<ChatList />
 				)}
 			</div>
-			<div className='flex-[8] bg-lightMode-background dark:bg-darkMode-background h-full flex flex-col'>
-				<ChatHeader />
-				<ChatMessages />
-				<ChatInput />
+			<div className='flex-[8] bg-lightMode-background dark:bg-darkMode-background flex flex-col'>
+				{currentChat ? (
+					<>
+						<ChatHeader />
+						<ChatMessages />
+						<ChatInput />
+					</>
+				) : (
+					<NoChatSelected />
+				)}
 			</div>
 		</div>
 	);

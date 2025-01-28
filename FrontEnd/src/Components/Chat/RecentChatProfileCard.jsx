@@ -1,21 +1,12 @@
 import React from 'react';
-import useUserChatRoom from '../../CustomHooks/useUserChatRoom';
 import { useChat } from '../../Contexts/ChatContext';
 
-function SearchedChatProfileCard({ message, user }) {
-	if (!user) return null;
+function RecentChatProfileCard({ chatRoom }) {
+	if (!chatRoom) return null;
 	const { currentChat, selectChat, clearChat } = useChat();
-	const { mutate, isLoading, isError, data } = useUserChatRoom(user?.id);
+	const user = chatRoom.members[0];
 	const manageSelectChat = () => {
-		mutate(
-			{},
-			{
-				onSuccess: (data) => {
-					// console.log(data);
-					selectChat(data.chat_room);
-				},
-			}
-		);
+		selectChat(chatRoom);
 	};
 	const { first_name, last_name, username, profile_image } =
 		user.profile || {};
@@ -38,10 +29,10 @@ function SearchedChatProfileCard({ message, user }) {
 					</p>
 				</div>
 				{/* recent message */}
-				<div>{message}</div>
+				<div>message</div>
 			</div>
 		</div>
 	);
 }
 
-export default SearchedChatProfileCard;
+export default RecentChatProfileCard;

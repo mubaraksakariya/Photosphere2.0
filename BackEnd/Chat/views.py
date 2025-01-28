@@ -2,9 +2,49 @@ from django.db.models import Max
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+
+from Chat.services import get_private_chat_room
+from Users.models import User
 from .models import ChatRoom, ChatRoomMember, FavoriteChat, Message
-from .serializers import ChatRoomMemberSerializer, FavoriteChatSerializer, RecentChatSerializer
+from .serializers import ChatRoomMemberSerializer, ChatRoomSerializer, FavoriteChatSerializer, RecentChatSerializer
 from rest_framework import status
+from django.db import DatabaseError
+from rest_framework.exceptions import APIException
+from django.conf import settings
+from django.db import transaction
+from django.db.models import Q
+
+
+class GetOrCreateChatRoomView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        """
+        Gets or creates a private chat room between the current user and another user.
+        """
+        current_user = request.user
+
+        # Validate the other user
+        try:
+            other_user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if current_user.id == other_user.id:
+            return Response({'error': 'Cannot create a chat room with yourself'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # get chat room
+        try:
+            chat_room = get_private_chat_room(
+                current_user=current_user, other_user=other_user)
+        except Exception as e:
+            # Log the exception if needed
+            return Response({'error': 'An unexpected error occurred', 'details': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({
+            'chat_room': ChatRoomSerializer(chat_room, context={'request': request}).data,
+            'name': chat_room.name or f"Room {chat_room.id}"
+        }, status=status.HTTP_200_OK)
 
 
 class RecentChatUsersView(APIView):
@@ -12,18 +52,34 @@ class RecentChatUsersView(APIView):
 
     def get(self, request):
         user = request.user
-        # Fetch latest message timestamp for each chat room the user is part of
-        recent_chats = (
-            Message.objects.filter(chat_room__members__user=user)
-            .values('chat_room_id')
-            .annotate(last_message=Max('timestamp'))
-            .order_by('-last_message')
-        )
-        chat_room_ids = [chat['chat_room_id'] for chat in recent_chats]
-        messages = Message.objects.filter(
-            chat_room_id__in=chat_room_ids).order_by('-timestamp')
-        serializer = RecentChatSerializer(messages, many=True)
-        return Response(serializer.data)
+
+        try:
+            # Fetch latest message timestamp for each chat room the user is part of
+            recent_chats = (
+                ChatRoom.objects.filter(members__user=user)
+                .annotate(last_message=Max('messages__timestamp'))
+                .order_by('-last_message')
+            )
+
+            # Serialize the recent chat rooms with the latest message data
+            serializer = ChatRoomSerializer(
+                recent_chats, many=True, context={'request': request}
+            )
+            return Response(serializer.data)
+
+        except DatabaseError as e:
+            # Handle database errors
+            return Response(
+                {"error": "Database error occurred. Please try again later."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+        except Exception as e:
+            # Handle any other unexpected errors
+            print(e)
+            return Response(
+                {"error": "An unexpected error occurred. Please try again later."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class FavoriteChatListView(APIView):

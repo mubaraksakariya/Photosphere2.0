@@ -10,6 +10,8 @@ import { useSelector } from 'react-redux';
 import { ModalProvider } from './Contexts/ModalProvider';
 import Profile from './Pages/Profile/Profile';
 import ChatMainPage from './Pages/Chat/ChatMainPage';
+import { ChatProvider } from './Contexts/ChatContext';
+import { ChatSocketProvider } from './Contexts/ChatSocketContext';
 
 function PublicRoute({ children }) {
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -92,7 +94,11 @@ function User() {
 				path='/chat'
 				element={
 					<PrivateRoute>
-						<ChatMainPage />
+						<ChatProvider>
+							<ChatSocketProvider>
+								<ChatMainPage />
+							</ChatSocketProvider>
+						</ChatProvider>
 					</PrivateRoute>
 				}
 			/>

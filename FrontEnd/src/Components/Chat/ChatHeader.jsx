@@ -1,9 +1,13 @@
 // ChatHeader.jsx
 import React from 'react';
 import { useChat } from '../../Contexts/ChatContext';
+// import { useSelector } from 'react-redux';
 
 function ChatHeader() {
 	const { currentChat, clearChat, isGroup } = useChat();
+	// const { currentChat, isGroup, messages } = useSelector(
+	// 	(state) => state.chat
+	// );
 	const chatUser = currentChat?.members[0];
 	const username = chatUser?.username;
 	const profile_image = chatUser?.profile.profile_image;

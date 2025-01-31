@@ -1,10 +1,13 @@
 import React from 'react';
 import useUserChatRoom from '../../CustomHooks/useUserChatRoom';
 import { useChat } from '../../Contexts/ChatContext';
+// import { useDispatch } from 'react-redux';
+// import { selectChat } from '../../Store/Slices/ChatSlice';
 
 function SearchedChatProfileCard({ message, user }) {
 	if (!user) return null;
-	const { currentChat, selectChat, clearChat } = useChat();
+	// const dispatch = useDispatch();
+	const { selectChat } = useChat();
 	const { mutate, isLoading, isError, data } = useUserChatRoom(user?.id);
 	const manageSelectChat = () => {
 		mutate(
@@ -12,6 +15,7 @@ function SearchedChatProfileCard({ message, user }) {
 			{
 				onSuccess: (data) => {
 					// console.log(data);
+					// dispatch(selectChat(data.chat_room));
 					selectChat(data.chat_room);
 				},
 			}

@@ -1,10 +1,10 @@
 import React from 'react';
 import ChatProfileThumpnail from './ChatProfileThumpnail';
-import useChatUsers from '../../CustomHooks/useChatUsers';
+import useChatRooms from '../../CustomHooks/useChatRooms';
 import RecentChatProfileCard from './RecentChatProfileCard';
 
 function ChatList() {
-	const { data, isLoading, error } = useChatUsers();
+	const { data, isLoading, error } = useChatRooms();
 
 	if (isLoading) {
 		return <div>Loading...</div>;

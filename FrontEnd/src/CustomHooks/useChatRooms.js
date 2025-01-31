@@ -1,20 +1,20 @@
 import { useQuery } from '@tanstack/react-query';
 import { useApi } from '../Contexts/ApiContext';
 
-const GetChatUsers = async (api) => {
+const GetChatRooms = async (api) => {
 	const response = await api.get('api/chat/recent/');
 	return response.data;
 };
 
-const useChatUsers = () => {
+const useChatRooms = () => {
 	const api = useApi();
 	return useQuery({
 		queryKey: ['chatUsers'],
-		queryFn: () => GetChatUsers(api),
+		queryFn: () => GetChatRooms(api),
 	});
 };
 
-export default useChatUsers;
+export default useChatRooms;
 
 // import { useInfiniteQuery } from '@tanstack/react-query';
 // import { useApi } from '../Contexts/ApiContext';

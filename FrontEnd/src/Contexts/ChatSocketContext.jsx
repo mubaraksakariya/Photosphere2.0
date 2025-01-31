@@ -1,13 +1,17 @@
 import { createContext, useContext, useCallback, useRef } from 'react';
 import useWebSocket from '../CustomHooks/useWebSocket';
 import { useChat } from './ChatContext';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { setMessages } from '../Store/Slices/ChatSlice';
+
 // Create a context for the chat WebSocket
 const ChatSocketContext = createContext();
 
 export const ChatSocketProvider = ({ children }) => {
 	const isConnected = useRef(false);
-	const { currentChat } = useChat();
-
+	const { currentChat, setNewMessages } = useChat();
+	// const { currentChat } = useSelector((state) => state.chat);
+	// const dispatch = useDispatch();
 	const { sendMessage } = useWebSocket(
 		`chat`, // key
 		`chat`, // URL
@@ -20,9 +24,9 @@ export const ChatSocketProvider = ({ children }) => {
 	// Handle incoming messages from WebSocket
 	const handleIncomingMessage = (event) => {
 		const data = JSON.parse(event.data);
-		console.log(data.message);
-
-		// setMessages((prevMessages) => [...prevMessages, newMessage]);
+		// console.log(data.message);
+		const newMessage = data.message;
+		setNewMessages(newMessage);
 	};
 
 	// Handle WebSocket open connection
@@ -62,8 +66,6 @@ export const ChatSocketProvider = ({ children }) => {
 				chat_room_id: currentChat.id,
 				timestamp: new Date(),
 			};
-
-			console.log('Sending message:', data);
 
 			if (isConnected.current) {
 				sendMessage(data);

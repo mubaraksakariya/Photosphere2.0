@@ -5,17 +5,45 @@ const ChatContext = createContext();
 export const ChatProvider = ({ children }) => {
 	const [currentChat, setCurrentChat] = useState(null);
 	const [isGroup, setIsGroup] = useState(false);
-	const [messages, setMessages] = useState([]);
+	const [chatRoomMessages, setChatRoomMessages] = useState([]);
+	const [noneChatRoomMessages, setNoneChatRoomMessages] = useState([]);
 
 	const selectChat = (chat) => {
 		setCurrentChat(chat);
 		setIsGroup(chat.is_group);
-		setMessages([]);
+		setChatRoomMessages([]);
 	};
 
 	const clearChat = () => {
 		setCurrentChat(null);
-		setMessages([]);
+		setChatRoomMessages([]);
+	};
+
+	const setNewMessages = (newMessage) => {
+		// console.log(newMessage);
+		// console.log(currentChat);
+
+		if (currentChat && newMessage.chat_room === currentChat.id) {
+			setChatRoomMessages((prevMessages) => [
+				...prevMessages,
+				newMessage,
+			]);
+		} else {
+			setNoneChatRoomMessages((prevMessages) => [
+				...prevMessages,
+				newMessage,
+			]);
+		}
+	};
+
+	const getMessagesForChatRoom = (chatRoomId) => {
+		const currentChatRoomMessages = chatRoomMessages.filter(
+			(message) => message.chat_room === chatRoomId
+		);
+		const otherChatRoomMessages = noneChatRoomMessages.filter(
+			(message) => message.chat_room === chatRoomId
+		);
+		return [...currentChatRoomMessages, ...otherChatRoomMessages];
 	};
 
 	// Return context value
@@ -24,10 +52,13 @@ export const ChatProvider = ({ children }) => {
 			value={{
 				currentChat,
 				isGroup,
-				messages,
+				chatRoomMessages,
+				noneChatRoomMessages,
 				selectChat,
 				clearChat,
-				setMessages,
+				setChatRoomMessages,
+				setNewMessages,
+				getMessagesForChatRoom,
 			}}>
 			{children}
 		</ChatContext.Provider>

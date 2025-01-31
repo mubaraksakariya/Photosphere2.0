@@ -5,14 +5,10 @@ from rest_framework.permissions import IsAuthenticated
 
 from Chat.services import get_private_chat_room
 from Users.models import User
-from .models import ChatRoom, ChatRoomMember, FavoriteChat, Message
-from .serializers import ChatRoomMemberSerializer, ChatRoomSerializer, FavoriteChatSerializer, RecentChatSerializer
+from .models import ChatRoom, FavoriteChat
+from .serializers import ChatRoomSerializer, FavoriteChatSerializer
 from rest_framework import status
 from django.db import DatabaseError
-from rest_framework.exceptions import APIException
-from django.conf import settings
-from django.db import transaction
-from django.db.models import Q
 
 
 class GetOrCreateChatRoomView(APIView):

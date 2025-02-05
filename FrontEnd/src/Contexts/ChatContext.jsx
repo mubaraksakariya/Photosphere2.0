@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import useMessages from '../CustomHooks/useMessages';
+import { useQueryClient } from '@tanstack/react-query';
 
 const ChatContext = createContext();
 
@@ -7,6 +9,16 @@ export const ChatProvider = ({ children }) => {
 	const [isGroup, setIsGroup] = useState(false);
 	const [chatRoomMessages, setChatRoomMessages] = useState([]);
 	const [noneChatRoomMessages, setNoneChatRoomMessages] = useState([]);
+
+	const {
+		data,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+		isLoading,
+		isError,
+		error,
+	} = useMessages(currentChat?.id);
 
 	const selectChat = (chat) => {
 		setCurrentChat(chat);
@@ -19,16 +31,34 @@ export const ChatProvider = ({ children }) => {
 		setChatRoomMessages([]);
 	};
 
+	const queryClient = useQueryClient();
 	const setNewMessages = (newMessage) => {
-		// console.log(newMessage);
-		// console.log(currentChat);
-
 		if (currentChat && newMessage.chat_room === currentChat.id) {
 			setChatRoomMessages((prevMessages) => [
 				...prevMessages,
 				newMessage,
 			]);
+			// Update messages in React Query cache
+			queryClient.setQueryData(
+				['messages', currentChat.id],
+				(oldData) => {
+					if (!oldData) return oldData;
+
+					return {
+						...oldData,
+						pages: oldData.pages.map((page, index) =>
+							index === oldData.pages.length - 1 // Append only to the last page
+								? {
+										...page,
+										results: [newMessage, ...page.results],
+								  }
+								: page
+						),
+					};
+				}
+			);
 		} else {
+			// Store messages for other chat rooms separately
 			setNoneChatRoomMessages((prevMessages) => [
 				...prevMessages,
 				newMessage,
@@ -51,6 +81,12 @@ export const ChatProvider = ({ children }) => {
 		<ChatContext.Provider
 			value={{
 				currentChat,
+				data,
+				hasNextPage,
+				isLoading,
+				isError,
+				isFetchingNextPage,
+				error,
 				isGroup,
 				chatRoomMessages,
 				noneChatRoomMessages,
@@ -59,6 +95,7 @@ export const ChatProvider = ({ children }) => {
 				setChatRoomMessages,
 				setNewMessages,
 				getMessagesForChatRoom,
+				fetchNextPage,
 			}}>
 			{children}
 		</ChatContext.Provider>

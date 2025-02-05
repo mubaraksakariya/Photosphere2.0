@@ -23,7 +23,10 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from Chat.views import FavoriteChatListView, GetOrCreateChatRoomView, RecentChatUsersView
+
+from Chat.views.chat import GetOrCreateChatRoomView, MessageViewSet
+from Chat.views.favorites import FavoriteChatListView
+from Chat.views.recent_chats import RecentChatUsersView
 from Posts.views import CommentViewSet, LikeViewSet, PostViewSet
 from Stories.views import StoryViewSet
 from Users.CustomTokenObtain import CustomTokenObtainPairView
@@ -35,6 +38,8 @@ router.register(r'api/posts', PostViewSet, basename='post')
 router.register(r'api/likes', LikeViewSet, basename='like')
 router.register(r'api/comments', CommentViewSet, basename='comment')
 router.register(r'api/stories', StoryViewSet, basename='story')
+router.register(r'chat/(?P<chat_room_id>\d+)/messages',
+                MessageViewSet, basename='message')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

@@ -15,7 +15,11 @@ function RecentChatProfileCard({ chatRoom }) {
 
 	useEffect(() => {
 		if (chatRoom?.id) {
-			if (currentChat?.id && currentChat.id === chatRoom.id) return;
+			if (currentChat?.id && currentChat.id === chatRoom.id) {
+				setUnreadMessages([]);
+				setUnreadMessagesCount(0);
+				return;
+			}
 			const messages = getMessagesForChatRoom(chatRoom.id);
 			if (messages.length > 0) {
 				setUnreadMessages(messages);

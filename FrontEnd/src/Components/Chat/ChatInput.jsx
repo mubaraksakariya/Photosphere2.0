@@ -8,6 +8,7 @@ function ChatInput() {
 	const manageSubmit = (e) => {
 		e.preventDefault();
 		sendChatMessage(e.target.message.value);
+		e.target.message.value = '';
 	};
 	return (
 		<div className='p-4 border-t border-lightMode-shadow dark:border-darkMode-shadow'>

@@ -31,7 +31,7 @@ const useWebSocket = (key, url, onMessage, onOpen, onClose, onError) => {
 				websocketService.closeSocket(key);
 			}
 		};
-	}, [key, url, isAuthenticated, onMessage, onOpen, onClose, onError]);
+	}, [key, url, isAuthenticated]);
 
 	// Function to send a message through the WebSocket
 	const sendMessage = useCallback(

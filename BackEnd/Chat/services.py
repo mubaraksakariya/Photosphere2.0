@@ -123,3 +123,30 @@ def get_room_member(chat_room, current_user):
 
     # Return the list of members (even for private chat)
     return members
+
+
+@sync_to_async
+def get_chat_room_members_id(chat_room_id):
+    chat_room = ChatRoom.objects.filter(id=chat_room_id).first()
+    if chat_room:
+        return list(ChatRoomMember.objects.filter(chat_room=chat_room).values_list('user__id', flat=True))
+    return []
+
+
+@sync_to_async
+def get_related_chat_users(user_id):
+    """
+    Get unique user IDs of all members in the chat rooms the given user participates in,
+    excluding the user themselves.
+    """
+    # Get all chat rooms where the user is a member
+    chat_rooms = ChatRoomMember.objects.filter(
+        user_id=user_id
+    ).values_list("chat_room_id", flat=True)
+
+    # Get all members in these chat rooms, excluding the user itself
+    members = ChatRoomMember.objects.filter(
+        chat_room_id__in=chat_rooms
+    ).exclude(user_id=user_id).values_list("user_id", flat=True)
+
+    return list(set(members))

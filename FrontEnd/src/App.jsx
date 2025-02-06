@@ -19,7 +19,13 @@ function PublicRoute({ children }) {
 }
 function PrivateRoute({ children }) {
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-	return !isAuthenticated ? <Navigate to='/signin' replace /> : children;
+	return !isAuthenticated ? (
+		<Navigate to='/signin' replace />
+	) : (
+		<ChatProvider>
+			<ChatSocketProvider>{children}</ChatSocketProvider>
+		</ChatProvider>
+	);
 }
 
 function App() {
@@ -94,11 +100,7 @@ function User() {
 				path='/chat'
 				element={
 					<PrivateRoute>
-						<ChatProvider>
-							<ChatSocketProvider>
-								<ChatMainPage />
-							</ChatSocketProvider>
-						</ChatProvider>
+						<ChatMainPage />
 					</PrivateRoute>
 				}
 			/>

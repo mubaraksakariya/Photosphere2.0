@@ -7,7 +7,7 @@ function ChatInput() {
 
 	const manageSubmit = (e) => {
 		e.preventDefault();
-		sendChatMessage(e.target.message.value);
+		sendChatMessage({ data: e.target.message.value, type: 'text' });
 		e.target.message.value = '';
 	};
 	return (

@@ -1,17 +1,19 @@
 import { createContext, useContext, useCallback, useRef } from 'react';
 import useWebSocket from '../CustomHooks/useWebSocket';
 import { useChat } from './ChatContext';
-// import { useDispatch, useSelector } from 'react-redux';
-// import { setMessages } from '../Store/Slices/ChatSlice';
 
 // Create a context for the chat WebSocket
 const ChatSocketContext = createContext();
 
 export const ChatSocketProvider = ({ children }) => {
 	const isConnected = useRef(false);
-	const { currentChat, setNewMessages } = useChat();
-	// const { currentChat } = useSelector((state) => state.chat);
-	// const dispatch = useDispatch();
+	const {
+		currentChat,
+		setNewMessages,
+		manageUserOnlineStatus,
+		setInitialUserStatus,
+	} = useChat();
+
 	const { sendMessage } = useWebSocket(
 		`chat`, // key
 		`chat`, // URL
@@ -20,14 +22,6 @@ export const ChatSocketProvider = ({ children }) => {
 		() => handleSocketClose(), // On WebSocket close
 		(error) => handleSocketError(error) // On WebSocket error
 	);
-
-	// Handle incoming messages from WebSocket
-	const handleIncomingMessage = (event) => {
-		const data = JSON.parse(event.data);
-		// console.log(data.message);
-		const newMessage = data.message;
-		setNewMessages(newMessage);
-	};
 
 	// Handle WebSocket open connection
 	const handleSocketOpen = () => {
@@ -47,23 +41,36 @@ export const ChatSocketProvider = ({ children }) => {
 		console.error('WebSocket error:', error);
 	};
 
+	// Handle incoming messages from WebSocket
+	const handleIncomingMessage = (event) => {
+		const data = JSON.parse(event.data);
+		const newMessage = data.message;
+		if (newMessage.type === 'text' || newMessage.type === 'acknowledgement')
+			setNewMessages(newMessage);
+		//status of a single user
+		else if (newMessage.type === 'userStatus') {
+			manageUserOnlineStatus(newMessage);
+		}
+		// status check for all recent chats on chat page load
+		else if (newMessage.type === 'isOnline') {
+			setInitialUserStatus(newMessage.users);
+		}
+	};
+
 	// Explicit method to send a message
 	const sendChatMessage = useCallback(
 		(message) => {
 			// Validate currentChat
-			if (!currentChat) {
-				console.error('No active chat selected.');
-				return;
-			}
+			const chat_room_id = message.chat_room_id || currentChat.id;
 
-			if (!currentChat?.id) {
+			if (!chat_room_id) {
 				console.error('Chat room ID is missing or invalid.');
 				return;
 			}
 
 			const data = {
 				message,
-				chat_room_id: currentChat.id,
+				chat_room_id: chat_room_id,
 				timestamp: new Date(),
 			};
 

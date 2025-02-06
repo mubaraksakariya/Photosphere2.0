@@ -9,6 +9,7 @@ export const ChatProvider = ({ children }) => {
 	const [isGroup, setIsGroup] = useState(false);
 	const [chatRoomMessages, setChatRoomMessages] = useState([]);
 	const [noneChatRoomMessages, setNoneChatRoomMessages] = useState([]);
+	const [onlineUsers, setOnlineUsers] = useState([]);
 
 	const {
 		data,
@@ -76,6 +77,42 @@ export const ChatProvider = ({ children }) => {
 		return [...currentChatRoomMessages, ...otherChatRoomMessages];
 	};
 
+	const isOnline = (userId) => {
+		return onlineUsers[userId] === true;
+	};
+
+	const setInitialUserStatus = (initialUserStatus) => {
+		setOnlineUsers((old) => {
+			const newUsers = {};
+			initialUserStatus.forEach((userId) => {
+				newUsers[userId] = true;
+			});
+			return newUsers;
+		});
+	};
+	// data comes through socket
+	// newMessage :
+	// {
+	// 		status:t/f,
+	// 		user_id,
+	// 		type:userStatus
+	// 	}
+	const manageUserOnlineStatus = (newMessage) => {
+		const { status, user_id: userId } = newMessage;
+
+		setOnlineUsers((prev) => {
+			const newUsers = { ...prev };
+
+			if (status === 'online') {
+				newUsers[userId] = true; // Mark online
+			} else {
+				delete newUsers[userId]; // Remove user
+			}
+
+			return newUsers; // New object reference triggers state update
+		});
+	};
+
 	// Return context value
 	return (
 		<ChatContext.Provider
@@ -90,12 +127,16 @@ export const ChatProvider = ({ children }) => {
 				isGroup,
 				chatRoomMessages,
 				noneChatRoomMessages,
+				onlineUsers,
 				selectChat,
 				clearChat,
 				setChatRoomMessages,
 				setNewMessages,
 				getMessagesForChatRoom,
 				fetchNextPage,
+				isOnline,
+				manageUserOnlineStatus,
+				setInitialUserStatus,
 			}}>
 			{children}
 		</ChatContext.Provider>

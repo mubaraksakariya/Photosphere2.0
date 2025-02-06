@@ -29,8 +29,8 @@ class ChatRoomMember(models.Model):
         # Ensures no duplicate memberships
         unique_together = ('user', 'chat_room')
 
-    def __str__(self):
-        return f"{self.user.username} in {self.chat_room}"
+    # def __str__(self):
+    #     return f"{self.user.username} in {self.chat_room}"
 
 
 class Message(models.Model):

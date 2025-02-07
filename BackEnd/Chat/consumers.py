@@ -2,7 +2,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 import redis.asyncio as aioredis
 
-from Chat.utils import notify_chat_members
+from Chat.utils import notify_chat_members, send_is_typing
 
 REDIS_ONLINE_USERS_KEY = "online_users"
 
@@ -42,7 +42,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         from Chat.services import save_message, get_chat_room_members_id
-        import redis.asyncio as aioredis
 
         data = json.loads(text_data)
         message = data.get("message")
@@ -70,10 +69,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             # print(online_users)
             message_object["users"] = online_users
             message_object["type"] = "isOnline"
-        else:
+        elif message["type"] == "typing":
+            await send_is_typing(message=message, current_user=current_user, chat_room_id=chat_room_id)
             return
         # Send acknowledgment or online users to sender
-        recipient_group_name = f"user_{current_user.id}"
+        recipient_group_name = f"user_{self.user_id}"
         await self.channel_layer.group_send(
             recipient_group_name,
             {

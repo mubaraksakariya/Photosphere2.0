@@ -2,13 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import MessageBubble from './MessageBubble';
 import { useChat } from '../../Contexts/ChatContext';
 import { useInView } from 'react-intersection-observer';
+import TypingIndicator from './TypingIndicator';
 
 function ChatMessages() {
 	const {
 		currentChat,
 		fetchNextPage,
 		hasNextPage,
-		error,
 		isError,
 		isFetchingNextPage,
 		isLoading,
@@ -16,6 +16,7 @@ function ChatMessages() {
 	} = useChat();
 
 	const chatUserEmail = currentChat?.members[0]?.email;
+	const userId = currentChat?.members[0]?.id;
 	const { ref, inView } = useInView();
 	const chatContainerRef = useRef(null);
 	const [isAtBottom, setIsAtBottom] = useState(true);
@@ -73,6 +74,8 @@ function ChatMessages() {
 			ref={chatContainerRef}
 			className='flex-1 flex flex-col-reverse gap-4 p-4 overflow-y-auto space-y-4'
 			onScroll={checkIfAtBottom}>
+			<TypingIndicator userId={userId} />
+
 			{/* Render messages */}
 			{data.pages.map((page) =>
 				page.results.map((post) => (
@@ -88,6 +91,7 @@ function ChatMessages() {
 					/>
 				))
 			)}
+
 			{isFetchingNextPage && (
 				<div className='flex justify-center py-4'>
 					<span>Loading more messages...</span>

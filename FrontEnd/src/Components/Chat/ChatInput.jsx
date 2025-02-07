@@ -3,12 +3,14 @@ import React from 'react';
 import { useChatSocket } from '../../Contexts/ChatSocketContext';
 
 function ChatInput() {
-	const { sendChatMessage } = useChatSocket();
-
+	const { sendChatMessage, sendIsTypingMessage } = useChatSocket();
 	const manageSubmit = (e) => {
 		e.preventDefault();
 		sendChatMessage({ data: e.target.message.value, type: 'text' });
 		e.target.message.value = '';
+	};
+	const manageIsTyping = () => {
+		sendIsTypingMessage();
 	};
 	return (
 		<div className='p-4 border-t border-lightMode-shadow dark:border-darkMode-shadow'>
@@ -17,6 +19,7 @@ function ChatInput() {
 				className='flex items-center space-x-4'
 				onSubmit={manageSubmit}>
 				<input
+					onChange={manageIsTyping}
 					name='message'
 					type='text'
 					placeholder='Type a message...'

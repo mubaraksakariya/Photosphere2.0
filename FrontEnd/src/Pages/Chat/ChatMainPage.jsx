@@ -7,11 +7,10 @@ import SearchedUsers from '../../Components/Chat/SearchedUsers';
 import ChatList from '../../Components/Chat/ChatList';
 import { useChat } from '../../Contexts/ChatContext';
 import NoChatSelected from '../../Components/Chat/NoChatSelected';
-// import { useSelector } from 'react-redux';
+
 function ChatMainPage() {
 	const [searchQuery, setSearchQuery] = useState('');
 	const { currentChat } = useChat();
-	// const { currentChat } = useSelector((state) => state.chat);
 	const handleSearch = (e) => {
 		setSearchQuery(e.target.value);
 	};

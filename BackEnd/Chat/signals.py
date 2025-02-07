@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
+from asgiref.sync import async_to_sync, sync_to_async
 
 from Chat.serializers import MessageSerializer
 from Chat.services import get_room_member
@@ -25,9 +25,11 @@ def send_message_to_consumer(sender, instance, created, **kwargs):
             raise ValueError("No valid recipients found for the chat room.")
 
         # Create message payload to send
+        serialized_message = MessageSerializer(instance).data
+        serialized_message['type'] = 'text'
         message_data = {
             "type": "chat_message",  # Event type handled in the consumer
-            "message": MessageSerializer(instance).data
+            "message": serialized_message
         }
 
         # Send the message to all recipients

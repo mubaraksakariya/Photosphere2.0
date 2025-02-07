@@ -12,6 +12,9 @@ export const ChatSocketProvider = ({ children }) => {
 		setNewMessages,
 		manageUserOnlineStatus,
 		setInitialUserStatus,
+		setIsTypingStatus,
+		isTyping,
+		setIsTyping,
 	} = useChat();
 
 	const { sendMessage } = useWebSocket(
@@ -45,8 +48,13 @@ export const ChatSocketProvider = ({ children }) => {
 	const handleIncomingMessage = (event) => {
 		const data = JSON.parse(event.data);
 		const newMessage = data.message;
-		if (newMessage.type === 'text' || newMessage.type === 'acknowledgement')
+
+		if (
+			newMessage.type === 'text' ||
+			newMessage.type === 'acknowledgement'
+		) {
 			setNewMessages(newMessage);
+		}
 		//status of a single user
 		else if (newMessage.type === 'userStatus') {
 			manageUserOnlineStatus(newMessage);
@@ -54,6 +62,9 @@ export const ChatSocketProvider = ({ children }) => {
 		// status check for all recent chats on chat page load
 		else if (newMessage.type === 'isOnline') {
 			setInitialUserStatus(newMessage.users);
+		} else if (newMessage.type === 'typing') {
+			// console.log(newMessage);
+			setIsTypingStatus(newMessage);
 		}
 	};
 
@@ -83,12 +94,48 @@ export const ChatSocketProvider = ({ children }) => {
 		[isConnected, sendMessage, currentChat]
 	);
 
+	const sendIsTypingMessage = useCallback(() => {
+		const message = {
+			type: 'typing',
+			is_typing: true,
+			chat_room_id: currentChat.id,
+		};
+
+		if (!isTyping) sendChatMessage(message);
+		setIsTyping(true);
+		// Clear the previous timeout if it exists
+		if (typingTimeoutRef.current) {
+			clearTimeout(typingTimeoutRef.current);
+		}
+
+		// Set a new timeout
+		typingTimeoutRef.current = setTimeout(() => {
+			stopTyping();
+		}, 2000);
+	}, [isConnected, currentChat]);
+
+	// Ref to store the timeout ID
+	const typingTimeoutRef = useRef(null);
+
+	// Debounced function to stop typing after 2 seconds
+	const stopTyping = () => {
+		const message = {
+			type: 'typing',
+			is_typing: false,
+			chat_room_id: currentChat.id,
+		};
+		console.log('stoped');
+
+		setIsTyping(false);
+		sendChatMessage(message);
+	};
 	// Return context value
 	return (
 		<ChatSocketContext.Provider
 			value={{
 				isConnected,
 				sendChatMessage,
+				sendIsTypingMessage,
 			}}>
 			{children}
 		</ChatSocketContext.Provider>

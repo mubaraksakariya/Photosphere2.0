@@ -126,10 +126,10 @@ def get_room_member(chat_room, current_user):
 
 
 @sync_to_async
-def get_chat_room_members_id(chat_room_id):
+def get_chat_room_members_id(chat_room_id, current_user=None):
     chat_room = ChatRoom.objects.filter(id=chat_room_id).first()
     if chat_room:
-        return list(ChatRoomMember.objects.filter(chat_room=chat_room).values_list('user__id', flat=True))
+        return list(ChatRoomMember.objects.filter(chat_room=chat_room).exclude(user=current_user).values_list('user__id', flat=True))
     return []
 
 

@@ -69,11 +69,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
             # print(online_users)
             message_object["users"] = online_users
             message_object["type"] = "isOnline"
+
         elif message["type"] == "typing":
             await send_is_typing(message=message, current_user=current_user, chat_room_id=chat_room_id)
             return
         # Send acknowledgment or online users to sender
         recipient_group_name = f"user_{self.user_id}"
+        # print(message_object)
         await self.channel_layer.group_send(
             recipient_group_name,
             {

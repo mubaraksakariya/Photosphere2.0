@@ -6,6 +6,8 @@ function ChatInput() {
 	const { sendChatMessage, sendIsTypingMessage } = useChatSocket();
 	const manageSubmit = (e) => {
 		e.preventDefault();
+		const text = e.target.message.value;
+		if (text === '') return;
 		sendChatMessage({ data: e.target.message.value, type: 'text' });
 		e.target.message.value = '';
 	};

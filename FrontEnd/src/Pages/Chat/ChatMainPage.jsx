@@ -7,17 +7,19 @@ import SearchedUsers from '../../Components/Chat/SearchedUsers';
 import ChatList from '../../Components/Chat/ChatList';
 import { useChat } from '../../Contexts/ChatContext';
 import NoChatSelected from '../../Components/Chat/NoChatSelected';
+import { useChatSocket } from '../../Contexts/ChatSocketContext';
+import WebSocketStatus from '../../Components/WebSocket/WebSocketStatus';
 
 function ChatMainPage() {
 	const [searchQuery, setSearchQuery] = useState('');
 	const { currentChat } = useChat();
+
 	const handleSearch = (e) => {
 		setSearchQuery(e.target.value);
 	};
-	// console.log(currentChat);
 
 	return (
-		<div className='flex h-screen'>
+		<div className='flex h-screen relative'>
 			<div className='w-16 bg-lightMode-accent dark:bg-darkMode-accent text-lightMode-background dark:text-darkMode-background '>
 				<Sidebar />
 			</div>
@@ -53,6 +55,9 @@ function ChatMainPage() {
 					<NoChatSelected />
 				)}
 			</div>
+
+			{/* WebSocket Status Indicator */}
+			<WebSocketStatus />
 		</div>
 	);
 }

@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useCallback, useMemo } from 'react';
+import React, {
+	createContext,
+	useContext,
+	useCallback,
+	useMemo,
+	useRef,
+} from 'react';
 import useMessages from '../CustomHooks/useMessages';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -15,6 +21,14 @@ export const ChatProvider = ({ children }) => {
 	const [onlineUsers, setOnlineUsers] = React.useState({});
 	const [whoIsTyping, setWhoIsTyping] = React.useState({});
 	const [isTyping, setIsTyping] = React.useState(false);
+
+	// Ref to store the latest currentChat value
+	const currentChatRef = useRef(currentChat);
+
+	// Update the ref whenever currentChat changes
+	React.useEffect(() => {
+		currentChatRef.current = currentChat;
+	}, [currentChat]);
 
 	// Fetch messages for the current chat using a custom hook
 	const {
@@ -48,7 +62,6 @@ export const ChatProvider = ({ children }) => {
 	}, []);
 
 	// Function to add a new message to the appropriate state and update the React Query cache
-
 	const setNewMessages = useCallback(
 		(newMessage) => {
 			if (!newMessage) {
@@ -56,8 +69,14 @@ export const ChatProvider = ({ children }) => {
 				return;
 			}
 
+			// Use the ref to get the latest currentChat value
+			const latestCurrentChat = currentChatRef.current;
+
 			// Add the message to the current chat's messages if it belongs to the current chat
-			if (currentChat && newMessage.chat_room === currentChat.id) {
+			if (
+				latestCurrentChat &&
+				newMessage.chat_room === latestCurrentChat.id
+			) {
 				setChatRoomMessages((prevMessages) => {
 					// Avoid adding duplicate messages
 					if (!prevMessages.some((msg) => msg.id === newMessage.id)) {
@@ -68,7 +87,7 @@ export const ChatProvider = ({ children }) => {
 
 				// Update the React Query cache for the current chat's messages
 				queryClient.setQueryData(
-					['messages', currentChat.id],
+					['messages', latestCurrentChat.id],
 					(oldData) => {
 						if (!oldData) return oldData;
 
@@ -98,7 +117,7 @@ export const ChatProvider = ({ children }) => {
 				});
 			}
 		},
-		[currentChat, queryClient]
+		[queryClient]
 	);
 
 	// Function to retrieve messages for a specific chat room
@@ -178,7 +197,6 @@ export const ChatProvider = ({ children }) => {
 		}
 
 		const { user_id, is_typing } = newMessage;
-		console.log(user_id, is_typing);
 
 		setWhoIsTyping((old) => {
 			if (old[user_id] !== is_typing) {

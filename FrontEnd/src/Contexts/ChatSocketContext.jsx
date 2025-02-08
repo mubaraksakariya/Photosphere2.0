@@ -1,4 +1,10 @@
-import { createContext, useContext, useCallback, useRef } from 'react';
+import {
+	createContext,
+	useContext,
+	useCallback,
+	useRef,
+	useState,
+} from 'react';
 import useWebSocket from '../CustomHooks/useWebSocket';
 import { useChat } from './ChatContext';
 
@@ -6,7 +12,6 @@ import { useChat } from './ChatContext';
 const ChatSocketContext = createContext();
 
 export const ChatSocketProvider = ({ children }) => {
-	const isConnected = useRef(false);
 	const {
 		currentChat,
 		setNewMessages,
@@ -17,7 +22,7 @@ export const ChatSocketProvider = ({ children }) => {
 		setIsTyping,
 	} = useChat();
 
-	const { sendMessage } = useWebSocket(
+	const { isConnected, sendMessage, reconnect } = useWebSocket(
 		`chat`, // key
 		`chat`, // URL
 		(event) => handleIncomingMessage(event), // On message received
@@ -28,19 +33,24 @@ export const ChatSocketProvider = ({ children }) => {
 
 	// Handle WebSocket open connection
 	const handleSocketOpen = () => {
-		isConnected.current = true;
+		// isConnected.current = true;
+		// setIsConnected(true);
 		console.log('WebSocket connected');
 	};
 
 	// Handle WebSocket close connection
 	const handleSocketClose = () => {
-		isConnected.current = false;
+		// isConnected.current = false;
+		// setIsConnected(false);
+
 		console.log('WebSocket disconnected');
 	};
 
 	// Handle WebSocket errors
 	const handleSocketError = (error) => {
-		isConnected.current = false;
+		// isConnected.current = false;
+		// setIsConnected(false);
+
 		console.error('WebSocket error:', error);
 	};
 
@@ -85,7 +95,7 @@ export const ChatSocketProvider = ({ children }) => {
 				timestamp: new Date(),
 			};
 
-			if (isConnected.current) {
+			if (isConnected) {
 				sendMessage(data);
 			} else {
 				console.error('Cannot send message: WebSocket not connected.');
@@ -124,8 +134,6 @@ export const ChatSocketProvider = ({ children }) => {
 			is_typing: false,
 			chat_room_id: currentChat.id,
 		};
-		console.log('stoped');
-
 		setIsTyping(false);
 		sendChatMessage(message);
 	};
@@ -134,6 +142,7 @@ export const ChatSocketProvider = ({ children }) => {
 		<ChatSocketContext.Provider
 			value={{
 				isConnected,
+				reconnect,
 				sendChatMessage,
 				sendIsTypingMessage,
 			}}>

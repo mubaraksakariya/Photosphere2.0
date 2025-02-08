@@ -1,52 +1,81 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import websocketService from '../Services/WebSocketService';
-// import { useError } from '../Context/ErrorContext';
 
 const useWebSocket = (key, url, onMessage, onOpen, onClose, onError) => {
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+	const [isConnected, setIsConnected] = useState(false);
+	const retryCount = useRef(0);
+	const maxRetries = 5;
 
-	// const { showError } = useError();
-	useEffect(() => {
-		let socket;
+	const connectSocket = useCallback(() => {
+		if (!isAuthenticated || !url) return;
 
-		if (isAuthenticated && url) {
-			socket = websocketService.connect(
-				url,
-				onMessage,
-				onOpen,
-				onClose,
-				onError,
-				key
-			);
-		} else {
-			console.warn(
-				'WebSocket connection not established: Missing URL or user not authenticated.'
-			);
-		}
+		const socket = websocketService.connect(
+			url,
+			(event) => {
+				setIsConnected(true);
+				retryCount.current = 0; // Reset retry count on successful connection
+				onMessage?.(event);
+			},
+			() => {
+				setIsConnected(true);
+				retryCount.current = 0;
+				onOpen?.();
+			},
+			() => {
+				setIsConnected(false);
+				if (retryCount.current < maxRetries) {
+					const delay = Math.min(
+						5000 * (retryCount.current + 1),
+						30000
+					);
+					setTimeout(() => {
+						retryCount.current += 1;
+						connectSocket();
+					}, delay);
+				}
+				onClose?.();
+			},
+			(error) => {
+				setIsConnected(false);
+				onError?.(error);
+			},
+			key
+		);
 
-		// Cleanup on unmount or when dependencies change
-		return () => {
-			if (socket) {
-				websocketService.closeSocket(key);
-			}
-		};
+		return socket;
 	}, [key, url, isAuthenticated]);
 
-	// Function to send a message through the WebSocket
+	// Establish WebSocket connection on mount
+	useEffect(() => {
+		const socket = connectSocket();
+
+		return () => {
+			if (socket) websocketService.closeSocket(key);
+		};
+	}, [connectSocket]);
+
+	// Manual reconnect function
+	const reconnect = useCallback(() => {
+		retryCount.current = 0;
+		connectSocket();
+		console.log('retrying connection');
+	}, [connectSocket]);
+
+	// Function to send messages
 	const sendMessage = useCallback(
 		(message) => {
-			if (isAuthenticated) {
+			if (isAuthenticated && isConnected) {
 				websocketService.sendMessage(key, message);
 			} else {
-				// showError('Message not sent: Please login.');
-				console.warn('Message not sent: User is not authenticated.');
+				console.warn('Cannot send message: WebSocket not connected.');
 			}
 		},
-		[key, isAuthenticated]
+		[key, isAuthenticated, isConnected]
 	);
 
-	return { sendMessage };
+	return { isConnected, sendMessage, reconnect };
 };
 
 export default useWebSocket;

@@ -3,6 +3,7 @@ import LeftNav from '../../Components/Home/LeftNav/LeftNav';
 import Posts from '../../Components/Posts/Posts';
 import RightNav from '../../Components/Home/RightNav/RightNav';
 import StoryNav from '../../Components/Home/StoryNav/StoryNav';
+import TopNav from '../../Components/Home/TopNav/TopNav';
 
 function Home() {
 	return (
@@ -10,7 +11,7 @@ function Home() {
 			{/* Story Nav */}
 			<div className='px-4 md:px-6 lg:px-8'>
 				<div className='bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark py-4 px-6'>
-					<StoryNav />
+					<TopNav />
 				</div>
 			</div>
 

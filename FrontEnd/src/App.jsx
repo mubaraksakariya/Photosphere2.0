@@ -12,6 +12,7 @@ import Profile from './Pages/Profile/Profile';
 import ChatMainPage from './Pages/Chat/ChatMainPage';
 import { ChatProvider } from './Contexts/ChatContext';
 import { ChatSocketProvider } from './Contexts/ChatSocketContext';
+import { NotificationProvider } from './Contexts/NotificationContext';
 
 function PublicRoute({ children }) {
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -22,9 +23,11 @@ function PrivateRoute({ children }) {
 	return !isAuthenticated ? (
 		<Navigate to='/signin' replace />
 	) : (
-		<ChatProvider>
-			<ChatSocketProvider>{children}</ChatSocketProvider>
-		</ChatProvider>
+		<NotificationProvider>
+			<ChatProvider>
+				<ChatSocketProvider>{children}</ChatSocketProvider>
+			</ChatProvider>
+		</NotificationProvider>
 	);
 }
 
@@ -36,7 +39,6 @@ function App() {
 				<ModalProvider>
 					<Routes>
 						<Route path='/*' element={<User />} />
-
 						<Route exact path='/admin/*' element={<Admin />} />
 					</Routes>
 				</ModalProvider>

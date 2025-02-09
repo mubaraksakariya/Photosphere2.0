@@ -28,22 +28,8 @@ function StoryNav() {
 	if (isError) return <p>Error loading stories: {error?.message}</p>;
 
 	return (
-		<div className='bg-lightMode-background dark:bg-darkMode-background flex gap-4 shadow-light dark:shadow-dark'>
-			{/* Logo Section */}
-			<div className='hidden md:flex flex-[2] justify-center items-center p-4'>
-				<button
-					type='button'
-					className='aspect-square w-16 hover:opacity-80 transition-opacity'>
-					<img
-						src='logo.png'
-						alt='Logo'
-						className='w-full h-full object-contain'
-					/>
-				</button>
-			</div>
-
-			{/* Stories Section */}
-			<div className='flex-[10] flex gap-3 items-center overflow-x-auto p-4'>
+		<div className='flex gap-3 items-center overflow-x-auto p-1 '>
+			<div className='flex gap-3 items-center'>
 				<CreateStoryBtn />
 				{data.pages.map((page, pageIndex) => (
 					<React.Fragment key={pageIndex}>

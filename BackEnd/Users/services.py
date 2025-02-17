@@ -168,3 +168,33 @@ def follow_user(follower, followed):
     )
 
     return {"status": "followed", "follow": follow}
+
+
+def get_all_followers(user):
+    """
+    Retrieve all followers of a given user.
+
+    Args:
+        user (User): The user instance whose followers are to be retrieved.
+
+    Returns:
+        list: A list of serialized follower data.
+    """
+    followers = User.objects.filter(
+        following__followed=user)  # Fetch users who follow `user`
+    return followers
+
+
+def get_all_followings(user):
+    """
+    Retrieve all users that the given user is following.
+
+    Args:
+        user (User): The user instance whose followings are to be retrieved.
+
+    Returns:
+        list: A list of serialized following data.
+    """
+    followings = User.objects.filter(
+        following__follower=user)  # Fetch users who follow `user`
+    return followings

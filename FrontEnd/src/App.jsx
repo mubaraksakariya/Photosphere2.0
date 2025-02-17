@@ -84,7 +84,7 @@ function User() {
 				}
 			/>
 			<Route
-				path='/profile'
+				path='/profile/'
 				element={
 					<PrivateRoute>
 						<Profile />
@@ -93,6 +93,15 @@ function User() {
 			/>
 			<Route
 				path='/profile/:user_id'
+				element={
+					<PrivateRoute>
+						<Profile />
+					</PrivateRoute>
+				}
+			/>
+
+			<Route
+				path='/profile/:user_id/:tab'
 				element={
 					<PrivateRoute>
 						<Profile />

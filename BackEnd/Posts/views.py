@@ -7,7 +7,7 @@ from .models import Like, Post, Comment
 from .serializers import CommentSerializer, LikeSerializer, PostSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import action
-from rest_framework.filters import OrderingFilter
+from .services import update_post_count
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -48,6 +48,7 @@ class PostViewSet(viewsets.ModelViewSet):
             data=mutable_data, context={'request': request})
         if serializer.is_valid():
             post = serializer.save()
+            update_post_count(request.user)
             return Response(self.get_serializer(post).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

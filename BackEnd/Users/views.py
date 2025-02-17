@@ -2,14 +2,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from Users.models import Follow, Profile, User
-from Users.services import follow_user, get_or_create_user, get_suggested_users, get_user, send_otp_email, validate_otp, verify_google_id_token
-from .serializers import UserProfileSerializer, UserSerializer
+from Users.models import Follow, User
+from Users.services import follow_user, get_all_followers, get_all_followings, get_or_create_user, get_suggested_users, get_user, send_otp_email, validate_otp, verify_google_id_token
+from .serializers import UserSerializer
 from rest_framework.exceptions import ValidationError
 from django.db import IntegrityError
 import logging
 from django.core.files.base import ContentFile
-from django.core.files.storage import default_storage
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 import requests
@@ -327,3 +326,27 @@ class UserViewSet(ModelViewSet):
         users = self.get_queryset()
         serializer = self.get_serializer(users, many=True)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated], url_path='followers')
+    def get_followers(self, request, pk=None):
+        try:
+            user = User.objects.get(id=pk)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        followers = get_all_followers(user)
+        serialized_followers = self.get_serializer(followers, many=True).data
+
+        return Response({'followers': serialized_followers}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated], url_path='followings')
+    def get_followings(self, request, pk=None):
+        try:
+            user = User.objects.get(id=pk)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        followings = get_all_followings(user)
+        serialized_followings = self.get_serializer(followings, many=True).data
+
+        return Response({'followings': serialized_followings}, status=status.HTTP_200_OK)

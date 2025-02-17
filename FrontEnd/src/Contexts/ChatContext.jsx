@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import useMessages from '../CustomHooks/useMessages';
 import { useQueryClient } from '@tanstack/react-query';
+import { useNotifications } from './NotificationContext';
 
 // Create a context for the chat
 const ChatContext = createContext();
@@ -40,7 +41,7 @@ export const ChatProvider = ({ children }) => {
 		isError,
 		error,
 	} = useMessages(currentChat?.id);
-
+	const { addNotification } = useNotifications();
 	// Access the query client for managing React Query cache
 	const queryClient = useQueryClient();
 
@@ -108,8 +109,24 @@ export const ChatProvider = ({ children }) => {
 					}
 				);
 			} else {
+				// Notify the user of a new message if it's not in the current chat
+				const notification = {
+					id: `message-${newMessage?.id}`,
+					user: newMessage?.user,
+					sender: newMessage?.sender,
+					message: `You have a new message from ${newMessage?.sender?.email}`,
+					created_at: newMessage?.timestamp,
+					notification_type: 'message',
+					chat_room: newMessage?.chat_room,
+					content: newMessage?.content,
+					is_read: false,
+				};
+				addNotification(notification);
+				// console.log('New message:', newMessage);
+
 				// Add the message to the noneChatRoomMessages state for other chats
 				setNoneChatRoomMessages((prevMessages) => {
+					// Avoid adding duplicate messages
 					if (!prevMessages.some((msg) => msg.id === newMessage.id)) {
 						return [...prevMessages, newMessage];
 					}

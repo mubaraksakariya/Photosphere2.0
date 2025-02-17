@@ -9,17 +9,18 @@ function StoryButton({ story }) {
 	};
 
 	return (
-		<div className='flex items-center justify-center'>
+		<div className='flex items-center justify-center p-1 py-2'>
 			<button
 				onClick={manageStoryRead}
 				type='button'
 				aria-label={`View story of ${story?.user?.username}`}
-				className={`w-16 aspect-square flex justify-center items-center rounded-full overflow-hidden transition-transform hover:scale-105 ${
+				className={`relative md:w-16 w-12 aspect-square rounded-full transition-transform hover:scale-105 ${
 					story?.is_viewed
 						? ''
 						: 'ring-4 ring-lightMode-highlight dark:ring-darkMode-highlight'
 				} hover:shadow-light dark:hover:shadow-dark`}>
-				<span className='w-14 aspect-square block rounded-full overflow-hidden'>
+				{/* Profile Image */}
+				<span className='block w-full h-full rounded-full overflow-hidden'>
 					<img
 						src={story?.user?.profile.profile_image}
 						alt={`${story?.user?.username}'s profile`}

@@ -61,7 +61,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         """Customize the output to include detailed hashtags."""
-        user = self.context['request'].user
+        user = getattr(self.context.get('request'), 'user', None)
         is_liked = Like.objects.filter(post=instance, user=user).exists()
         representation = super().to_representation(instance)
         hashtags = instance.posthashtag_set.all().select_related('hashtag')

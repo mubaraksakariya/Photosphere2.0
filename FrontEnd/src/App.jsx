@@ -13,6 +13,7 @@ import ChatMainPage from './Pages/Chat/ChatMainPage';
 import { ChatProvider } from './Contexts/ChatContext';
 import { ChatSocketProvider } from './Contexts/ChatSocketContext';
 import { NotificationProvider } from './Contexts/NotificationContext';
+import NotificationsFullPage from './Pages/Notifications/NotificationsFullPage';
 
 function PublicRoute({ children }) {
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -103,6 +104,14 @@ function User() {
 				element={
 					<PrivateRoute>
 						<ChatMainPage />
+					</PrivateRoute>
+				}
+			/>
+			<Route
+				path='/notifications'
+				element={
+					<PrivateRoute>
+						<NotificationsFullPage />
 					</PrivateRoute>
 				}
 			/>

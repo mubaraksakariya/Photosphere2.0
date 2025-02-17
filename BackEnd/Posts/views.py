@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework import status, viewsets
 
+from Notification.services import create_notification
 from Posts.pagination import CustomPagination
 from .models import Like, Post, Comment
 from .serializers import CommentSerializer, LikeSerializer, PostSerializer
@@ -75,7 +76,17 @@ class LikeViewSet(viewsets.ModelViewSet):
 
         like, created = Like.objects.get_or_create(
             user=request.user, post=post)
-        if not created:
+        if created:
+            # Create a notification for the post owner
+            if post.user != request.user:  # Avoid notifying self-likes
+                create_notification(
+                    sender=request.user,
+                    recipient=post.user,
+                    action_object=post,
+                    notif_type="liked"
+                )
+
+        else:
             like.delete()
         return Response({'is_liked': created}, status=status.HTTP_200_OK)
 
@@ -99,6 +110,14 @@ class CommentViewSet(viewsets.ModelViewSet):
             user=user,
             text=comment
         )
+        # Create a notification for the post owner
+        if post.user != request.user:  # Avoid notifying self-likes
+            create_notification(
+                sender=request.user,
+                recipient=post.user,
+                action_object=post,
+                notif_type="commented"
+            )
         serialized_comment = self.get_serializer(new_comment).data
         return Response({'new_comment': serialized_comment}, status=status.HTTP_200_OK)
 

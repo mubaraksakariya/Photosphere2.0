@@ -8,6 +8,7 @@ https://docs.djangoproject.com/en/5.1/howto/deployment/asgi/
 """
 
 from Chat.routing import chat_socket_urlpatterns
+from Notification.routing import notification_socket_urlpatterns
 from channels.routing import ProtocolTypeRouter, URLRouter
 import os
 
@@ -21,7 +22,7 @@ application = ProtocolTypeRouter({
     "http": get_asgi_application(),
     "websocket": SocketJWTAuthMiddleware(
         URLRouter(
-            chat_socket_urlpatterns
+            chat_socket_urlpatterns + notification_socket_urlpatterns
         )
     ),
 })

@@ -9,6 +9,7 @@ from datetime import timedelta
 from rest_framework.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
 
+from Notification.services import create_notification
 from Users.models import OTP, Follow, User
 
 import google.auth.transport.requests
@@ -152,9 +153,18 @@ def follow_user(follower, followed):
         raise ValidationError(
             "An error occurred while trying to follow this user.")
 
-    # If the follow already exists, delete it (toggle unfollow)
     if not created:
+        # Unfollow logic (toggle unfollow)
         follow.delete()
         return {"status": "unfollowed", "follow": None}
+
+    # ✅ Send a follow notification
+    create_notification(
+        sender=follower,
+        recipient=followed,
+        action_object=follow,
+        notif_type="followed",
+        custom_message=f"{follower.username} started following you."
+    )
 
     return {"status": "followed", "follow": follow}

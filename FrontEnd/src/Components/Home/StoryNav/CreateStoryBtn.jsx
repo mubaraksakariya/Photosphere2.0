@@ -14,7 +14,7 @@ function CreateStoryBtn() {
 			<button
 				type='button'
 				onClick={manageCreateStory}
-				className='w-16 aspect-square flex justify-center items-center rounded-full bg-lightMode-accent dark:bg-darkMode-accent text-white shadow-light dark:shadow-dark transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-lightMode-shadow dark:focus:ring-darkMode-shadow'>
+				className='md:w-16 w-12 aspect-square flex justify-center items-center rounded-full bg-lightMode-accent dark:bg-darkMode-accent text-white shadow-light dark:shadow-dark transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-lightMode-shadow dark:focus:ring-darkMode-shadow'>
 				<svg
 					xmlns='http://www.w3.org/2000/svg'
 					fill='none'

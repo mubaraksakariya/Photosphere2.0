@@ -330,7 +330,10 @@ class UserViewSet(ModelViewSet):
     @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated], url_path='followers')
     def get_followers(self, request, pk=None):
         try:
-            user = User.objects.get(id=pk)
+            if pk:
+                user = User.objects.get(id=pk)
+            else:
+                user = User.objects.get(id=request.user.id)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -342,7 +345,10 @@ class UserViewSet(ModelViewSet):
     @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated], url_path='followings')
     def get_followings(self, request, pk=None):
         try:
-            user = User.objects.get(id=pk)
+            if pk:
+                user = User.objects.get(id=pk)
+            else:
+                user = User.objects.get(id=request.user.id)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 

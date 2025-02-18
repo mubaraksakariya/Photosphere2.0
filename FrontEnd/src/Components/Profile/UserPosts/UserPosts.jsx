@@ -2,6 +2,7 @@ import React from 'react';
 import useUserPosts from '../../../CustomHooks/useUserPosts';
 import { useInView } from 'react-intersection-observer';
 import UserPostCard from './UserPostCard';
+import LoadingRing from '../../Loading/LoadingRing';
 
 function UserPosts({ user }) {
 	const {
@@ -22,7 +23,9 @@ function UserPosts({ user }) {
 		}
 	}, [inView, hasNextPage, fetchNextPage]);
 
-	if (isLoading && !data) return <p>Loading posts...</p>;
+	if (isLoading && !data) {
+		return <LoadingRing />;
+	}
 	if (isError)
 		return (
 			<p className='text-red-500'>

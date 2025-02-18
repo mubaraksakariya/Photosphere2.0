@@ -196,5 +196,5 @@ def get_all_followings(user):
         list: A list of serialized following data.
     """
     followings = User.objects.filter(
-        following__follower=user)  # Fetch users who follow `user`
+        followers__follower=user)  # Fetch users whom `user` follows
     return followings

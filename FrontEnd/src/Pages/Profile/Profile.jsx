@@ -6,8 +6,6 @@ import useProfile from '../../CustomHooks/useProfile';
 import UserPosts from '../../Components/Profile/UserPosts/UserPosts';
 import ProfileNav from '../../Components/Profile/Navigation/ProfileNav';
 import UserFollowers from '../../Components/Profile/UserFollowers/UserFollowers';
-import { Underline } from 'lucide-react';
-import { ta } from 'date-fns/locale';
 import UserFollowings from '../../Components/Profile/UserFollowings/UserFollowings';
 
 function Profile() {
@@ -37,16 +35,16 @@ function Profile() {
 			setUser(data.user);
 		}
 	}, [data]);
+
 	useEffect(() => {
-		if (tab === undefined) {
+		if (!tab) {
 			navigate(`${location.pathname}/overview`, { replace: true });
 		}
-		if (user_id === undefined) {
-			navigate(`${CurrentUser.id}/overview?`, {
-				replace: true,
-			});
+		if (!user_id) {
+			navigate(`${CurrentUser.id}/overview`, { replace: true });
 		}
 	}, [location, navigate]);
+
 	if (isLoading) {
 		return (
 			<div className='flex items-center justify-center min-h-screen text-lg text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
@@ -64,29 +62,28 @@ function Profile() {
 	}
 
 	return (
-		<div className='min-h-screen flex flex-col md:flex-row bg-lightMode-background dark:bg-darkMode-background text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
+		<div className='min-h-[100dvh] bg-lightMode-background dark:bg-darkMode-background text-lightMode-textPrimary dark:text-darkMode-textPrimary flex flex-col pb-2'>
+			{/* Header Section */}
+			<div className='md:px-6 lg:px-8 px-0 pb-0'>
+				<Header user={user} />
+			</div>
+
 			{/* Main Content */}
-			<div className='flex-1 flex flex-col p-4 md:p-6 lg:p-8'>
-				{/* Header Section */}
-				<div className='px-4 md:px-6 lg:px-8'>
-					<div className='relative bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark py-4 px-4 sm:py-6 sm:px-8 rounded-2xl'>
-						<Header user={user} />
-					</div>
+			<div className='flex flex-1 flex-col md:flex-row gap-4 pt-4 md:px-6 lg:px-8 pb-0 max-h-[85dvh] overflow-y-auto'>
+				{/* Left Navigation - Hidden on smaller screens */}
+				<div className='md:flex-[1] hidden md:block bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark rounded-lg p-3'>
+					<ProfileNav user={user} />
 				</div>
 
-				{/* Content Section */}
-				<div className='flex-1 p-4 md:p-6 lg:p-8 flex flex-col md:flex-row gap-6'>
-					{/* Sidebar for Mobile View */}
-					<div className='md:hidden'>
-						<ProfileNav user={user} />
-					</div>
-					{/* Left Sidebar Navigation (Hidden on small screens) */}
-					<div className='w-60 hidden md:block'>
-						<ProfileNav user={user} />
-					</div>
-					{/* User Posts */}
-					<div className='flex-1'>{selectedTab()}</div>
+				{/* Profile Content - Scrollable */}
+				<div className='md:flex-[4] flex-1 bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark rounded-lg p-6'>
+					{selectedTab()}
 				</div>
+			</div>
+
+			{/* Left Navigation at Bottom on Small Screens */}
+			<div className='md:hidden fixed bottom-0 left-0 w-full bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark p-3 border-t'>
+				<ProfileNav user={user} />
 			</div>
 		</div>
 	);

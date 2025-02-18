@@ -5,7 +5,7 @@ import { User, FileText, Users, Settings } from 'lucide-react'; // Icons
 function ProfileNav({ user }) {
 	const user_id = user.id;
 	return (
-		<aside className='w-60 hidden md:flex flex-col bg-lightMode-section dark:bg-darkMode-section shadow-lg p-6 rounded-2xl h-fit sticky top-4'>
+		<aside className='w-full flex justify-between md:flex-col h-fit sticky top-4'>
 			<NavLink
 				to={`/profile/${user_id}/overview`}
 				className={({ isActive }) =>
@@ -16,7 +16,7 @@ function ProfileNav({ user }) {
 					}`
 				}>
 				<User size={20} />
-				<span>Overview</span>
+				<span className='hidden md:block'>Overview</span>
 			</NavLink>
 			<NavLink
 				to={`/profile/${user_id}/posts`}
@@ -28,7 +28,7 @@ function ProfileNav({ user }) {
 					}`
 				}>
 				<FileText size={20} />
-				<span>Posts</span>
+				<span className='hidden md:block'>Posts</span>
 			</NavLink>
 			<NavLink
 				to={`/profile/${user_id}/followers`}
@@ -40,7 +40,7 @@ function ProfileNav({ user }) {
 					}`
 				}>
 				<Users size={20} />
-				<span>Followers</span>
+				<span className='hidden md:block'>Followers</span>
 			</NavLink>
 			<NavLink
 				to={`/profile/${user_id}/followings`}
@@ -52,7 +52,7 @@ function ProfileNav({ user }) {
 					}`
 				}>
 				<Users size={20} />
-				<span>Following</span>
+				<span className='hidden md:block'>Following</span>
 			</NavLink>
 			<NavLink
 				to={`/profile/${user_id}/settings`}
@@ -64,7 +64,7 @@ function ProfileNav({ user }) {
 					}`
 				}>
 				<Settings size={20} />
-				<span>Settings</span>
+				<span className='hidden md:block'>Settings</span>
 			</NavLink>
 		</aside>
 	);

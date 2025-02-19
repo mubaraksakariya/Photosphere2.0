@@ -31,6 +31,7 @@ from Notification.views import NotificationViewSet
 from Posts.views import CommentViewSet, LikeViewSet, PostViewSet
 from Stories.views import StoryViewSet
 from Users.CustomTokenObtain import CustomTokenObtainPairView
+from Users.profile_views import ProfileViewSet
 from Users.views import GoogleSignInView, ResendOTPView, SignupView, UserViewSet, VerifyOTPView
 
 router = routers.DefaultRouter()
@@ -43,6 +44,7 @@ router.register(r'chat/(?P<chat_room_id>\d+)/messages',
                 MessageViewSet, basename='message')
 router.register(r'api/notifications', NotificationViewSet,
                 basename='notifications')
+router.register(r'api/profiles', ProfileViewSet, basename='profile')
 
 
 urlpatterns = [

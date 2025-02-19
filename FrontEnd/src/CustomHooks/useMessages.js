@@ -29,6 +29,7 @@ const useMessages = (chatRoomId) => {
 			}
 			return undefined;
 		},
+		enabled: !!chatRoomId,
 	});
 };
 

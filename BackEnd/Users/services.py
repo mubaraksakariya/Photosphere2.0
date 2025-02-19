@@ -158,7 +158,7 @@ def follow_user(follower, followed):
         follow.delete()
         return {"status": "unfollowed", "follow": None}
 
-    # ✅ Send a follow notification
+    # Send a follow notification
     create_notification(
         sender=follower,
         recipient=followed,

@@ -13,14 +13,14 @@ function Header({ user }) {
 
 	return (
 		<div className=' bg-lightMode-section dark:bg-darkMode-section rounded-lg'>
-			<div className='flex flex-col md:flex-row items-center gap-4 rounded-md max-w-5xl mx-auto py-2'>
-				<div className='flex-shrink-0'>
+			<div className='flex items-center gap-4 rounded-md max-w-5xl mx-auto py-2'>
+				<div className='flex-shrink-0 px-3'>
 					<ProfileImage user={user} />
 				</div>
-				<div className='w-full'>
+				<div className='w-full mx-3'>
 					{/* Username and follow button */}
 					<div className='flex flex-col md:flex-row md:items-center justify-between'>
-						<div className='text-xl font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
+						<div className=' text-base sm:text-xl font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
 							{user.username}
 						</div>
 						{!isOwnProfile && (

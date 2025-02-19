@@ -1,11 +1,23 @@
 import React from 'react';
 import { NavLink } from 'react-router';
-import { User, FileText, Users, Settings } from 'lucide-react'; // Icons
+import { User, FileText, Users, Settings, CornerUpLeft } from 'lucide-react'; // Icons
 
 function ProfileNav({ user }) {
 	const user_id = user.id;
 	return (
 		<aside className='w-full flex justify-between md:flex-col h-fit sticky top-4'>
+			<NavLink
+				to={`/`}
+				className={({ isActive }) =>
+					`flex items-center gap-3 p-3 rounded-md transition-all ${
+						isActive
+							? 'bg-lightMode-accent text-white'
+							: 'hover:bg-gray-200 dark:hover:bg-gray-700'
+					}`
+				}>
+				<CornerUpLeft size={20} />
+				<span className='hidden md:block'>Back</span>
+			</NavLink>
 			<NavLink
 				to={`/profile/${user_id}/overview`}
 				className={({ isActive }) =>

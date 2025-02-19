@@ -7,18 +7,29 @@ import UserPosts from '../../Components/Profile/UserPosts/UserPosts';
 import ProfileNav from '../../Components/Profile/Navigation/ProfileNav';
 import UserFollowers from '../../Components/Profile/UserFollowers/UserFollowers';
 import UserFollowings from '../../Components/Profile/UserFollowings/UserFollowings';
+import UserDetails from '../../Components/Profile/UserDetails/UserDetails';
+import UserDetailsEdit from '../../Components/Profile/UserDetails/UserDetailsEdit';
+import LoadingRing from '../../Components/Loading/LoadingRing';
 
 function Profile() {
-	const { user_id, tab } = useParams();
+	const { user_id: paramUserId, tab } = useParams();
 	const navigate = useNavigate();
 
 	const [user, setUser] = useState({});
 	const CurrentUser = useSelector((state) => state.auth.user);
-	const isSelfProfile = user_id ? CurrentUser?.id === user_id : true;
+	const user_id = paramUserId || CurrentUser?.id;
+	const isSelfProfile = user_id ? CurrentUser?.id == user_id : true;
 	const { data, isLoading, error } = useProfile(user_id);
 
+	// Function to select the appropriate tab content
 	const selectedTab = () => {
 		switch (tab) {
+			case 'overview':
+				return isSelfProfile && user ? (
+					<UserDetailsEdit user={user} />
+				) : (
+					<UserDetails user={user} />
+				);
 			case 'posts':
 				return <UserPosts user={user} />;
 			case 'followers':
@@ -30,29 +41,29 @@ function Profile() {
 		}
 	};
 
+	// Effect to set user data when profile data is fetched
 	useEffect(() => {
 		if (data) {
 			setUser(data.user);
 		}
 	}, [data]);
 
+	// Effect to handle navigation based on tab and user ID
 	useEffect(() => {
 		if (!tab) {
 			navigate(`${location.pathname}/overview`, { replace: true });
 		}
-		if (!user_id) {
+		if (!paramUserId) {
 			navigate(`${CurrentUser.id}/overview`, { replace: true });
 		}
-	}, [location, navigate]);
+	}, [location, navigate, paramUserId, CurrentUser.id]);
 
+	// Show loading indicator while fetching data
 	if (isLoading) {
-		return (
-			<div className='flex items-center justify-center min-h-screen text-lg text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
-				Loading...
-			</div>
-		);
+		return <LoadingRing />;
 	}
 
+	// Show error message if there is an error fetching data
 	if (error) {
 		return (
 			<div className='flex items-center justify-center min-h-screen text-lg text-red-500'>
@@ -76,7 +87,7 @@ function Profile() {
 				</div>
 
 				{/* Profile Content - Scrollable */}
-				<div className='md:flex-[4] flex-1 bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark rounded-lg p-6'>
+				<div className=' max-h-full overflow-auto md:flex-[4] flex-1 bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark rounded-lg p-6'>
 					{selectedTab()}
 				</div>
 			</div>

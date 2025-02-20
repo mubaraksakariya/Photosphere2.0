@@ -14,6 +14,8 @@ import { ChatProvider } from './Contexts/ChatContext';
 import { ChatSocketProvider } from './Contexts/ChatSocketContext';
 import { NotificationProvider } from './Contexts/NotificationContext';
 import NotificationsFullPage from './Pages/Notifications/NotificationsFullPage';
+import { SettingsProvider } from './Contexts/SettingsContext';
+import { AlertProvider } from './Contexts/AlertContext';
 
 function PublicRoute({ children }) {
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -21,30 +23,35 @@ function PublicRoute({ children }) {
 }
 function PrivateRoute({ children }) {
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
 	return !isAuthenticated ? (
 		<Navigate to='/signin' replace />
 	) : (
-		<NotificationProvider>
-			<ChatProvider>
-				<ChatSocketProvider>{children}</ChatSocketProvider>
-			</ChatProvider>
-		</NotificationProvider>
+		<SettingsProvider>
+			<NotificationProvider>
+				<ChatProvider>
+					<ChatSocketProvider>{children}</ChatSocketProvider>
+				</ChatProvider>
+			</NotificationProvider>
+		</SettingsProvider>
 	);
 }
 
 function App() {
 	const queryClient = new QueryClient();
 	return (
-		<ApiProvider>
-			<QueryClientProvider client={queryClient}>
-				<ModalProvider>
-					<Routes>
-						<Route path='/*' element={<User />} />
-						<Route exact path='/admin/*' element={<Admin />} />
-					</Routes>
-				</ModalProvider>
-			</QueryClientProvider>
-		</ApiProvider>
+		<AlertProvider>
+			<ApiProvider>
+				<QueryClientProvider client={queryClient}>
+					<ModalProvider>
+						<Routes>
+							<Route path='/*' element={<User />} />
+							<Route exact path='/admin/*' element={<Admin />} />
+						</Routes>
+					</ModalProvider>
+				</QueryClientProvider>
+			</ApiProvider>
+		</AlertProvider>
 	);
 }
 

@@ -21,14 +21,14 @@ const UserFollowings = ({ userId }) => {
 
 	return (
 		<div>
-			<h2 className='text-xl font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-4'>
+			<h2 className='text-xl text-center font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-4'>
 				Followings
 			</h2>
 
 			{followings?.length === 0 ? (
 				<p className='text-gray-500 text-center'>No followings yet.</p>
 			) : (
-				<div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+				<div className='flex flex-wrap justify-center gap-4'>
 					{followings.map((following) => (
 						<ProfileCard user={following} key={following.id} />
 					))}

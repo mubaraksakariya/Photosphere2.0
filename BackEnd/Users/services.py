@@ -144,6 +144,10 @@ def follow_user(follower, followed):
     if follower == followed:
         raise ValidationError("A user cannot follow themselves.")
 
+    if not followed or not isinstance(followed, User):
+        raise ValidationError(
+            "Invalid recipient: followed user does not exist.")
+
     try:
         follow, created = Follow.objects.get_or_create(
             follower=follower,
@@ -154,9 +158,11 @@ def follow_user(follower, followed):
             "An error occurred while trying to follow this user.")
 
     if not created:
-        # Unfollow logic (toggle unfollow)
         follow.delete()
         return {"status": "unfollowed", "follow": None}
+
+    if not follow:
+        raise ValidationError("Failed to create follow relationship.")
 
     # Send a follow notification
     create_notification(

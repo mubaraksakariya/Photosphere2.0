@@ -31,8 +31,10 @@ from Notification.views import NotificationViewSet
 from Posts.views import CommentViewSet, LikeViewSet, PostViewSet
 from Stories.views import StoryViewSet
 from Users.CustomTokenObtain import CustomTokenObtainPairView
-from Users.profile_views import ProfileViewSet
-from Users.views import GoogleSignInView, ResendOTPView, SignupView, UserViewSet, VerifyOTPView
+from Users.views.profile_views import ProfileViewSet
+from Users.views.user_block_view import UserBlockViewSet
+from Users.views.user_settings_view import UserSettingsViewSet
+from Users.views.user_views import GoogleSignInView, ResendOTPView, SignupView, UserViewSet, VerifyOTPView
 
 router = routers.DefaultRouter()
 router.register(r'api/users', UserViewSet)
@@ -45,6 +47,9 @@ router.register(r'chat/(?P<chat_room_id>\d+)/messages',
 router.register(r'api/notifications', NotificationViewSet,
                 basename='notifications')
 router.register(r'api/profiles', ProfileViewSet, basename='profile')
+router.register(r'api/user-settings', UserSettingsViewSet,
+                basename='user-settings')
+router.register("api/user-blocks", UserBlockViewSet, basename="userblock")
 
 
 urlpatterns = [

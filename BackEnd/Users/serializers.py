@@ -3,7 +3,7 @@ from datetime import date
 from Users.models import Follow, Profile, User
 from datetime import date
 from rest_framework import serializers
-from .models import Profile, Follow
+from .models import Profile, Follow, UserSettings, UserBlock
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -42,8 +42,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return False
 
     def get_is_own_profile(self, obj):
-        request = self.context.get('request')
-        return request.user.is_authenticated and obj.user == request.user  # Direct comparison
+        request = self.context.get("request")
+        if not request or not hasattr(request, "user") or request.user.is_anonymous:
+            return False  # Return False if there's no valid request or user
+        return obj.user == request.user
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -83,3 +85,19 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+
+
+class UserSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserSettings
+        fields = '__all__'
+        read_only_fields = ['user']
+
+
+class UserBlockSerializer(serializers.ModelSerializer):
+    blocker = UserSerializer(read_only=True)
+    blocked = UserSerializer(read_only=True)
+
+    class Meta:
+        model = UserBlock
+        fields = "__all__"

@@ -10,6 +10,7 @@ import UserFollowings from '../../Components/Profile/UserFollowings/UserFollowin
 import UserDetails from '../../Components/Profile/UserDetails/UserDetails';
 import UserDetailsEdit from '../../Components/Profile/UserDetails/UserDetailsEdit';
 import LoadingRing from '../../Components/Loading/LoadingRing';
+import UserSettings from '../../Components/Profile/UserSettings/UserSettings';
 
 function Profile() {
 	const { user_id: paramUserId, tab } = useParams();
@@ -36,6 +37,10 @@ function Profile() {
 				return <UserFollowers userId={user.id} />;
 			case 'followings':
 				return <UserFollowings userId={user.id} />;
+			case 'settings':
+				return isSelfProfile && user ? (
+					<UserSettings user={user} />
+				) : null;
 			default:
 				return <UserPosts user={user} />;
 		}
@@ -49,6 +54,8 @@ function Profile() {
 	}, [data]);
 
 	// Effect to handle navigation based on tab and user ID
+	// Redirect to overview tab if tab is not present
+	// Redirect to current user's profile if user ID is not present
 	useEffect(() => {
 		if (!tab) {
 			navigate(`${location.pathname}/overview`, { replace: true });

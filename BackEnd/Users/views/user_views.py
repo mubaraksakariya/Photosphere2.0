@@ -4,7 +4,7 @@ from rest_framework import status
 
 from Users.models import Follow, User
 from Users.services import follow_user, get_all_followers, get_all_followings, get_or_create_user, get_suggested_users, get_user, send_otp_email, validate_otp, verify_google_id_token
-from .serializers import UserSerializer
+from Users.serializers import UserSerializer
 from rest_framework.exceptions import ValidationError
 from django.db import IntegrityError
 import logging

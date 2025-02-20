@@ -29,7 +29,6 @@ async def notify_chat_members(user_id, online):
                 },
             },
         )
-        print('notified')
 
     await redis.close()
 

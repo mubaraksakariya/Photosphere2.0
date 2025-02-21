@@ -23,9 +23,19 @@ class UserManager(BaseUserManager):
         return self.create_user(email, username, password, **extra_fields)
 
 
+class AuthProvider(models.TextChoices):
+    EMAIL = "email", "Email"
+    GOOGLE = "google", "Google"
+    FACEBOOK = "facebook", "Facebook"
+    GITHUB = "github", "GitHub"
+
+
 class User(AbstractBaseUser):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=30, unique=True)
+    auth_provider = models.CharField(
+        max_length=20, choices=AuthProvider.choices, default=AuthProvider.EMAIL
+    )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)

@@ -10,7 +10,7 @@ from rest_framework.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
 
 from Notification.services import create_notification
-from Users.models import OTP, Follow, User
+from Users.models import OTP, AuthProvider, Follow, User
 
 import google.auth.transport.requests
 import google.oauth2.id_token
@@ -121,7 +121,7 @@ def verify_google_id_token(token):
 def get_or_create_user(email, first_name, last_name, birthdate):
     """Get or create the user and profile"""
     user, created = User.objects.get_or_create(
-        username=email, defaults={'email': email})
+        username=email, auth_provider=AuthProvider.GOOGLE, defaults={'email': email})
     if created:
         profile = user.profile  # Automatically created by signal
         profile.first_name = first_name
@@ -129,7 +129,7 @@ def get_or_create_user(email, first_name, last_name, birthdate):
         profile.date_of_birth = birthdate
         profile.save()
     else:
-        profile = user.profile  # In case profile needs to be updated
+        profile = user.profile
 
     return user, profile
 

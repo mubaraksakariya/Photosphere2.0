@@ -11,6 +11,7 @@ import UserDetails from '../../Components/Profile/UserDetails/UserDetails';
 import UserDetailsEdit from '../../Components/Profile/UserDetails/UserDetailsEdit';
 import LoadingRing from '../../Components/Loading/LoadingRing';
 import UserSettings from '../../Components/Profile/UserSettings/UserSettings';
+import OtherUsersSettings from '../../Components/Profile/OtherUsersSettings/OtherUsersSettings';
 
 function Profile() {
 	const { user_id: paramUserId, tab } = useParams();
@@ -40,7 +41,9 @@ function Profile() {
 			case 'settings':
 				return isSelfProfile && user ? (
 					<UserSettings user={user} />
-				) : null;
+				) : (
+					<OtherUsersSettings user={user} />
+				);
 			default:
 				return <UserPosts user={user} />;
 		}

@@ -4,6 +4,7 @@ import { logout } from '../../../Store/Slices/AuthSlice';
 import { useNavigate } from 'react-router';
 import { openCreatePostModal } from '../../../Store/Slices/ModalSlice';
 import { useNotifications } from '../../../Contexts/NotificationContext';
+import { Settings } from 'lucide-react';
 
 function LeftNav() {
 	const navigate = useNavigate();
@@ -180,6 +181,13 @@ function LeftNav() {
 					</svg>
 
 					<span className='hidden md:inline'>Profile</span>
+				</div>
+				{/* Settings */}
+				<div
+					className='flex items-center space-x-2 cursor-pointer hover:text-lightMode-accent dark:hover:text-darkMode-accent'
+					onClick={() => navigate('/settings')}>
+					<Settings />
+					<span className='hidden md:inline'>Settings</span>
 				</div>
 			</div>
 

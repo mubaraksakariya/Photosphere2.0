@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import LoadingRing from '../../Loading/LoadingRing';
 import { useSettings } from '../../../Contexts/SettingsContext';
-import DarkModeToggle from '../../Theme/DarkModeToggle';
 
 const UserSettings = () => {
 	const { settings, changeSetting, saveSettings, isLoading, error } =
@@ -53,12 +52,6 @@ const UserSettings = () => {
 				User Settings
 			</h2>
 			<form onSubmit={handleSubmit} className='space-y-6'>
-				<div className='flex items-center justify-between'>
-					<span className='text-lightMode-textPrimary dark:text-darkMode-textPrimary font-medium'>
-						Theme
-					</span>
-					<DarkModeToggle />
-				</div>
 				{[
 					{ label: 'Profile Public', name: 'is_profile_public' },
 					{

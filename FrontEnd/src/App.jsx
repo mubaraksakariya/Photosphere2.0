@@ -16,6 +16,7 @@ import { NotificationProvider } from './Contexts/NotificationContext';
 import NotificationsFullPage from './Pages/Notifications/NotificationsFullPage';
 import { SettingsProvider } from './Contexts/SettingsContext';
 import { AlertProvider } from './Contexts/AlertContext';
+import Settings from './Pages/Settings/Settings';
 
 function PublicRoute({ children }) {
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -128,6 +129,14 @@ function User() {
 				element={
 					<PrivateRoute>
 						<NotificationsFullPage />
+					</PrivateRoute>
+				}
+			/>
+			<Route
+				path='/settings/*'
+				element={
+					<PrivateRoute>
+						<Settings />
 					</PrivateRoute>
 				}
 			/>

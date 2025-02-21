@@ -52,11 +52,12 @@ class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     email = serializers.EmailField()
     profile = UserProfileSerializer()
+    is_blocked_by_current_user = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = ['id', 'email', 'username',
-                  'password', 'profile', 'date_joined']
+                  'password', 'profile', 'date_joined', 'is_blocked_by_current_user', 'auth_provider']
 
     def validate_password(self, value):
         """
@@ -85,6 +86,13 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+
+    def get_is_blocked_by_current_user(self, obj):
+        request = self.context.get("request")
+        if not request or not hasattr(request, "user") or request.user.is_anonymous:
+            return None  # Return None if there's no valid request or user
+
+        return UserBlock.objects.filter(blocker=request.user, blocked=obj).exists()
 
 
 class UserSettingsSerializer(serializers.ModelSerializer):

@@ -38,19 +38,21 @@ const SubmitOtp = ({ email, setError, onSuccess }) => {
 					type='text'
 					name='otp'
 					placeholder='Enter OTP'
-					className='w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
+					className='w-full border rounded-md px-4 py-2 bg-lightMode-section dark:bg-darkMode-section text-lightMode-textPrimary dark:text-darkMode-textPrimary border-lightMode-accent dark:border-darkMode-accent focus:ring-lightMode-accent dark:focus:ring-darkMode-accent focus:outline-none'
 					value={otp}
 					onChange={(e) => setOtp(e.target.value)}
 					required
 				/>
-				<label className='absolute left-4 -top-3.5 text-sm text-gray-500 bg-white px-1'>
+				<label className='absolute left-4 -top-3.5 text-xs text-lightMode-textPrimary dark:text-darkMode-textPrimary bg-lightMode-section dark:bg-darkMode-section px-1'>
 					Enter OTP
 				</label>
 			</div>
 			<button
 				type='submit'
 				disabled={submitLoading}
-				className='w-full bg-blue-500 text-white py-2 rounded-md font-bold hover:bg-blue-600'>
+				className={`w-full py-2 rounded-md font-bold text-white bg-lightMode-accent dark:bg-darkMode-accent transition hover:opacity-80 ${
+					submitLoading ? 'opacity-50 cursor-not-allowed' : ''
+				}`}>
 				{submitLoading ? 'Verifying...' : 'Verify'}
 			</button>
 		</form>

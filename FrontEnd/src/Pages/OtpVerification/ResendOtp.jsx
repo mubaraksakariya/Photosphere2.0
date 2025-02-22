@@ -42,13 +42,14 @@ const ResendOtp = ({ email, setError }) => {
 			const timer = setInterval(() => {
 				setCountdown((prev) => {
 					if (prev === 1) {
-						setCountdown(0); // Reset countdown to 0 after it reaches 0
+						setIsResendDisabled(false);
+						setCountdown(0);
 					}
 					return prev - 1;
 				});
-			}, 1000); // Countdown every second
+			}, 1000);
 
-			return () => clearInterval(timer); // Clean up the timer on unmount
+			return () => clearInterval(timer);
 		}
 	}, [isResendDisabled, countdown]);
 
@@ -58,14 +59,22 @@ const ResendOtp = ({ email, setError }) => {
 				<button
 					onClick={manageResend}
 					disabled={resendLoading}
-					className='text-blue-500 hover:underline'>
+					className={`text-lightMode-accent dark:text-darkMode-accent font-medium transition hover:underline ${
+						resendLoading ? 'opacity-50 cursor-not-allowed' : ''
+					}`}>
 					{resendLoading ? 'Resending...' : 'Resend OTP'}
 				</button>
 			) : (
 				<div>
-					<p className='text-green-500'>OTP sent successfully</p>
-					<p className='text-red-500 mt-2'>
-						You can resend OTP after {countdown}s.
+					<p className='text-green-500 font-medium'>
+						OTP sent successfully
+					</p>
+					<p className='text-lightMode-textPrimary dark:text-darkMode-textPrimary mt-2'>
+						You can resend OTP after{' '}
+						<span className='text-red-500 font-semibold'>
+							{countdown}s
+						</span>
+						.
 					</p>
 				</div>
 			)}

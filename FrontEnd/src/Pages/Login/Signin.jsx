@@ -7,13 +7,12 @@ import useSignin from '../../CustomHooks/useSignin';
 function Signin() {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
-	const [isLoading, setIsLoading] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const {
 		mutate: signinUser,
-		isLoading: isMutating,
+		isPending: isLoading,
 		isSuccess,
 		isError,
 		error,
@@ -21,7 +20,6 @@ function Signin() {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		setIsLoading(true);
 		setErrorMessage(''); // Clear previous errors
 		const data = {
 			username: email,

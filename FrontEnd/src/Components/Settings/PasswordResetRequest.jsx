@@ -1,0 +1,64 @@
+import React, { useState } from 'react';
+import Input from '../Ui/Input';
+import Button from '../Ui/Button';
+import Label from '../Ui/Label';
+import { useAlert } from '../../Contexts/AlertContext';
+import usePasswordResetMutation from '../../CustomHooks/usePasswordResetMutation ';
+
+const PasswordResetRequest = () => {
+	const [email, setEmail] = useState('');
+	const [error, setError] = useState('');
+	const { mutate, isPending } = usePasswordResetMutation();
+	const { showSuccess } = useAlert();
+
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		setError(''); // Clear previous errors
+
+		// Email validation
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (!emailRegex.test(email)) {
+			setError('Invalid email format.');
+			return;
+		}
+
+		// Send request
+		mutate(
+			{ email },
+			{
+				onSuccess: () => {
+					showSuccess('Reset link sent, check your email.');
+					setEmail(''); // Clear input field on success
+				},
+				onError: (error) => {
+					setError(
+						error.email || 'Something went wrong. Please try again.'
+					);
+				},
+			}
+		);
+	};
+
+	return (
+		<div className='space-y-4'>
+			<h3 className='text-lg font-semibold'>Reset Password</h3>
+			<form onSubmit={handleSubmit} className='grid gap-3'>
+				<Label htmlFor='email'>Enter your email</Label>
+				<Input
+					type='email'
+					id='email'
+					placeholder='Enter your email'
+					value={email}
+					onChange={(e) => setEmail(e.target.value)}
+				/>
+				{error && <p className='text-red-500 text-sm'>{error}</p>}{' '}
+				{/* Display error message */}
+				<Button type='submit' disabled={isPending}>
+					{isPending ? 'Sending...' : 'Send Reset Link'}
+				</Button>
+			</form>
+		</div>
+	);
+};
+
+export default PasswordResetRequest;

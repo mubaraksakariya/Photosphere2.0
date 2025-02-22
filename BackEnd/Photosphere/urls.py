@@ -69,9 +69,9 @@ urlpatterns = [
          name='recent-chats'),
     path('api/chat/get-or-create-room/<int:user_id>/',
          GetOrCreateChatRoomView.as_view(), name='get-or-create-chat-room'),
-    path("password-reset/", PasswordResetRequestView.as_view(),
+    path("api/password-reset/", PasswordResetRequestView.as_view(),
          name="password_reset"),
-    path("password-reset-confirm/", PasswordResetConfirmView.as_view(),
+    path("api/password-reset-confirm/", PasswordResetConfirmView.as_view(),
          name="password_reset_confirm"),
 
 ]+router.urls + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

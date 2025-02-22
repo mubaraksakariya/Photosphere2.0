@@ -1,3 +1,4 @@
+import os
 from django.core.mail import send_mail
 from django.contrib.auth import get_user_model
 from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
@@ -26,18 +27,22 @@ class PasswordResetRequestView(APIView):
         except User.DoesNotExist:
             return Response({"error": "User with this email does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
+        front_end_base_url = os.environ.get(
+            "FRONT_END_BASE_URL", "https://example.com")
+
+        # Ensure the base URL has no trailing slash
+        front_end_base_url = front_end_base_url.rstrip("/")
+
         # Generate a signed token with expiry
         signed_data = signer.sign(user.pk)
-        reset_url = request.build_absolute_uri(
-            reverse("password_reset_confirm") + "?" +
-            urlencode({"token": signed_data})
-        )
+
+        # Construct the reset URL properly
+        reset_url = f"{front_end_base_url}/password-reset?{urlencode({'token': signed_data})}"
 
         # Send email with reset link
         send_email(
             "Password Reset Request",
             f"Click the link below to reset your password (valid for 1 hour):\n{reset_url}",
-            "no-reply@example.com",
             [email],
         )
 

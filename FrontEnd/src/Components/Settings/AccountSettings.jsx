@@ -2,8 +2,8 @@ import React from 'react';
 import { Trash2 } from 'lucide-react';
 import Button from '../Ui/Button';
 import ChangePassword from './ChangePassword';
-import ResetPassword from './ResetPassword';
 import SetPassword from './SetPassword';
+import PasswordResetRequest from './PasswordResetRequest';
 
 const AccountSettings = ({ currentUser }) => {
 	const isOAuthUser = currentUser?.auth_provider !== 'email';
@@ -35,7 +35,7 @@ const AccountSettings = ({ currentUser }) => {
 				<div className='border-t border-lightMode-border dark:border-darkMode-border my-6'></div>
 
 				{/* Reset Password */}
-				{!isOAuthUser && <ResetPassword />}
+				{!isOAuthUser && <PasswordResetRequest />}
 			</div>
 
 			{/* Separator */}

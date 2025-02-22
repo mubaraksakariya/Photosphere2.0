@@ -63,18 +63,18 @@ class SignupView(APIView):
 
         except IntegrityError as e:
             # Handle duplicate email or username errors
-            logger.error(f"IntegrityError: {e}")
+            print(f"IntegrityError: {e}")
             return Response({"errors": {"email": ["This email is already registered"]}},
                             status=status.HTTP_400_BAD_REQUEST)
 
         except ValidationError as e:
             # Handle custom validation exceptions
-            logger.error(f"ValidationError: {e}")
+            print(f"ValidationError: {e}")
             return Response({"errors": {"message": "Invalid data provided."}}, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
             # Handle unexpected errors
-            logger.exception(f"Unexpected error occurred: {e}")
+            print(f"Unexpected error occurred: {e}")
             return Response({"message": "An unexpected error occurred. Please try again later."},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

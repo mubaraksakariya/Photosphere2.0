@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from datetime import date
+import re
 from Users.models import Follow, Profile, User
 from datetime import date
 from rest_framework import serializers
@@ -52,7 +53,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     email = serializers.EmailField()
-    profile = UserProfileSerializer()
+    profile = UserProfileSerializer(read_only=True)
     is_blocked_by_current_user = serializers.SerializerMethodField()
 
     class Meta:

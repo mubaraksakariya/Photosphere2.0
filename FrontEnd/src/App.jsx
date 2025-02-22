@@ -18,6 +18,7 @@ import { SettingsProvider } from './Contexts/SettingsContext';
 import { AlertProvider } from './Contexts/AlertContext';
 import Settings from './Pages/Settings/Settings';
 import PasswordReset from './Pages/PasswordReset/PasswordReset';
+import PasswordRecovery from './Pages/PasswordRecovery/PasswordRecovery';
 
 function PublicRoute({ children }) {
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -49,6 +50,10 @@ function App() {
 						<Routes>
 							<Route path='/*' element={<User />} />
 							<Route exact path='/admin/*' element={<Admin />} />
+							<Route
+								path='/password-reset-request'
+								element={<PasswordRecovery />}
+							/>
 							<Route
 								path='/password-reset'
 								element={<PasswordReset />}

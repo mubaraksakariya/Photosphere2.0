@@ -41,7 +41,12 @@ const PasswordResetRequest = () => {
 
 	return (
 		<div className='space-y-4'>
-			<h3 className='text-lg font-semibold'>Reset Password</h3>
+			<h3 className='text-lg font-semibold text-center'>
+				Reset Password
+			</h3>
+			<p className='text-center text-lightMode-textPrimary dark:text-darkMode-textPrimary text-sm'>
+				Enter your email to receive a password reset link.
+			</p>
 			<form onSubmit={handleSubmit} className='grid gap-3'>
 				<Label htmlFor='email'>Enter your email</Label>
 				<Input

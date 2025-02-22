@@ -31,90 +31,86 @@ function Signin() {
 			onSuccess: (response) => {
 				console.log('User signed in successfully');
 				console.log(response);
-				// You may want to store the token or session information here, for example:
-				// localStorage.setItem('authToken', response.data.token);
 			},
 			onError: (error) => {
-				// Set a meaningful error message
 				setErrorMessage(
 					error.response?.data?.detail ||
 						'An error occurred while signing in. Please try again later.'
 				);
 			},
 		});
-		setTimeout(() => setIsLoading(false), 1000); // Mock loading state
 	};
 
 	return (
-		<div className='flex justify-center items-center min-h-screen bg-gray-100'>
-			<div className='w-full max-w-md bg-white shadow-lg rounded-lg p-8'>
+		<div className='flex justify-center items-center min-h-screen bg-lightMode-background dark:bg-darkMode-background'>
+			<div className='w-full max-w-md bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark rounded-lg p-8'>
 				<div className='text-center mb-6'>
-					<h3 className='text-3xl font-semibold text-gray-800'>
+					<h3 className='text-3xl font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
 						PHOTOSPHERE
 					</h3>
 				</div>
 				<form onSubmit={handleSubmit} className='space-y-6'>
 					<div className='space-y-4 pb-6 relative'>
 						<div>
-							<label className='block text-sm font-medium text-gray-600'>
+							<label className='block text-sm font-medium text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
 								Email or Phone
 							</label>
 							<input
 								type='text'
 								placeholder='Enter your email'
-								className='mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'
+								className='mt-2 block w-full px-4 py-2 border border-lightMode-accent dark:border-darkMode-accent rounded-md shadow-sm focus:outline-none focus:ring-lightMode-accent dark:focus:ring-darkMode-accent focus:border-lightMode-accent dark:focus:border-darkMode-accent bg-lightMode-background dark:bg-darkMode-background text-lightMode-textPrimary dark:text-darkMode-textPrimary'
 								value={email}
 								onChange={(e) => setEmail(e.target.value)}
 								required
 							/>
 						</div>
 						<div>
-							<label className='block text-sm font-medium text-gray-600'>
+							<label className='block text-sm font-medium text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
 								Password
 							</label>
 							<input
 								type='password'
 								placeholder='Enter your password'
-								className='mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'
+								className='mt-2 block w-full px-4 py-2 border border-lightMode-accent dark:border-darkMode-accent rounded-md shadow-sm focus:outline-none focus:ring-lightMode-accent dark:focus:ring-darkMode-accent focus:border-lightMode-accent dark:focus:border-darkMode-accent bg-lightMode-background dark:bg-darkMode-background text-lightMode-textPrimary dark:text-darkMode-textPrimary'
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
 								required
 							/>
 						</div>
-						{/* Error message display */}
 						{isError && errorMessage && (
 							<div className='text-red-500 text-sm mt-1 absolute bottom-0 left-0'>
 								{errorMessage}
 							</div>
 						)}
 					</div>
-
+					<div className='flex justify-end'>
+						<span
+							className='cursor-pointer text-lightMode-accent dark:text-darkMode-accent'
+							onClick={() => navigate('/password-reset-request')}>
+							Forgot password?
+						</span>
+					</div>
 					<div>
 						<button
 							type='submit'
 							className={`w-full py-2 px-4 text-white font-semibold rounded-md ${
 								isLoading
 									? 'bg-gray-500 cursor-not-allowed'
-									: 'bg-blue-500 hover:bg-blue-600'
+									: 'bg-lightMode-accent dark:bg-darkMode-accent hover:bg-opacity-80'
 							}`}
 							disabled={isLoading}>
 							{isLoading ? 'Please Wait...' : 'Sign In'}
 						</button>
 					</div>
 				</form>
-
-				{/* Google Sign-in Component */}
 				<div className='mt-6 text-center'>
 					<GoogleSignin />
 				</div>
-
-				{/* Sign Up Link */}
 				<div className='mt-4 text-center'>
 					<p>
 						Don't have an account?{' '}
 						<a
-							href='#'
-							className='text-blue-500 hover:underline'
+							className='text-lightMode-accent dark:text-darkMode-accent hover:underline cursor-pointer'
 							onClick={() => navigate('/signup')}>
 							Sign Up
 						</a>

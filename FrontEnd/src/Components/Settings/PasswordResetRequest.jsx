@@ -31,8 +31,11 @@ const PasswordResetRequest = () => {
 					setEmail(''); // Clear input field on success
 				},
 				onError: (error) => {
+					console.log(error);
+
 					setError(
-						error.email || 'Something went wrong. Please try again.'
+						error.response.data.error ||
+							'Something went wrong. Please try again.'
 					);
 				},
 			}

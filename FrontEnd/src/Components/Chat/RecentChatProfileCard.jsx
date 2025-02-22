@@ -13,7 +13,7 @@ function RecentChatProfileCard({ chatRoom }) {
 	const { selectChat } = useChat();
 
 	const { first_name, last_name, username, profile_image } =
-		user.profile || {};
+		user?.profile || {};
 
 	const manageSelectChat = useCallback(() => {
 		selectChat(chatRoom);

@@ -1,16 +1,17 @@
 import React from 'react';
 import ChatProfileThumpnail from './ChatProfileThumpnail';
-import useChatRooms from '../../CustomHooks/useChatRooms';
 import RecentChatProfileCard from './RecentChatProfileCard';
+import { useChat } from '../../Contexts/ChatContext';
 
 function ChatList() {
-	const { data, isLoading, error } = useChatRooms();
+	const { chatRooms, chatRoomsLoading, chatRoomsError, chatRoomsRefetch } =
+		useChat();
 
-	if (isLoading) {
+	if (chatRoomsLoading) {
 		return <div>Loading...</div>;
 	}
 
-	if (error) {
+	if (chatRoomsError) {
 		return <div>Error loading chats. Please try again later.</div>;
 	}
 
@@ -35,7 +36,7 @@ function ChatList() {
 				</h2>
 				<div className='flex flex-col space-y-2'>
 					{/* Map through recent chat rooms */}
-					{data?.map((chatRoom) => (
+					{chatRooms?.map((chatRoom) => (
 						<RecentChatProfileCard
 							key={chatRoom.id}
 							chatRoom={chatRoom}

@@ -8,6 +8,7 @@ import React, {
 import useMessages from '../CustomHooks/useMessages';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNotifications } from './NotificationContext';
+import useChatRooms from '../CustomHooks/useChatRooms';
 
 // Create a context for the chat
 const ChatContext = createContext();
@@ -22,6 +23,14 @@ export const ChatProvider = ({ children }) => {
 	const [onlineUsers, setOnlineUsers] = React.useState({});
 	const [whoIsTyping, setWhoIsTyping] = React.useState({});
 	const [isTyping, setIsTyping] = React.useState(false);
+
+	// load chatRooms
+	const {
+		data: chatRooms,
+		isLoading: chatRoomsLoading,
+		error: chatRoomsError,
+		refetch: chatRoomsRefetch,
+	} = useChatRooms();
 
 	// Ref to store the latest currentChat value
 	const currentChatRef = useRef(currentChat);
@@ -41,7 +50,10 @@ export const ChatProvider = ({ children }) => {
 		isError,
 		error,
 	} = useMessages(currentChat?.id);
+
+	// method to add new notfication locally
 	const { addNotification } = useNotifications();
+
 	// Access the query client for managing React Query cache
 	const queryClient = useQueryClient();
 
@@ -132,6 +144,7 @@ export const ChatProvider = ({ children }) => {
 					}
 					return prevMessages;
 				});
+				chatRoomsRefetch();
 			}
 		},
 		[queryClient]
@@ -240,6 +253,10 @@ export const ChatProvider = ({ children }) => {
 	// Memoized context value to avoid unnecessary re-renders
 	const contextValue = useMemo(
 		() => ({
+			chatRooms,
+			chatRoomsLoading,
+			chatRoomsError,
+			chatRoomsRefetch,
 			currentChat,
 			data,
 			hasNextPage,
@@ -267,6 +284,9 @@ export const ChatProvider = ({ children }) => {
 			setIsTyping,
 		}),
 		[
+			chatRoomsLoading,
+			chatRoomsError,
+			chatRooms,
 			currentChat,
 			data,
 			hasNextPage,

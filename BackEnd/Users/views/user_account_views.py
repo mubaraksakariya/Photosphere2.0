@@ -62,7 +62,7 @@ class PasswordResetConfirmView(APIView):
         try:
             # Validate token and extract user ID
             # Expires after 1 hour
-            user_id = signer.unsign(token, max_age=3600)
+            user_id = signer.unsign(token, max_age=36)
             user = User.objects.get(pk=user_id)
         except (BadSignature, SignatureExpired):
             return Response({"error": "Invalid or expired token"}, status=status.HTTP_400_BAD_REQUEST)

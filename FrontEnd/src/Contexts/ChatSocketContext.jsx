@@ -65,7 +65,7 @@ export const ChatSocketProvider = ({ children }) => {
 		) {
 			setNewMessages(newMessage);
 		}
-		//status of a single user
+		//status of a single user, online/offline
 		else if (newMessage.type === 'userStatus') {
 			manageUserOnlineStatus(newMessage);
 		}
@@ -73,7 +73,6 @@ export const ChatSocketProvider = ({ children }) => {
 		else if (newMessage.type === 'isOnline') {
 			setInitialUserStatus(newMessage.users);
 		} else if (newMessage.type === 'typing') {
-			// console.log(newMessage);
 			setIsTypingStatus(newMessage);
 		}
 	};

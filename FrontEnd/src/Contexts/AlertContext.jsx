@@ -3,12 +3,14 @@ import ErrorAlert from '../Components/Alert/ErrorAlert';
 import SuccessAlert from '../Components/Alert/SuccessAlert';
 import ConfirmBox from '../Components/Alert/ConfirmBox';
 import ErrorBox from '../Components/Alert/ErrorBox';
+import SuccessBox from '../Components/Alert/SuccessBox';
 
 const AlertContext = createContext();
 
 export const AlertProvider = ({ children }) => {
 	const [alertData, setAlertData] = useState(null);
 	const [confirmData, setConfirmData] = useState(null);
+	const [successData, setSuccessData] = useState(null);
 
 	// Success Alert (Auto Disappears)
 	const showSuccessAlert = (message) => {
@@ -22,12 +24,17 @@ export const AlertProvider = ({ children }) => {
 		setTimeout(() => setAlertData(null), 3000);
 	};
 
-	// Success Confirm (OK/Cancel)
-	const showConfirm = (message, onConfirm, onCancel = null) => {
-		setConfirmData({ message, type: 'success', onConfirm, onCancel });
+	// Success Modal (OK Button)
+	const showSuccess = (message, onConfirm) => {
+		setSuccessData({ message, onConfirm });
 	};
 
-	// Error Confirm (OK/Cancel)
+	// Confirm Modal (OK/Cancel)
+	const showConfirm = (message, onConfirm, onCancel = null) => {
+		setConfirmData({ message, type: 'confirm', onConfirm, onCancel });
+	};
+
+	// Error Modal (OK/Cancel)
 	const showError = (message, onConfirm, onCancel = null) => {
 		setConfirmData({ message, type: 'error', onConfirm, onCancel });
 	};
@@ -35,10 +42,12 @@ export const AlertProvider = ({ children }) => {
 	// Handle Confirm Action
 	const handleConfirm = () => {
 		if (confirmData?.onConfirm) confirmData.onConfirm();
+		if (successData?.onConfirm) successData.onConfirm();
 		setConfirmData(null);
+		setSuccessData(null);
 	};
 
-	// Handle Cancel
+	// Handle Cancel Action
 	const handleCancel = () => {
 		if (confirmData?.onCancel) confirmData.onCancel();
 		setConfirmData(null);
@@ -51,30 +60,39 @@ export const AlertProvider = ({ children }) => {
 				showErrorAlert,
 				showConfirm,
 				showError,
+				showSuccess,
 			}}>
 			{children}
 
 			{/* Alerts */}
-			{alertData && alertData.type === 'success' && (
+			{alertData?.type === 'success' && (
 				<SuccessAlert message={alertData.message} />
 			)}
-			{alertData && alertData.type === 'error' && (
+			{alertData?.type === 'error' && (
 				<ErrorAlert message={alertData.message} />
 			)}
 
 			{/* Confirm Boxes */}
-			{confirmData && confirmData.type === 'success' && (
-				<ConfirmBox
-					message={confirmData.message}
+			{confirmData &&
+				(confirmData.type === 'confirm' ? (
+					<ConfirmBox
+						message={confirmData.message}
+						onConfirm={handleConfirm}
+						onCancel={handleCancel}
+					/>
+				) : (
+					<ErrorBox
+						message={confirmData.message}
+						onConfirm={handleConfirm}
+						onCancel={handleCancel}
+					/>
+				))}
+
+			{/* Success Box */}
+			{successData && (
+				<SuccessBox
+					message={successData.message}
 					onConfirm={handleConfirm}
-					onCancel={handleCancel}
-				/>
-			)}
-			{confirmData && confirmData.type === 'error' && (
-				<ErrorBox
-					message={confirmData.message}
-					onConfirm={handleConfirm}
-					onCancel={handleCancel}
 				/>
 			)}
 		</AlertContext.Provider>

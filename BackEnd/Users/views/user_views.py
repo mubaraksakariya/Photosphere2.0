@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from Users.models import Follow, User
-from Users.services import follow_user, get_all_followers, get_all_followings, get_or_create_user, get_suggested_users, get_user, send_otp_email, validate_otp, verify_google_id_token
-from Users.serializers import UserSerializer
+from Users.services import follow_user, get_all_followers, get_all_followings, get_or_create_google_user, get_suggested_users, get_user, send_otp_email, validate_otp, verify_google_id_token
+from Users.serializers import ChangePasswordSerializer, UserSerializer
 from rest_framework.exceptions import ValidationError
 from django.db import IntegrityError
 import logging
@@ -17,6 +17,7 @@ from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 from requests.exceptions import RequestException
 from django.db.models import Q
+from django.contrib.auth.password_validation import validate_password
 
 
 # Set up logging for the view
@@ -142,7 +143,7 @@ class GoogleSignInView(APIView):
 
             email, first_name, last_name, profile_image_url, birthdate = self.extract_user_info(
                 id_info)
-            user, profile = get_or_create_user(
+            user, profile = get_or_create_google_user(
                 email, first_name, last_name, birthdate)
             self.update_profile_image(user, profile_image_url)
             self.update_user_verified_status(user, id_info)
@@ -356,3 +357,51 @@ class UserViewSet(ModelViewSet):
         serialized_followings = self.get_serializer(followings, many=True).data
 
         return Response({'followings': serialized_followings}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated], url_path='set-password')
+    def set_password(self, request):
+        """
+        Allows OAuth users to set a password so they can log in with email/password later.
+        """
+        user = request.user
+        print(request.data)
+        print(user)
+        # Ensure the user signed in via OAuth (not email)
+        if user.auth_provider == "email":
+            return Response({"error": "You already have a password set."}, status=status.HTTP_400_BAD_REQUEST)
+
+        new_password = request.data.get("new_password")
+        confirm_password = request.data.get("confirm_password")
+
+        # Validate input
+        if not new_password or not confirm_password:
+            return Response({"error": "Both password fields are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if new_password != confirm_password:
+            return Response({"error": "Passwords do not match."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            validate_password(new_password, user)
+        except Exception as e:
+            print("Password validation error:", e)  # Debugging
+            return Response({"error": list(e.messages)}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Set password and change auth provider to 'email'
+        user.set_password(new_password)
+        user.auth_provider = "email"
+        user.save()
+
+        return Response({"message": "Password set successfully. You can now log in with email."}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'], url_path='change-password', permission_classes=[IsAuthenticated])
+    def change_password(self, request):
+        serializer = ChangePasswordSerializer(
+            data=request.data, context={"request": request})
+
+        if serializer.is_valid():
+            user = request.user
+            user.set_password(serializer.validated_data["new_password"])
+            user.save()
+            return Response({"detail": "Password changed successfully."}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

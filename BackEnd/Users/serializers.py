@@ -4,6 +4,7 @@ from Users.models import Follow, Profile, User
 from datetime import date
 from rest_framework import serializers
 from .models import Profile, Follow, UserSettings, UserBlock
+from django.contrib.auth.password_validation import validate_password
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -109,3 +110,20 @@ class UserBlockSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserBlock
         fields = "__all__"
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
+
+    def validate_old_password(self, value):
+        """Check if the old password is correct."""
+        user = self.context["request"].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("Incorrect current password.")
+        return value
+
+    def validate_new_password(self, value):
+        """Validate new password against Django's password validators."""
+        validate_password(value)
+        return value

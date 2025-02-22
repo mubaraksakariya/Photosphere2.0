@@ -32,6 +32,7 @@ from Posts.views import CommentViewSet, LikeViewSet, PostViewSet
 from Stories.views import StoryViewSet
 from Users.CustomTokenObtain import CustomTokenObtainPairView
 from Users.views.profile_views import ProfileViewSet
+from Users.views.user_account_views import PasswordResetConfirmView, PasswordResetRequestView
 from Users.views.user_block_view import UserBlockViewSet
 from Users.views.user_settings_view import UserSettingsViewSet
 from Users.views.user_views import GoogleSignInView, ResendOTPView, SignupView, UserViewSet, VerifyOTPView
@@ -53,7 +54,6 @@ router.register("api/user-blocks", UserBlockViewSet, basename="userblock")
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('api/signin/', CustomTokenObtainPairView.as_view(),
          name='token_obtain_pair'),
     path('api/google-signin/', GoogleSignInView.as_view(), name='google_signin'),
@@ -69,5 +69,9 @@ urlpatterns = [
          name='recent-chats'),
     path('api/chat/get-or-create-room/<int:user_id>/',
          GetOrCreateChatRoomView.as_view(), name='get-or-create-chat-room'),
+    path("password-reset/", PasswordResetRequestView.as_view(),
+         name="password_reset"),
+    path("password-reset-confirm/", PasswordResetConfirmView.as_view(),
+         name="password_reset_confirm"),
 
 ]+router.urls + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

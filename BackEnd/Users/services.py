@@ -118,8 +118,13 @@ def verify_google_id_token(token):
         return None
 
 
-def get_or_create_user(email, first_name, last_name, birthdate):
+def get_or_create_google_user(email, first_name, last_name, birthdate):
     """Get or create the user and profile"""
+
+    user = User.objects.filter(Q(username=email) | Q(email=email)).first()
+    if user:
+        return user, user.profile
+
     user, created = User.objects.get_or_create(
         username=email, auth_provider=AuthProvider.GOOGLE, defaults={'email': email})
     if created:

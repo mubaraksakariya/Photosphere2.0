@@ -11,11 +11,11 @@ function Settings() {
 	const user = useSelector((state) => state.auth.user);
 
 	return (
-		<div className='min-h-screen bg-lightMode-background dark:bg-darkMode-background text-lightMode-textPrimary dark:text-darkMode-textPrimary flex flex-col md:flex-row gap-4 p-4 md:p-6 lg:p-8'>
-			<div className='w-1/4 hidden md:block p-4 md:px-6 lg:px-8 bg-lightMode-section dark:bg-darkMode-section rounded-lg shadow-md'>
+		<div className='min-h-screen max-h-screen bg-lightMode-background dark:bg-darkMode-background text-lightMode-textPrimary dark:text-darkMode-textPrimary flex flex-col md:flex-row gap-4 p-4 md:p-6 lg:p-8'>
+			<div className='w-1/4 hidden md:block p-4 md:px-6 lg:px-8 bg-lightMode-section dark:bg-darkMode-section rounded-lg'>
 				<SidebarNav />
 			</div>
-			<div className='md:w-3/4 min-h-[90dvh] p-4 md:px-6 lg:px-8 bg-lightMode-section dark:bg-darkMode-section rounded-lg shadow-md'>
+			<div className='md:w-3/4 min-h-[90dvh] overflow-y-auto p-4 md:px-6 lg:px-8 bg-lightMode-section dark:bg-darkMode-section rounded-lg'>
 				<Routes>
 					<Route path='/' element={<Navigate to='general' />} />
 					<Route

@@ -1,76 +1,60 @@
 import React from 'react';
-import { ShieldCheck, Trash2 } from 'lucide-react'; // Icons
+import { Trash2 } from 'lucide-react';
 import Button from '../Ui/Button';
-import Label from '../Ui/Label';
-import Input from '../Ui/Input';
+import ChangePassword from './ChangePassword';
+import ResetPassword from './ResetPassword';
+import SetPassword from './SetPassword';
 
 const AccountSettings = ({ currentUser }) => {
-	console.log(currentUser);
+	const isOAuthUser = currentUser?.auth_provider !== 'email';
 
 	return (
-		<section className='space-y-6 p-6 bg-lightMode-section dark:bg-darkMode-section rounded-2xl max-w-3xl mx-auto'>
-			<h2 className='text-2xl font-bold text-lightMode-textPrimary dark:text-darkMode-textPrimary text-center'>
+		<section className='p-8 bg-lightMode-section dark:bg-darkMode-section rounded-2xl max-w-3xl mx-auto overflow-auto'>
+			<h2 className='text-3xl font-bold text-lightMode-textPrimary dark:text-darkMode-textPrimary text-center mb-8'>
 				Account Settings
 			</h2>
 
-			{/* Change Email */}
-			{/* <div className='space-y-3'>
-				<Label htmlFor='email'>Change Email</Label>
-				<div className='flex items-center gap-3'>
-					<Input
-						type='email'
-						id='email'
-						placeholder='Enter new email'
-					/>
-					<Button variant='outline'>Update</Button>
-				</div>
-			</div> */}
+			{/* Password Management */}
+			<div className='bg-lightMode-card dark:bg-darkMode-card p-6 rounded-xl'>
+				<h3 className='text-xl text-center font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-4'>
+					Security & Password
+				</h3>
 
-			{/* Change Password */}
-			<div className='space-y-3'>
-				<Label htmlFor='password'>Change Password</Label>
-				<div className='grid gap-3'>
-					<Input
-						type='password'
-						id='current-password'
-						placeholder='Current password'
-					/>
-					<Input
-						type='password'
-						id='new-password'
-						placeholder='New password'
-					/>
-					<Input
-						type='password'
-						id='confirm-password'
-						placeholder='Confirm new password'
-					/>
-					<Button>Update Password</Button>
-				</div>
+				{isOAuthUser ? (
+					<div className='text-center text-sm text-lightMode-textSecondary dark:text-darkMode-textSecondary'>
+						<p className='mb-3'>
+							You signed in with {currentUser.auth_provider}.
+						</p>
+						<SetPassword />
+					</div>
+				) : (
+					<ChangePassword />
+				)}
+
+				{/* Separator */}
+				<div className='border-t border-lightMode-border dark:border-darkMode-border my-6'></div>
+
+				{/* Reset Password */}
+				{!isOAuthUser && <ResetPassword />}
 			</div>
 
-			{/* Two-Factor Authentication */}
-			{/* <div className='flex items-center justify-between p-4 border border-lightMode-textPrimary dark:border-darkMode-textPrimary rounded-lg'>
-				<div className='flex items-center gap-2'>
-					<ShieldCheck size={20} className='text-blue-500' />
-					<p className='text-sm text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
-						Enable Two-Factor Authentication
-					</p>
-				</div>
-				<Button variant='outline'>Enable</Button>
-			</div> */}
+			{/* Separator */}
+			<div className='border-t border-lightMode-border dark:border-darkMode-border my-8'></div>
 
 			{/* Delete Account */}
-			<div className='border-t pt-4 border-lightMode-textPrimary dark:border-darkMode-textPrimary'>
-				<p className='text-sm text-red-500 flex items-center gap-2'>
+			<div className='bg-lightMode-section dark:bg-darkMode-section p-4 rounded-xl opacity-80 hover:opacity-100 transition-opacity'>
+				<h3 className='text-md font-medium text-red-600 dark:text-red-400 flex items-center gap-2'>
 					<Trash2 size={18} /> Delete Account
+				</h3>
+				<p className='text-xs text-lightMode-textSecondary dark:text-darkMode-textSecondary mt-1'>
+					This action is{' '}
+					<span className='font-semibold'>irreversible</span>. All
+					your data will be permanently deleted.
 				</p>
-				<p className='text-xs text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
-					This action is irreversible. All your data will be
-					permanently deleted.
-				</p>
-				<Button variant='destructive' className='mt-2'>
-					Delete Account
+				<Button
+					variant='destructive'
+					className='mt-2 w-auto px-4 py-1 text-xs font-medium opacity-80 hover:opacity-100'>
+					Delete
 				</Button>
 			</div>
 		</section>

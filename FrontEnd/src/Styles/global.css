@@ -1,0 +1,71 @@
+/* src/styles/global.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Component Layer */
+@layer components {
+	/* Button Styles */
+	.btn {
+		@apply px-4 py-2 rounded-md font-semibold text-white transition-all;
+		background-color: theme('colors.lightMode.accent');
+		@apply hover:opacity-90 dark:bg-darkMode-accent dark:hover:opacity-80;
+	}
+
+	/* Card Styles */
+	.card {
+		@apply p-6 rounded-lg transition-all shadow-light dark:shadow-dark;
+		background-color: theme('colors.lightMode.section');
+		@apply dark:bg-darkMode-section;
+	}
+}
+
+/* Utility Layer */
+@layer utilities {
+	/* Truncate Text Utility */
+	.truncate-text {
+		@apply text-ellipsis overflow-hidden whitespace-nowrap;
+	}
+
+	/* Text Link */
+	.text-link {
+		@apply font-medium underline transition-all;
+		color: theme('colors.lightMode.accent');
+		@apply hover:opacity-80 dark:text-darkMode-accent;
+	}
+
+	/* Section Padding */
+	.section-padding {
+		@apply py-8 px-4 lg:px-16;
+	}
+}
+
+/* Base Layer */
+@layer base {
+	/* HTML and Body Defaults */
+	html {
+		@apply font-sans;
+	}
+
+	body {
+		@apply transition-colors duration-300;
+		background-color: theme('colors.lightMode.background');
+		color: theme('colors.lightMode.textPrimary');
+		@apply dark:bg-darkMode-background dark:text-darkMode-textPrimary;
+	}
+
+	/* Scrollbar Styling (Optional) */
+	::-webkit-scrollbar {
+		@apply w-2;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background-color: theme('colors.lightMode.accent');
+		@apply dark:bg-darkMode-accent rounded;
+	}
+
+	::-webkit-scrollbar-track {
+		background-color: theme('colors.lightMode.section');
+		@apply dark:bg-darkMode-section;
+	}
+}

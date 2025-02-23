@@ -1,6 +1,10 @@
 # Ignore virtual environment directories
+.venv/
 venv/
 Venv/
 ENV/
 env/
 .Venv/
+# Ignore database files
+.media/
+media/

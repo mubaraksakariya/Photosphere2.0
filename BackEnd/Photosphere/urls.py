@@ -16,13 +16,62 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.conf.urls.static import static
+from django.conf import settings
+from rest_framework import routers
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
 
+from Chat.views.chat import GetOrCreateChatRoomView, MessageViewSet
+from Chat.views.favorites import FavoriteChatListView
+from Chat.views.recent_chats import RecentChatUsersView
+from Notification.views import NotificationViewSet
+from Posts.views import CommentViewSet, LikeViewSet, PostViewSet
+from Stories.views import StoryViewSet
+from Users.CustomTokenObtain import CustomTokenObtainPairView
+from Users.views.profile_views import ProfileViewSet
+from Users.views.user_account_views import PasswordResetConfirmView, PasswordResetRequestView
+from Users.views.user_block_view import UserBlockViewSet
+from Users.views.user_settings_view import UserSettingsViewSet
+from Users.views.user_views import GoogleSignInView, ResendOTPView, SignupView, UserViewSet, VerifyOTPView
+
+router = routers.DefaultRouter()
+router.register(r'api/users', UserViewSet)
+router.register(r'api/posts', PostViewSet, basename='post')
+router.register(r'api/likes', LikeViewSet, basename='like')
+router.register(r'api/comments', CommentViewSet, basename='comment')
+router.register(r'api/stories', StoryViewSet, basename='story')
+router.register(r'chat/(?P<chat_room_id>\d+)/messages',
+                MessageViewSet, basename='message')
+router.register(r'api/notifications', NotificationViewSet,
+                basename='notifications')
+router.register(r'api/profiles', ProfileViewSet, basename='profile')
+router.register(r'api/user-settings', UserSettingsViewSet,
+                basename='user-settings')
+router.register("api/user-blocks", UserBlockViewSet, basename="userblock")
+
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/signin/', CustomTokenObtainPairView.as_view(),
+         name='token_obtain_pair'),
+    path('api/google-signin/', GoogleSignInView.as_view(), name='google_signin'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-]
+    path('api/signup/', SignupView.as_view(), name='signup'),
+    path('api/verify/', VerifyOTPView.as_view(), name='verify'),
+    path('api/resend-otp/', ResendOTPView.as_view(), name='resend_otp'),
+
+    # Chat
+    path('api/chat/favorites/', FavoriteChatListView.as_view(),
+         name='favorite-chats'),
+    path('api/chat/recent/', RecentChatUsersView.as_view(),
+         name='recent-chats'),
+    path('api/chat/get-or-create-room/<int:user_id>/',
+         GetOrCreateChatRoomView.as_view(), name='get-or-create-chat-room'),
+    path("api/password-reset/", PasswordResetRequestView.as_view(),
+         name="password_reset"),
+    path("api/password-reset-confirm/", PasswordResetConfirmView.as_view(),
+         name="password_reset_confirm"),
+
+]+router.urls + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

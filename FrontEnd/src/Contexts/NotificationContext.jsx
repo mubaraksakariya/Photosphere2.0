@@ -16,7 +16,7 @@ export const NotificationProvider = ({ children }) => {
 
 	// Fetch notifications from API
 	const { data, isLoading, error, refetch } = useRecentNotifications();
-	//  markAsReadUpdate is a function that will be used to mark notifiactions as read
+	// mark notifiactions as read
 	const { mutate: markAsReadUpdate } = useMarkNotificationsAsRead();
 
 	useEffect(() => {

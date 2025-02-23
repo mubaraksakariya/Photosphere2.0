@@ -33,13 +33,13 @@ function UserPosts({ user }) {
 			</p>
 		);
 
-	if (!data?.pages?.length)
+	if (!!data?.pages?.length)
 		return <p className='text-gray-500'>No posts available.</p>;
 
 	return (
 		<div className='max-h-[73vh] md:overflow-y-auto'>
 			<div className='flex flex-wrap justify-center items-center gap-5'>
-				{data.pages.map((page) =>
+				{data?.pages?.map((page) =>
 					page.results.map((post) => (
 						<UserPostCard key={post.id} post={post} />
 					))

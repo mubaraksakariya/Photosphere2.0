@@ -21,6 +21,7 @@ const useGoogleLogin = () => {
 			dispatch(login({ user, token: { refresh, access } }));
 		},
 		onError: (error) => {
+			console.log(error);
 			console.error(
 				'Sign-in failed:',
 				error.response?.data?.detail || 'An error occurred'

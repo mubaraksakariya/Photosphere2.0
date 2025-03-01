@@ -7,4 +7,6 @@ env/
 .Venv/
 # Ignore database files
 media/*
+!media/profile_images/
+media/profile_images/*
 !media/profile_images/default_user_profile_image.png

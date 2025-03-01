@@ -11,6 +11,8 @@ const ProfileCard = ({ user }) => {
 			? `${text.slice(0, nameMaxLength)}...`
 			: text;
 	const manageProfileOpen = () => {
+		console.log(user);
+
 		navigate(`/profile/${user?.id}`);
 	};
 	return (

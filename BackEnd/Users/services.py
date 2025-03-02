@@ -7,19 +7,13 @@ import string
 from django.utils.timezone import now
 from datetime import timedelta
 from rest_framework.exceptions import ValidationError
-from django.core.exceptions import ObjectDoesNotExist
 
 from Notification.services import create_notification
-from Users.models import OTP, AuthProvider, Follow, User
-
-import google.auth.transport.requests
-import google.oauth2.id_token
-from google.auth import exceptions
+from Users.models import OTP, AuthProvider, Follow, User, FollowRequest
+from Users.serializers import FollowSerializer
 from google.oauth2.id_token import verify_oauth2_token
 from google.auth.transport.requests import Request
 from django.db import IntegrityError
-
-from Users.serializers import UserSerializer
 
 
 def send_email(subject, message, recipient_list):
@@ -153,23 +147,47 @@ def follow_user(follower, followed):
         raise ValidationError(
             "Invalid recipient: followed user does not exist.")
 
+    # Check if already following
+    existing_follow = Follow.objects.filter(
+        follower=follower, followed=followed).first()
+    if existing_follow:
+        existing_follow.delete()
+        return {"status": "unfollowed", "message": "Unfollowed successfully"}
+
+    # If the followed user is private, create a follow request instead
+    if not followed.settings.is_profile_public:
+        follow_request, created = FollowRequest.objects.get_or_create(
+            requester=follower, target=followed, defaults={'status': 'pending'}
+        )
+
+        if not created:
+            follow_request.delete()
+            return {"status": "cancelled", "message": "Follow request cencelled"}
+
+        # **Send Follow Request Notification**
+        create_notification(
+            sender=follower,
+            recipient=followed,
+            action_object=follow_request,
+            notif_type="follow_request",
+            custom_message=f"{follower.username} sent you a follow request."
+        )
+
+        return {"status": "requested", "message": "Follow request sent"}
+
+    # If public, proceed with normal follow
     try:
         follow, created = Follow.objects.get_or_create(
-            follower=follower,
-            followed=followed
-        )
+            follower=follower, followed=followed)
     except IntegrityError:
         raise ValidationError(
             "An error occurred while trying to follow this user.")
 
     if not created:
-        follow.delete()
-        return {"status": "unfollowed", "follow": None}
+        raise ValidationError(
+            "Unexpected error: Follow relationship was not created.")
 
-    if not follow:
-        raise ValidationError("Failed to create follow relationship.")
-
-    # Send a follow notification
+    # **Send Follow Notification**
     create_notification(
         sender=follower,
         recipient=followed,
@@ -178,7 +196,7 @@ def follow_user(follower, followed):
         custom_message=f"{follower.username} started following you."
     )
 
-    return {"status": "followed", "follow": follow}
+    return {"status": "followed", "message": "Followed successfully", "follow": FollowSerializer(follow).data}
 
 
 def get_all_followers(user):

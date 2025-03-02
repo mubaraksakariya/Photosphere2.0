@@ -23,7 +23,6 @@ function Profile() {
 	const isSelfProfile = user_id ? CurrentUser?.id == user_id : true;
 	const { data, isLoading, error } = useProfile(user_id);
 	const is_private = !user?.settings?.is_profile_public;
-	console.log(is_private);
 
 	// Function to select the appropriate tab content
 	const selectedTab = () => {

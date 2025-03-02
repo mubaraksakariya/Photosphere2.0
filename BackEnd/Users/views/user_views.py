@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from Users.models import Follow, User
+from Users.models import Follow, FollowRequest, User
 from Users.services import follow_user, get_all_followers, get_all_followings, get_or_create_google_user, get_suggested_users, get_user, send_otp_email, validate_otp, verify_google_id_token
 from Users.serializers import ChangePasswordSerializer, UserSerializer
 from rest_framework.exceptions import ValidationError
@@ -274,19 +274,21 @@ class UserViewSet(ModelViewSet):
         except IntegrityError:
             return Response({'error': 'An internal error occurred while processing the request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        is_following = follow_data.get('status') == 'followed'
-        return Response({'is_followed': is_following}, status=status.HTTP_200_OK)
+        return Response({'follow_data': follow_data}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated], url_path='check-follow')
     def is_following(self, request, pk=None):
-        try:
-            followed = User.objects.get(id=pk)
-        except User.DoesNotExist:
-            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        followed_user = get_object_or_404(User, id=pk)
+        follow_status = "none"
 
-        is_following = Follow.objects.filter(
-            follower=request.user, followed=followed).exists()
-        return Response({'is_followed': is_following}, status=status.HTTP_200_OK)
+        # Check if following
+        if Follow.objects.filter(follower=request.user, followed=followed_user).exists():
+            follow_status = "followed"
+        elif FollowRequest.objects.filter(requester=request.user, target=followed_user, status='pending').exists():
+            follow_status = "requested"
+
+        return Response({
+            "follow_status": follow_status}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated], url_path='user-profile')
     def user_profile(self, request, pk=None):

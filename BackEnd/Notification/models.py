@@ -25,7 +25,8 @@ class Notification(models.Model):
         ('commented', 'Comment'),
         ('followed', 'Follow'),
         ('mentioned', 'Mention'),
-        ('general', 'General')
+        ('general', 'General'),
+        ('follow_request', 'Follow request')
     ])
 
     def __str__(self):

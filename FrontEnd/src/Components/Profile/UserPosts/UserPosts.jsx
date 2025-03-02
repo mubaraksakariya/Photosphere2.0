@@ -33,7 +33,7 @@ function UserPosts({ user }) {
 			</p>
 		);
 
-	if (!!data?.pages?.length)
+	if (data?.pages[0].count < 1)
 		return <p className='text-gray-500'>No posts available.</p>;
 
 	return (

@@ -1,16 +1,24 @@
 from rest_framework import serializers
 from datetime import date
 import re
-from Users.models import Follow, Profile, User
+from Users.models import Follow, Profile, User, FollowRequest
 from datetime import date
 from rest_framework import serializers
 from .models import Profile, Follow, UserSettings, UserBlock
 from django.contrib.auth.password_validation import validate_password
 
 
+class UserSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserSettings
+        fields = '__all__'
+        read_only_fields = ['user']
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
     is_followed = serializers.SerializerMethodField()
     is_own_profile = serializers.SerializerMethodField()
+    follow_status = serializers.SerializerMethodField()  # Updated field
 
     class Meta:
         model = Profile
@@ -26,6 +34,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'post_count',
             'bio',
             'is_own_profile',
+            'follow_status',
         ]
 
     def validate_date_of_birth(self, value):
@@ -49,17 +58,28 @@ class UserProfileSerializer(serializers.ModelSerializer):
             return False  # Return False if there's no valid request or user
         return obj.user == request.user
 
+    def get_follow_status(self, obj):
+        """Returns 'followed', 'requested', or 'none' based on the follow state"""
+        request = self.context.get('request')
+        if request and request.user:
+            if Follow.objects.filter(follower=request.user, followed=obj.user).exists():
+                return "followed"
+            if FollowRequest.objects.filter(requester=request.user, target=obj.user, status='pending').exists():
+                return "requested"
+        return "none"
+
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     email = serializers.EmailField()
     profile = UserProfileSerializer(read_only=True)
     is_blocked_by_current_user = serializers.SerializerMethodField()
+    settings = UserSettingsSerializer(read_only=True)
 
     class Meta:
         model = User
         fields = ['id', 'email', 'username',
-                  'password', 'profile', 'date_joined', 'is_blocked_by_current_user', 'auth_provider']
+                  'password', 'profile', 'date_joined', 'is_blocked_by_current_user', 'auth_provider', 'settings']
 
     def validate_password(self, value):
         """
@@ -97,13 +117,6 @@ class UserSerializer(serializers.ModelSerializer):
         return UserBlock.objects.filter(blocker=request.user, blocked=obj).exists()
 
 
-class UserSettingsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserSettings
-        fields = '__all__'
-        read_only_fields = ['user']
-
-
 class UserBlockSerializer(serializers.ModelSerializer):
     blocker = UserSerializer(read_only=True)
     blocked = UserSerializer(read_only=True)
@@ -128,3 +141,10 @@ class ChangePasswordSerializer(serializers.Serializer):
         """Validate new password against Django's password validators."""
         validate_password(value)
         return value
+
+
+class FollowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Follow
+        fields = '__all__'
+        read_only_fields = ['user']

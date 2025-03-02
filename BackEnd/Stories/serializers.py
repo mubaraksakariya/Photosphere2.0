@@ -69,10 +69,7 @@ class StorySerializer(serializers.ModelSerializer):
         return obj.story_views.count()
 
     def get_is_viewed(self, obj):
-        request = self.context.get('request')
-        if request and request.user.is_authenticated:
-            return obj.story_views.filter(viewer=request.user).exists()
-        return False
+        return getattr(obj, "has_viewed", False)  # Use annotated value
 
     def get_is_liked(self, obj):
         request = self.context.get('request')

@@ -8,13 +8,29 @@ from .serializers import StorySerializer, StoryCommentSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
+from django.db.models import Exists, OuterRef
 
 
 class StoryViewSet(ModelViewSet):
-    queryset = Story.objects.all()
+    # queryset = Story.objects.all()
     serializer_class = StorySerializer
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
+
+    def get_queryset(self):
+        user = self.request.user
+
+        # Check if the user has viewed the story
+        viewed_subquery = StoryView.objects.filter(
+            viewer=user, story=OuterRef('pk')
+        )
+
+        return Story.objects.filter(
+            expires_at__gte=timezone.now(), is_active=True
+        ).annotate(
+            has_viewed=Exists(viewed_subquery)
+        ).order_by('has_viewed', '-created_at')  # Unviewed stories come first, then newest
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

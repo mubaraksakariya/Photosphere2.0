@@ -8,6 +8,13 @@ from .models import Profile, Follow, UserSettings, UserBlock
 from django.contrib.auth.password_validation import validate_password
 
 
+class UserSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserSettings
+        fields = '__all__'
+        read_only_fields = ['user']
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
     is_followed = serializers.SerializerMethodField()
     is_own_profile = serializers.SerializerMethodField()
@@ -55,11 +62,12 @@ class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField()
     profile = UserProfileSerializer(read_only=True)
     is_blocked_by_current_user = serializers.SerializerMethodField()
+    settings = UserSettingsSerializer(read_only=True)
 
     class Meta:
         model = User
         fields = ['id', 'email', 'username',
-                  'password', 'profile', 'date_joined', 'is_blocked_by_current_user', 'auth_provider']
+                  'password', 'profile', 'date_joined', 'is_blocked_by_current_user', 'auth_provider', 'settings']
 
     def validate_password(self, value):
         """
@@ -95,13 +103,6 @@ class UserSerializer(serializers.ModelSerializer):
             return None  # Return None if there's no valid request or user
 
         return UserBlock.objects.filter(blocker=request.user, blocked=obj).exists()
-
-
-class UserSettingsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserSettings
-        fields = '__all__'
-        read_only_fields = ['user']
 
 
 class UserBlockSerializer(serializers.ModelSerializer):

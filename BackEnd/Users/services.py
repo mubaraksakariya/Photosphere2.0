@@ -78,7 +78,7 @@ def validate_otp(user, code):
 def get_user(identifier):
     """Fetch user by email or username or raise ValidationError."""
     try:
-        return User.objects.get(Q(email=identifier) | Q(username=identifier))
+        return User.objects.get(Q(email=identifier) | Q(username=identifier) | Q(id=identifier))
     except User.DoesNotExist:
         raise ValidationError(
             "User with this email or username does not exist.")

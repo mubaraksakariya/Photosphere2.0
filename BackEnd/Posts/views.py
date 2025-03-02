@@ -3,6 +3,8 @@ from rest_framework import status, viewsets
 
 from Notification.services import create_notification
 from Posts.pagination import CustomPagination
+from Users.models import Follow
+from Users.services import get_user
 from .models import Like, Post, Comment
 from .serializers import CommentSerializer, LikeSerializer, PostSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -30,10 +32,40 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user_id = self.request.query_params.get('user_id')
+        user = self.request.user  # Requesting user
         if user_id:
-            # Assuming Post has a foreign key to User
-            return Post.objects.filter(user_id=user_id)
-        return super().get_queryset()
+            target_user = get_user(identifier=user_id)
+            # Check if the target user is public or if the requesting user follows them
+            is_following = Follow.objects.filter(
+                follower=user, followed=target_user).exists()
+            # Fetch directly from UserSettings
+            is_public = target_user.settings.is_profile_public
+
+            if is_public or is_following or user == target_user:
+                return Post.objects.filter(user=target_user)
+
+            # If private and not following, return empty queryset
+            return Post.objects.none()
+
+        if not user:
+            # Fetch only public profile posts for unauthenticated users
+            return Post.objects.filter(user__settings__is_profile_public=True)
+
+        # Step 1: Get followed users
+        followed_users = Follow.objects.filter(
+            follower=user).values_list('followed', flat=True)
+
+        # Step 2: Fetch posts from followed users (including private profiles)
+        followed_posts = Post.objects.filter(user_id__in=followed_users)
+
+        # Step 3: Fetch posts from public profiles (checking UserSettings)
+        public_posts = Post.objects.filter(
+            user__settings__is_profile_public=True)
+
+        # Step 4: Combine both queries (avoiding duplicates)
+        queryset = followed_posts | public_posts
+
+        return queryset.distinct().order_by('-created_at')
 
     def create(self, request, *args, **kwargs):
         hashtags_data = request.data.getlist('hashtags')

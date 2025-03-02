@@ -135,3 +135,23 @@ class Follow(models.Model):
 
     def __str__(self):
         return f"{self.follower.username} follows {self.followed.username}"
+
+
+class FollowRequest(models.Model):
+    requester = models.ForeignKey(
+        User, related_name="sent_follow_requests", on_delete=models.CASCADE)
+    target = models.ForeignKey(
+        User, related_name="received_follow_requests", on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=10,
+        choices=[("pending", "Pending"), ("accepted", "Accepted"),
+                 ("rejected", "Rejected")],
+        default="pending",
+    )
+
+    class Meta:
+        unique_together = ('requester', 'target')  # Prevent duplicate requests
+
+    def __str__(self):
+        return f"{self.requester.username} requested to follow {self.target.username}"

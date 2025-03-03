@@ -134,9 +134,27 @@ def get_or_create_google_user(email, first_name, last_name, birthdate):
 
 
 def get_suggested_users(user):
-    latest_users = User.objects.filter(
-        is_superuser=False, is_staff=False).exclude(email=user.email).order_by('-date_joined')[:5]
-    return latest_users
+    # Get the users the current user is following
+    following_ids = user.following.values_list('followed__id', flat=True)
+
+    # Get the users blocked by the current user
+    blocked_ids = user.blocking.values_list('blocked__id', flat=True)
+
+    # Get the users who blocked the current user
+    blocked_by_ids = user.blocked_by.values_list('blocker__id', flat=True)
+
+    # Filter users excluding followed, blocked, and blocked-by users, and self
+    suggested_users = User.objects.filter(
+        is_superuser=False,
+        is_staff=False
+    ).exclude(
+        Q(id=user.id) |  # Exclude self
+        Q(id__in=following_ids) |  # Exclude followed users
+        Q(id__in=blocked_ids) |  # Exclude users blocked by the current user
+        Q(id__in=blocked_by_ids)  # Exclude users who blocked the current user
+    ).order_by('-date_joined')[:5]
+
+    return suggested_users
 
 
 def follow_user(request, follower, followed):

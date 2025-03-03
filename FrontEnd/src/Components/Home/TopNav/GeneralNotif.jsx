@@ -12,10 +12,10 @@ function GeneralNotif({ notification }) {
 			className={`cursor-pointer p-3 rounded-lg shadow-light dark:shadow-dark border-l-4 transition 
 				${
 					isUnread
-						? 'bg-lightMode-highlight dark:bg-darkMode-highlight font-semibold border-lightMode-accent dark:border-darkMode-accent'
-						: 'bg-lightMode-background dark:bg-darkMode-background text-lightMode-textSecondary dark:text-darkMode-textSecondary opacity-80 border-transparent hover:border-lightMode-accent dark:hover:border-darkMode-accent'
+						? 'bg-lightMode-highlight dark:bg-[#5C4B42] font-semibold border-lightMode-accent dark:border-darkMode-accent'
+						: 'bg-lightMode-background dark:bg-darkMode-background text-lightMode-textSecondary dark:text-darkMode-textSecondary opacity-80 border-transparent'
 				}
-				hover:bg-lightMode-accent dark:hover:bg-darkMode-accent hover:text-lightMode-background dark:hover:text-darkMode-background`}>
+				hover:bg-lightMode-highlight dark:hover:bg-[#5C4B42] hover:text-lightMode-background dark:hover:text-darkMode-background`}>
 			{/* Notification Content */}
 			<p className='text-sm text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
 				{notification.message}

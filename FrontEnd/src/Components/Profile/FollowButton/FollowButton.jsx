@@ -13,7 +13,6 @@ function FollowButton({ user }) {
 	useEffect(() => {
 		if (data?.follow_status) setFollowState(data.follow_status);
 	}, [data]);
-	console.log(followState);
 
 	const handleToggleFollow = () => {
 		toggleFollow(user.id, {

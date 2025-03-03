@@ -34,6 +34,7 @@ from Users.CustomTokenObtain import CustomTokenObtainPairView
 from Users.views.profile_views import ProfileViewSet
 from Users.views.user_account_views import PasswordResetConfirmView, PasswordResetRequestView
 from Users.views.user_block_view import UserBlockViewSet
+from Users.views.user_follow_views import FollowRequestViewSet
 from Users.views.user_settings_view import UserSettingsViewSet
 from Users.views.user_views import GoogleSignInView, ResendOTPView, SignupView, UserViewSet, VerifyOTPView
 
@@ -50,7 +51,9 @@ router.register(r'api/notifications', NotificationViewSet,
 router.register(r'api/profiles', ProfileViewSet, basename='profile')
 router.register(r'api/user-settings', UserSettingsViewSet,
                 basename='user-settings')
-router.register("api/user-blocks", UserBlockViewSet, basename="userblock")
+router.register('api/user-blocks', UserBlockViewSet, basename="userblock")
+router.register(r'api/follow-requests', FollowRequestViewSet,
+                basename='follow-requests')
 
 
 urlpatterns = [

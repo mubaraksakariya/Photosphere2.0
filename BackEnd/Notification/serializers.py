@@ -51,6 +51,7 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     def get_serializer_for_model(self, model_class):
         """Dynamically fetches the serializer for a given model."""
+        # print(model_class)
         try:
             app_label = model_class._meta.app_label
             serializer_module_path = f"{app_label}.serializers"

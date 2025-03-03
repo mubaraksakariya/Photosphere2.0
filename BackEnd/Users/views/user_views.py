@@ -268,7 +268,7 @@ class UserViewSet(ModelViewSet):
 
         try:
             follow_data = follow_user(
-                follower=current_user, followed=user_to_follow)
+                request, follower=current_user, followed=user_to_follow)
         except ValidationError as e:
             return Response({'error': e.detail}, status=status.HTTP_400_BAD_REQUEST)
         except IntegrityError:

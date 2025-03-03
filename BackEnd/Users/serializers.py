@@ -144,7 +144,19 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 class FollowSerializer(serializers.ModelSerializer):
+    follower = UserSerializer(read_only=True)
+    followed = UserSerializer(read_only=True)
+
     class Meta:
         model = Follow
+        fields = '__all__'
+        read_only_fields = ['user']
+
+
+class FollowRequestSerializer(serializers.ModelSerializer):
+    requester = UserSerializer(read_only=True)
+
+    class Meta:
+        model = FollowRequest
         fields = '__all__'
         read_only_fields = ['user']

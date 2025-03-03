@@ -139,7 +139,7 @@ def get_suggested_users(user):
     return latest_users
 
 
-def follow_user(follower, followed):
+def follow_user(request, follower, followed):
     if follower == followed:
         raise ValidationError("A user cannot follow themselves.")
 
@@ -170,7 +170,8 @@ def follow_user(follower, followed):
             recipient=followed,
             action_object=follow_request,
             notif_type="follow_request",
-            custom_message=f"{follower.username} sent you a follow request."
+            custom_message=f"{follower.username} sent you a follow request.",
+            request=request
         )
 
         return {"status": "requested", "message": "Follow request sent"}
@@ -193,7 +194,8 @@ def follow_user(follower, followed):
         recipient=followed,
         action_object=follow,
         notif_type="followed",
-        custom_message=f"{follower.username} started following you."
+        custom_message=f"{follower.username} started following you.",
+        request=request
     )
 
     return {"status": "followed", "message": "Followed successfully", "follow": FollowSerializer(follow).data}

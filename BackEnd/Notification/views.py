@@ -23,10 +23,26 @@ class NotificationViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def latest(self, request):
-        """Fetch latest unread notifications (limit: 10)."""
-        queryset = self.get_queryset().filter(is_read=False)[:10]
-        serializer = self.get_serializer(
-            queryset, many=True)
+        """Fetch latest 10 notifications, prioritizing unread."""
+        queryset = self.get_queryset()
+
+        # Prioritize unread notifications
+        unread_queryset = queryset.filter(is_read=False)[:10]
+
+        # If we already have 10 unread, return them
+        if unread_queryset.count() >= 10:
+            serializer = self.get_serializer(unread_queryset, many=True)
+            return Response(serializer.data)
+
+        # Get additional latest notifications excluding already fetched unread ones
+        latest_queryset = queryset.exclude(is_read=False).order_by(
+            '-created_at')[:10 - unread_queryset.count()]
+
+        # Use union() to ensure uniqueness at DB level
+        final_queryset = unread_queryset.union(
+            latest_queryset).order_by('-created_at')
+
+        serializer = self.get_serializer(final_queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=False, methods=['POST'], url_path='mark-as-read')

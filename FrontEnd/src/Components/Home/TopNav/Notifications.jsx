@@ -1,19 +1,38 @@
 import React, { useEffect, useRef } from 'react';
 import { useNotifications } from '../../../Contexts/NotificationContext';
+import FollowRequestNotif from './FollowRequestNotif';
+import GeneralNotif from './GeneralNotif';
 
 function Notifications() {
-	const { notifications, markAsRead, isLoading, error } = useNotifications();
-
+	const { notifications, markAsRead, isLoading, error, unreadCount } =
+		useNotifications();
 	useEffect(() => {
 		// Mark notifications as read when unmounting
 		return () => {
-			console.log('Marked as read on unmount');
-			markAsRead();
+			if (unreadCount > 0) {
+				console.log('Marked as read on unmount');
+				markAsRead();
+			}
 		};
 	}, []);
-
+	const getNotificationType = (notification) => {
+		if (notification.action_object_type === 'followrequest')
+			return (
+				<FollowRequestNotif
+					notification={notification}
+					key={notification.id}
+				/>
+			);
+		else
+			return (
+				<GeneralNotif
+					notification={notification}
+					key={notification.id}
+				/>
+			);
+	};
 	const manageClick = (notification) => {
-		console.log(notification);
+		console.log(notifications);
 	};
 
 	return (
@@ -39,22 +58,11 @@ function Notifications() {
 
 			{/* Notifications List */}
 			{!isLoading && !error && (
-				<div className='max-h-60 overflow-y-auto'>
+				<div className='max-h-60 overflow-y-auto space-y-1'>
 					{notifications.length > 0 ? (
-						notifications.map((notification) => (
-							<div
-								onClick={() => manageClick(notification)}
-								key={notification.id}
-								className={`flex justify-between items-center px-4 py-2 border-b border-lightMode-shadow dark:border-darkMode-shadow cursor-pointer transition ${
-									notification.is_read
-										? 'bg-lightMode-background dark:bg-darkMode-background text-lightMode-textSecondary dark:text-darkMode-textSecondary'
-										: 'bg-lightMode-highlight dark:bg-darkMode-highlight text-lightMode-textPrimary dark:text-darkMode-textPrimary font-semibold border-l-4 border-lightMode-accent dark:border-darkMode-accent hover:bg-lightMode-accent dark:hover:bg-darkMode-accent hover:text-white dark:hover:text-darkMode-background'
-								}`}>
-								<span className='w-full'>
-									{notification.message}
-								</span>
-							</div>
-						))
+						notifications.map((notification) =>
+							getNotificationType(notification)
+						)
 					) : (
 						<div className='p-4 text-center text-lightMode-textSecondary dark:text-darkMode-textSecondary'>
 							No notifications

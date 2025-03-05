@@ -2,7 +2,7 @@ import { formatDateIsoToLocal } from '../../../Utilities/formatDate';
 
 const RecentComments = ({ comments }) => {
 	// console.log(comments);
-
+	if (!comments) return null;
 	return (
 		<div className='p-4'>
 			<h3 className='font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-3'>

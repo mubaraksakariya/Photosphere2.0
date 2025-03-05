@@ -20,7 +20,7 @@ const PostCard = ({ post }) => {
 	return (
 		<div className='bg-lightMode-background dark:bg-darkMode-background border border-lightMode-textPrimary dark:border-darkMode-textPrimary rounded-lg shadow-light dark:shadow-dark overflow-hidden max-w-4xl mx-auto transition-colors'>
 			<UserDetails user={post.user} />
-			<MediaContent media={post.media} mediaType={post.media_type} />
+			<MediaContent post={post} />
 			<div className='p-4'>
 				<PostDescription description={post.description} />
 				<Hashtags hashtags={post.hashtags} />

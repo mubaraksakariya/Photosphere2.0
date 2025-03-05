@@ -48,6 +48,9 @@ export const {
 	openViewStoryModal,
 	closeViewStoryModal,
 	setStory,
+	openViewPostModal,
+	closeViewPostModal,
+	setPost,
 } = modalSlice.actions;
 
 export default modalSlice.reducer;

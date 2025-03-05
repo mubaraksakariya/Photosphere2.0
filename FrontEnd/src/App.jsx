@@ -19,6 +19,7 @@ import { AlertProvider } from './Contexts/AlertContext';
 import Settings from './Pages/Settings/Settings';
 import PasswordReset from './Pages/PasswordReset/PasswordReset';
 import PasswordRecovery from './Pages/PasswordRecovery/PasswordRecovery';
+import PostPage from './Pages/Post/PostPage';
 
 function PublicRoute({ children }) {
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -148,6 +149,14 @@ function User() {
 					<PrivateRoute>
 						<Settings />
 					</PrivateRoute>
+				}
+			/>
+			<Route
+				path='/post/:postId'
+				element={
+					// <PrivateRoute>
+					<PostPage />
+					// </PrivateRoute>
 				}
 			/>
 		</Routes>

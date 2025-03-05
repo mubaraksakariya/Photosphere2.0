@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework import status, viewsets
 
 from Notification.services import create_notification
-from Posts.pagination import CustomPagination
+from Posts.pagination import CustomCommentPagination, CustomPagination
 from Users.models import Follow
 from Users.services import get_user
 from .models import Like, Post, Comment
@@ -128,7 +128,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]
-    pagination_class = CustomPagination
+    pagination_class = CustomCommentPagination
 
     @action(detail=False, methods=['post'], url_path='write')
     def write_comment(self, request):
@@ -165,3 +165,22 @@ class CommentViewSet(viewsets.ModelViewSet):
 
         serialized_comments = self.get_serializer(comments, many=True).data
         return Response({'comments': serialized_comments}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['get'], url_path='paginated-comments')
+    def paginated_comments(self, request, pk=None):
+        """
+        Returns paginated comments of a specific post.
+        """
+        try:
+            post = Post.objects.get(id=pk)
+        except Post.DoesNotExist:
+            return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        comments = Comment.objects.filter(
+            post=post).order_by('-created_at')  # Newest first
+        paginator = self.pagination_class()
+        paginated_comments = paginator.paginate_queryset(comments, request)
+
+        serialized_comments = self.get_serializer(
+            paginated_comments, many=True)
+        return paginator.get_paginated_response(serialized_comments.data)

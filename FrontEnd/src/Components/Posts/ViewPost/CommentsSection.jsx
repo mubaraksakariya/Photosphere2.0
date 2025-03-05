@@ -66,7 +66,7 @@ function CommentsSection({ post }) {
 				</div>
 			</div>
 			{/* Comment Input */}
-			<CommentInput />
+			<CommentInput post={post} />
 		</>
 	);
 }

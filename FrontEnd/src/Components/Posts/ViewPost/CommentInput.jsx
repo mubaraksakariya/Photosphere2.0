@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
+import { usePostComment } from '../Utils/usePostComment';
 
-function CommentInput() {
+function CommentInput({ post }) {
 	const [newComment, setNewComment] = useState('');
-	const handlePostComment = () => {
+	const { postComment, isPending, error } = usePostComment();
+
+	const handlePostComment = (e) => {
+		e.preventDefault();
 		if (newComment.trim() === '') return;
-		console.log('Posting comment:', newComment);
-		setNewComment('');
+		postComment(post, newComment, () => setNewComment(''));
 	};
 
 	return (
-		<div className='mt-2 flex items-center p-3 bg-lightMode-background dark:bg-darkMode-background rounded-lg'>
+		<form
+			className='mt-2 flex items-center p-3 bg-lightMode-background dark:bg-darkMode-background rounded-lg'
+			onSubmit={handlePostComment}>
 			<input
 				type='text'
 				className='flex-1 outline-none bg-transparent text-sm text-lightMode-textPrimary dark:text-darkMode-textPrimary placeholder-lightMode-textSecondary dark:placeholder-darkMode-textSecondary'
@@ -18,7 +23,7 @@ function CommentInput() {
 				onChange={(e) => setNewComment(e.target.value)}
 			/>
 			<button
-				onClick={handlePostComment}
+				type='submit'
 				className={`text-sm font-semibold transition ${
 					newComment.trim() === ''
 						? 'text-gray-400 cursor-not-allowed'
@@ -27,7 +32,7 @@ function CommentInput() {
 				disabled={newComment.trim() === ''}>
 				Post
 			</button>
-		</div>
+		</form>
 	);
 }
 

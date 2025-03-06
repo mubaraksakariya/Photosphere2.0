@@ -7,7 +7,7 @@ const ActionButtons = ({ post }) => {
 		<div className='flex items-center gap-6 p-4 ps-7 border-t border-lightMode-textPrimary dark:border-darkMode-textPrimary'>
 			<Like post={post} />
 			<CommentBtn post={post} />
-			<ShareBtn />
+			<ShareBtn post={post} />
 		</div>
 	);
 };

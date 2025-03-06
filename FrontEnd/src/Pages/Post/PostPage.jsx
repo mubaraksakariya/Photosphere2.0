@@ -7,9 +7,11 @@ import usePost from '../../CustomHooks/usePost';
 import PostOwner from '../../Components/Posts/ViewPost/PostOwner';
 import { X } from 'lucide-react';
 import LoadingRing from '../../Components/Loading/LoadingRing';
+import Hashtags from '../../Components/Posts/ViewPost/Hashtags';
 
 function PostPage() {
 	const { postId } = useParams();
+
 	const navigate = useNavigate();
 	const { data: post, isLoading, error } = usePost(postId);
 
@@ -34,13 +36,8 @@ function PostPage() {
 		);
 
 	// Extract post details
-	const { user, description, is_liked: isLiked } = post;
-
-	// Handlers
+	const { user, description, hashtags } = post;
 	const handleClose = () => navigate(-1);
-	const handleLike = () => console.log('Liked!');
-	const handleComment = () => console.log('Commenting...');
-	const handleShare = () => console.log('Sharing...');
 
 	return (
 		<div className='h-screen w-screen bg-lightMode-background dark:bg-darkMode-background flex items-center justify-center'>
@@ -66,17 +63,14 @@ function PostPage() {
 					<PostOwner user={user} />
 
 					{/* Description */}
-					<p className='text-sm text-lightMode-textPrimary dark:text-darkMode-textPrimary my-3 leading-relaxed'>
-						{description}
-					</p>
-
+					<div className='my-3'>
+						<p className='text-sm text-lightMode-textPrimary dark:text-darkMode-textPrimary  leading-relaxed'>
+							{description}
+						</p>
+						<Hashtags hashtags={hashtags} />
+					</div>
 					{/* Post Actions */}
-					<PostActions
-						onLike={handleLike}
-						onComment={handleComment}
-						onShare={handleShare}
-						isLiked={isLiked}
-					/>
+					<PostActions post={post} />
 
 					{/* Comments Section */}
 

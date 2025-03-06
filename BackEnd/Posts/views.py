@@ -33,6 +33,7 @@ class PostViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user_id = self.request.query_params.get('user_id')
         user = self.request.user  # Requesting user
+        # get posts of specific user, for profile page
         if user_id:
             target_user = get_user(identifier=user_id)
             # Check if the target user is public or if the requesting user follows them
@@ -61,9 +62,10 @@ class PostViewSet(viewsets.ModelViewSet):
         # Step 3: Fetch posts from public profiles (checking UserSettings)
         public_posts = Post.objects.filter(
             user__settings__is_profile_public=True)
-
-        # Step 4: Combine both queries (avoiding duplicates)
-        queryset = followed_posts | public_posts
+        # step 4: Fetch user's own posts
+        self_posts = Post.objects.filter(user=user)
+        # Step 5: Combine both queries (avoiding duplicates)
+        queryset = followed_posts | public_posts | self_posts
 
         return queryset.distinct().order_by('-created_at')
 
@@ -121,7 +123,7 @@ class LikeViewSet(viewsets.ModelViewSet):
 
         else:
             like.delete()
-        return Response({'is_liked': created}, status=status.HTTP_200_OK)
+        return Response({'is_liked': created, 'post': PostSerializer(post, context={'request': request}).data}, status=status.HTTP_200_OK)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -159,7 +161,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         try:
             post = Post.objects.get(id=pk)
             comments = Comment.objects.filter(
-                post=post).order_by('created_at')[:3]
+                post=post).order_by('-created_at')[:3]
         except Post.DoesNotExist:
             return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
 

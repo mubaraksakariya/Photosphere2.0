@@ -1,7 +1,8 @@
 from rest_framework import serializers
 
+from Posts.serializers import PostSerializer
 from Users.serializers import UserSerializer
-from .models import ChatRoom, ChatRoomMember, FavoriteChat, Message
+from .models import ChatRoom, ChatRoomMember, FavoriteChat, Message, MessageContent
 
 
 class ChatRoomSerializer(serializers.ModelSerializer):
@@ -44,12 +45,21 @@ class RecentChatSerializer(serializers.ModelSerializer):
         fields = ['id', 'chat_room', 'sender', 'content', 'timestamp']
 
 
+class MessageContentSerializer(serializers.ModelSerializer):
+    shared_post = PostSerializer(read_only=True, required=False)
+
+    class Meta:
+        model = MessageContent
+        fields = ['id', 'text', 'image', 'shared_post', 'file']
+
+
 class MessageSerializer(serializers.ModelSerializer):
     sender = UserSerializer()
+    content = MessageContentSerializer()
 
     class Meta:
         model = Message
-        fields = ['id', 'chat_room', 'sender', 'content', 'timestamp']
+        fields = ['id', 'chat_room', 'sender', 'content', 'timestamp', 'type']
 
 
 class FavoriteChatSerializer(serializers.ModelSerializer):

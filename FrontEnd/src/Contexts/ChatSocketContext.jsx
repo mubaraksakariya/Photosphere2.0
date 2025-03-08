@@ -56,24 +56,29 @@ export const ChatSocketProvider = ({ children }) => {
 
 	// Handle incoming messages from WebSocket
 	const handleIncomingMessage = (event) => {
-		const data = JSON.parse(event.data);
-		const newMessage = data.message;
+		const { message: newMessage } = JSON.parse(event.data);
 
-		if (
-			newMessage.type === 'text' ||
-			newMessage.type === 'acknowledgement'
-		) {
-			setNewMessages(newMessage);
-		}
-		//status of a single user, online/offline
-		else if (newMessage.type === 'userStatus') {
-			manageUserOnlineStatus(newMessage);
-		}
-		// status check for all recent chats on chat page load
-		else if (newMessage.type === 'isOnline') {
-			setInitialUserStatus(newMessage.users);
-		} else if (newMessage.type === 'typing') {
-			setIsTypingStatus(newMessage);
+		switch (newMessage.type) {
+			case 'text':
+			case 'acknowledgement':
+			case 'shared-post':
+				setNewMessages(newMessage);
+				break;
+
+			case 'userStatus': // Status of a single user (online/offline)
+				manageUserOnlineStatus(newMessage);
+				break;
+
+			case 'isOnline': // Status check for all recent chats on page load
+				setInitialUserStatus(newMessage.users);
+				break;
+
+			case 'typing':
+				setIsTypingStatus(newMessage);
+				break;
+
+			default:
+				console.warn('Unhandled message type:', newMessage.type);
 		}
 	};
 
@@ -81,7 +86,7 @@ export const ChatSocketProvider = ({ children }) => {
 	const sendChatMessage = useCallback(
 		(message) => {
 			// Validate currentChat
-			const chat_room_id = message.chat_room_id || currentChat.id;
+			const chat_room_id = message.chat_room_id || currentChat?.id;
 
 			if (!chat_room_id) {
 				console.error('Chat room ID is missing or invalid.');

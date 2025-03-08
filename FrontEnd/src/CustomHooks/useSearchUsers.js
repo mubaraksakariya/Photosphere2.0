@@ -35,7 +35,7 @@ const useInfiniteSearchUsers = (searchQuery) => {
 			}
 			return undefined;
 		},
-		enabled: !!searchQuery, // Fetch only when searchQuery is provided
+		// enabled: !!searchQuery,
 	});
 };
 

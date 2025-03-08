@@ -20,9 +20,7 @@ class PostViewSet(viewsets.ModelViewSet):
     # ordering = ['-created_at']
 
     def get_permissions(self):
-        """
-        Override this method to set permissions dynamically based on the action.
-        """
+
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             self.permission_classes = [IsAuthenticated]
         else:

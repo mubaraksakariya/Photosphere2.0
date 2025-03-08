@@ -1,9 +1,16 @@
 import { Share } from 'lucide-react';
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { openSharePostModal } from '../../../../Store/Slices/ModalSlice';
 
 function ShareBtn({ post }) {
 	const { share_count: shareCount } = post;
-	const handleShare = () => console.log('Sharing...');
+	const dispatch = useDispatch();
+
+	const handleShare = () => {
+		console.log('Sharing...');
+		dispatch(openSharePostModal({ post }));
+	};
 	return (
 		<span
 			onClick={handleShare}

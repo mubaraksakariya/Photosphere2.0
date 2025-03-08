@@ -34,7 +34,9 @@ function PrivateRoute({ children }) {
 		<SettingsProvider>
 			<NotificationProvider>
 				<ChatProvider>
-					<ChatSocketProvider>{children}</ChatSocketProvider>
+					<ChatSocketProvider>
+						<ModalProvider>{children}</ModalProvider>
+					</ChatSocketProvider>
 				</ChatProvider>
 			</NotificationProvider>
 		</SettingsProvider>
@@ -47,20 +49,18 @@ function App() {
 		<AlertProvider>
 			<ApiProvider>
 				<QueryClientProvider client={queryClient}>
-					<ModalProvider>
-						<Routes>
-							<Route path='/*' element={<User />} />
-							<Route exact path='/admin/*' element={<Admin />} />
-							<Route
-								path='/password-reset-request'
-								element={<PasswordRecovery />}
-							/>
-							<Route
-								path='/password-reset'
-								element={<PasswordReset />}
-							/>
-						</Routes>
-					</ModalProvider>
+					<Routes>
+						<Route path='/*' element={<User />} />
+						<Route exact path='/admin/*' element={<Admin />} />
+						<Route
+							path='/password-reset-request'
+							element={<PasswordRecovery />}
+						/>
+						<Route
+							path='/password-reset'
+							element={<PasswordReset />}
+						/>
+					</Routes>
 				</QueryClientProvider>
 			</ApiProvider>
 		</AlertProvider>

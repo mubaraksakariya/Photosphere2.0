@@ -1,13 +1,17 @@
 import React from 'react';
+import { useChat } from '../../Contexts/ChatContext';
+import TextBubble from './ChatBubbles/TextBubble';
+import SharedPostBubble from './ChatBubbles/SharedPost/SharedPostBubble';
 
-function MessageBubble({ text, align }) {
-	return (
-		<div className={`flex ${align}`}>
-			<div className='bg-lightMode-highlight dark:bg-darkMode-highlight text-lightMode-textPrimary dark:text-darkMode-textPrimary p-3 rounded-lg max-w-sm shadow-light dark:shadow-dark'>
-				{text}
-			</div>
-		</div>
-	);
+function MessageBubble({ message }) {
+	const { type } = message;
+
+	if (type === 'text') {
+		return <TextBubble message={message} />;
+	}
+	if (type === 'shared-post') {
+		return <SharedPostBubble message={message} />;
+	}
 }
 
 export default MessageBubble;

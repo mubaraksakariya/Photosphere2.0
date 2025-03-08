@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from Users.models import Follow, FollowRequest, User
+from Users.models import Follow, FollowRequest, User, UserBlock
 from Users.services import follow_user, get_all_followers, get_all_followings, get_or_create_google_user, get_suggested_users, get_user, send_otp_email, validate_otp, verify_google_id_token
 from Users.serializers import ChangePasswordSerializer, UserSerializer
 from rest_framework.exceptions import ValidationError
@@ -223,23 +223,33 @@ class UserViewSet(ModelViewSet):
 
     def get_queryset(self):
         """
-        Filters the queryset by excluding the current user and admin users.
-        Optionally filters by 'search' query parameter.
+        - Excludes:
+            1. The current user
+            2. Admin users (is_staff or is_superuser)
+            3. Users who are blocked by or have blocked the current user
+        - Includes all other users.
         """
-        queryset = super().get_queryset()
         current_user = self.request.user
 
-        # Exclude the current user and admin users
-        queryset = queryset.exclude(Q(id=current_user.id) | Q(
-            is_staff=True) | Q(is_superuser=True))
+        # Get IDs of blocked users (both ways)
+        blocked_users = UserBlock.objects.filter(
+            Q(blocker=current_user) | Q(blocked=current_user)
+        ).values_list('id', flat=True)
+
+        # Base Query: Exclude self, admins, and blocked users
+        queryset = super().get_queryset().exclude(
+            Q(id=current_user.id) | Q(is_staff=True) | Q(
+                is_superuser=True) | Q(id__in=blocked_users)
+        )
 
         # Apply search filter if provided
-        search_query = self.request.query_params.get('search', None)
+        search_query = self.request.query_params.get("search")
         if search_query:
             queryset = queryset.filter(
-                Q(username__icontains=search_query) |
-                Q(email__icontains=search_query)
+                Q(username__icontains=search_query) | Q(
+                    email__icontains=search_query)
             )
+
         return queryset
 
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated], url_path='suggested_users')

@@ -1,5 +1,6 @@
 from Chat.serializers import MessageSerializer
-from .models import ChatRoom, ChatRoomMember
+from Posts.models import Post
+from .models import ChatRoom, ChatRoomMember, MessageContent
 from Chat.models import ChatRoom, ChatRoomMember
 from django.db import transaction
 from django.contrib.auth import get_user_model
@@ -54,53 +55,47 @@ def get_private_chat_room(current_user, other_user):
 
 
 @sync_to_async
-def save_message(current_user, chat_room_id, content):
-    """
-    Saves a message in a chat room and creates MessageStatus entries for all members
-    of the chat room (excluding the sender).
-
-    Args:
-        current_user (User): The currently authenticated user (sender).
-        chat_room_id (int): The ID of the chat room.
-        content (str): The content of the message.
-
-    Returns:
-        dict: The serialized message object.
-
-    Raises:
-        ValueError: If the chat room does not exist or any recipients are invalid.
-        Exception: For any other errors.
-    """
+def save_message(current_user, chat_room_id, content, type='text'):
     try:
-        # Fetch the chat room
-        chat_room = ChatRoom.objects.get(id=chat_room_id)
+        with transaction.atomic():
+            chat_room = ChatRoom.objects.get(id=chat_room_id)
 
-        # Create and save the message
-        message = Message.objects.create(
-            chat_room=chat_room,
-            sender=current_user,
-            content=content
-        )
+            if type == 'text':
+                content_obj = MessageContent.objects.create(text=content)
+            elif type == 'shared-post':
+                post = Post.objects.get(id=content)
+                content_obj = MessageContent.objects.create(shared_post=post)
+            else:
+                raise ValueError("Invalid message type")
 
-        # Get all recipients (excluding the sender)
-        members = get_room_member(
-            chat_room=chat_room, current_user=current_user)
-
-        if not members:
-            raise ValueError("No valid recipients found for the chat room.")
-
-        # Create MessageStatus entries for all recipients
-        for member in members:
-            MessageStatus.objects.create(
-                user=member.user,  # The recipient user
-                message=message,
-                is_read=False
+            # Create and save the message
+            message = Message.objects.create(
+                chat_room=chat_room,
+                sender=current_user,
+                content=content_obj,
+                type=type
             )
 
-        return MessageSerializer(message).data
+            # Get all recipients (excluding the sender)
+            members = get_room_member(
+                chat_room=chat_room, current_user=current_user)
+
+            if not members.exists():
+                raise ValueError(
+                    "No valid recipients found for the chat room.")
+
+            # Create MessageStatus entries for all recipients
+            MessageStatus.objects.bulk_create([
+                MessageStatus(user=member.user, message=message, is_read=False)
+                for member in members
+            ])
+
+            return MessageSerializer(message).data
 
     except ChatRoom.DoesNotExist:
         raise ValueError("Chat room does not exist.")
+    except Post.DoesNotExist:
+        raise ValueError("Shared post does not exist.")
     except Exception as e:
         raise e
 

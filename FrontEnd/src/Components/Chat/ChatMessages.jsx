@@ -15,7 +15,6 @@ function ChatMessages() {
 		data,
 	} = useChat();
 
-	const chatUserEmail = currentChat?.members[0]?.email;
 	const userId = currentChat?.members[0]?.id;
 	const { ref, inView } = useInView();
 	const chatContainerRef = useRef(null);
@@ -78,17 +77,8 @@ function ChatMessages() {
 
 			{/* Render messages */}
 			{data.pages.map((page) =>
-				page.results.map((post) => (
-					<MessageBubble
-						key={post.id}
-						text={post.content}
-						align={
-							post.sender.email === chatUserEmail
-								? 'justify-start'
-								: 'justify-end'
-						}
-						timestamp={post.timestamp}
-					/>
+				page.results.map((message) => (
+					<MessageBubble key={message.id} message={message} />
 				))
 			)}
 

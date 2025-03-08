@@ -50,40 +50,39 @@ function FollowRequestNotif({ notification }) {
 
 	return (
 		<div
-			className='flex items-center cursor-pointer p-3 bg-lightMode-background dark:bg-darkMode-background rounded-lg shadow-sm hover:bg-lightMode-highlight dark:hover:bg-darkMode-highlight transition'
+			className={`flex items-center cursor-pointer p-3 rounded-lg shadow-sm transition border-l-4
+				${
+					!is_read
+						? 'bg-lightMode-highlight dark:bg-[#5C4B42] font-semibold border-lightMode-accent dark:border-darkMode-accent'
+						: 'bg-lightMode-background dark:bg-darkMode-background text-lightMode-textSecondary dark:text-darkMode-textSecondary opacity-80 border-transparent'
+				}
+				hover:bg-lightMode-highlight dark:hover:bg-[#5C4B42]`}
 			onClick={manageOpenProfile}>
-			{/* Profile Image */}
-			<img
-				src={profile?.profile_image || '/default-profile.png'}
-				alt='Profile'
-				className='w-10 h-10 rounded-full border-2 border-lightMode-accent dark:border-darkMode-accent'
-			/>
-
-			<div className='flex-1 ml-3'>
-				{/* Notification Content */}
-				<div className='text-sm'>
-					<p className='font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
-						{profile?.first_name} {profile?.last_name}
-					</p>
-					<p className='text-lightMode-textPrimary dark:text-darkMode-textPrimary text-xs opacity-80'>
-						{message}
-					</p>
-					<p className='text-xs text-lightMode-textPrimary dark:text-darkMode-textPrimary opacity-60'>
-						{new Date(created_at).toLocaleString()}
-					</p>
-				</div>
+			{/* Notification Content */}
+			<div className='flex-1'>
+				<p className='font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
+					{profile?.first_name} {profile?.last_name}
+				</p>
+				<p className='text-lightMode-textPrimary dark:text-darkMode-textPrimary text-xs opacity-80'>
+					{message}
+				</p>
+				<p className='text-xs text-lightMode-textPrimary dark:text-darkMode-textPrimary opacity-60'>
+					{new Date(created_at).toLocaleString()}
+				</p>
 
 				{/* Action Buttons */}
 				{!is_read && !isHandled && (
 					<div className='flex space-x-2 mt-2'>
 						<button
 							onClick={onAccept}
-							className='px-3 py-1 text-xs text-white bg-lightMode-accent dark:bg-darkMode-accent rounded-md font-medium transition hover:opacity-80'>
+							className='px-3 py-1 text-xs text-white bg-lightMode-accent dark:bg-darkMode-accent rounded-md font-medium transition 
+									 hover:bg-[#705A4A] dark:hover:bg-[#927D6C]'>
 							Accept
 						</button>
 						<button
 							onClick={onDecline}
-							className='px-3 py-1 text-xs text-white bg-red-500 dark:bg-red-600 rounded-md font-medium transition hover:opacity-80'>
+							className='px-3 py-1 text-xs text-white bg-red-500 dark:bg-red-600 rounded-md font-medium transition 
+									 hover:bg-red-600 dark:hover:bg-red-700'>
 							Decline
 						</button>
 					</div>

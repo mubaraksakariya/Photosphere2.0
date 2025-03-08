@@ -1,16 +1,28 @@
 import React from 'react';
 
 function GeneralNotif({ notification }) {
+	if (!notification) return null;
+
+	const isUnread = !notification.is_read;
+
 	return (
 		<div
-			onClick={() => manageClick(notification)}
+			onClick={() => console.log(notification)}
 			key={notification.id}
-			className={`flex justify-between items-center px-4 py-2 border-b border-lightMode-shadow dark:border-darkMode-shadow cursor-pointer transition ${
-				notification.is_read
-					? 'bg-lightMode-background dark:bg-darkMode-background text-lightMode-textSecondary dark:text-darkMode-textSecondary'
-					: 'bg-lightMode-highlight dark:bg-darkMode-highlight text-lightMode-textPrimary dark:text-darkMode-textPrimary font-semibold border-l-4 border-lightMode-accent dark:border-darkMode-accent hover:bg-lightMode-accent dark:hover:bg-darkMode-accent hover:text-white dark:hover:text-darkMode-background'
-			}`}>
-			<span className='w-full'>{notification.message}</span>
+			className={`cursor-pointer p-3 rounded-lg shadow-light dark:shadow-dark border-l-4 transition 
+				${
+					isUnread
+						? 'bg-lightMode-highlight dark:bg-[#5C4B42] font-semibold border-lightMode-accent dark:border-darkMode-accent'
+						: 'bg-lightMode-background dark:bg-darkMode-background text-lightMode-textSecondary dark:text-darkMode-textSecondary opacity-80 border-transparent'
+				}
+				hover:bg-lightMode-highlight dark:hover:bg-[#5C4B42] hover:text-lightMode-background dark:hover:text-darkMode-background`}>
+			{/* Notification Content */}
+			<p className='text-sm text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
+				{notification.message}
+			</p>
+			<p className='text-xs text-lightMode-textPrimary dark:text-darkMode-textPrimary opacity-60'>
+				{new Date(notification.created_at).toLocaleString()}
+			</p>
 		</div>
 	);
 }

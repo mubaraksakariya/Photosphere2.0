@@ -33,7 +33,7 @@ function Posts() {
 
 	return (
 		<div className='h-full overflow-y-auto'>
-			{data.pages.map((page) =>
+			{data?.pages.map((page) =>
 				page.results.map((post) => (
 					<PostCard key={post.id} post={post} />
 				))

@@ -111,7 +111,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_is_blocked_by_current_user(self, obj):
         request = self.context.get("request")
-        if not request or not hasattr(request, "user") or request.user.is_anonymous:
+        if not request or not hasattr(request, "user"):
             return None  # Return None if there's no valid request or user
 
         return UserBlock.objects.filter(blocker=request.user, blocked=obj).exists()

@@ -19,6 +19,7 @@ import { AlertProvider } from './Contexts/AlertContext';
 import Settings from './Pages/Settings/Settings';
 import PasswordReset from './Pages/PasswordReset/PasswordReset';
 import PasswordRecovery from './Pages/PasswordRecovery/PasswordRecovery';
+import PostPage from './Pages/Post/PostPage';
 
 function PublicRoute({ children }) {
 	const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -33,7 +34,9 @@ function PrivateRoute({ children }) {
 		<SettingsProvider>
 			<NotificationProvider>
 				<ChatProvider>
-					<ChatSocketProvider>{children}</ChatSocketProvider>
+					<ChatSocketProvider>
+						<ModalProvider>{children}</ModalProvider>
+					</ChatSocketProvider>
 				</ChatProvider>
 			</NotificationProvider>
 		</SettingsProvider>
@@ -46,20 +49,18 @@ function App() {
 		<AlertProvider>
 			<ApiProvider>
 				<QueryClientProvider client={queryClient}>
-					<ModalProvider>
-						<Routes>
-							<Route path='/*' element={<User />} />
-							<Route exact path='/admin/*' element={<Admin />} />
-							<Route
-								path='/password-reset-request'
-								element={<PasswordRecovery />}
-							/>
-							<Route
-								path='/password-reset'
-								element={<PasswordReset />}
-							/>
-						</Routes>
-					</ModalProvider>
+					<Routes>
+						<Route path='/*' element={<User />} />
+						<Route exact path='/admin/*' element={<Admin />} />
+						<Route
+							path='/password-reset-request'
+							element={<PasswordRecovery />}
+						/>
+						<Route
+							path='/password-reset'
+							element={<PasswordReset />}
+						/>
+					</Routes>
 				</QueryClientProvider>
 			</ApiProvider>
 		</AlertProvider>
@@ -148,6 +149,14 @@ function User() {
 					<PrivateRoute>
 						<Settings />
 					</PrivateRoute>
+				}
+			/>
+			<Route
+				path='/post/:postId'
+				element={
+					// <PrivateRoute>
+					<PostPage />
+					// </PrivateRoute>
 				}
 			/>
 		</Routes>

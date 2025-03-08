@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework import status, viewsets
 
 from Notification.services import create_notification
-from Posts.pagination import CustomPagination
+from Posts.pagination import CustomCommentPagination, CustomPagination
 from Users.models import Follow
 from Users.services import get_user
 from .models import Like, Post, Comment
@@ -20,9 +20,7 @@ class PostViewSet(viewsets.ModelViewSet):
     # ordering = ['-created_at']
 
     def get_permissions(self):
-        """
-        Override this method to set permissions dynamically based on the action.
-        """
+
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             self.permission_classes = [IsAuthenticated]
         else:
@@ -33,6 +31,7 @@ class PostViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user_id = self.request.query_params.get('user_id')
         user = self.request.user  # Requesting user
+        # get posts of specific user, for profile page
         if user_id:
             target_user = get_user(identifier=user_id)
             # Check if the target user is public or if the requesting user follows them
@@ -61,9 +60,10 @@ class PostViewSet(viewsets.ModelViewSet):
         # Step 3: Fetch posts from public profiles (checking UserSettings)
         public_posts = Post.objects.filter(
             user__settings__is_profile_public=True)
-
-        # Step 4: Combine both queries (avoiding duplicates)
-        queryset = followed_posts | public_posts
+        # step 4: Fetch user's own posts
+        self_posts = Post.objects.filter(user=user)
+        # Step 5: Combine both queries (avoiding duplicates)
+        queryset = followed_posts | public_posts | self_posts
 
         return queryset.distinct().order_by('-created_at')
 
@@ -121,14 +121,14 @@ class LikeViewSet(viewsets.ModelViewSet):
 
         else:
             like.delete()
-        return Response({'is_liked': created}, status=status.HTTP_200_OK)
+        return Response({'is_liked': created, 'post': PostSerializer(post, context={'request': request}).data}, status=status.HTTP_200_OK)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]
-    pagination_class = CustomPagination
+    pagination_class = CustomCommentPagination
 
     @action(detail=False, methods=['post'], url_path='write')
     def write_comment(self, request):
@@ -159,9 +159,28 @@ class CommentViewSet(viewsets.ModelViewSet):
         try:
             post = Post.objects.get(id=pk)
             comments = Comment.objects.filter(
-                post=post).order_by('created_at')[:3]
+                post=post).order_by('-created_at')[:3]
         except Post.DoesNotExist:
             return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
 
         serialized_comments = self.get_serializer(comments, many=True).data
         return Response({'comments': serialized_comments}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['get'], url_path='paginated-comments')
+    def paginated_comments(self, request, pk=None):
+        """
+        Returns paginated comments of a specific post.
+        """
+        try:
+            post = Post.objects.get(id=pk)
+        except Post.DoesNotExist:
+            return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        comments = Comment.objects.filter(
+            post=post).order_by('-created_at')  # Newest first
+        paginator = self.pagination_class()
+        paginated_comments = paginator.paginate_queryset(comments, request)
+
+        serialized_comments = self.get_serializer(
+            paginated_comments, many=True)
+        return paginator.get_paginated_response(serialized_comments.data)

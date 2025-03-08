@@ -7,7 +7,7 @@ import ActionButtons from '../../Posts/Card/ActionButtons';
 function UserPostCard({ post }) {
 	return (
 		<div className='w-full sm:w-96 bg-lightMode-background dark:bg-darkMode-background border border-lightMode-textPrimary dark:border-darkMode-textPrimary rounded-lg shadow-light dark:shadow-dark overflow-hidden max-w-4xl mx-auto transition-colors'>
-			<MediaContent media={post.media} mediaType={post.media_type} />
+			<MediaContent post={post} />
 			<div>
 				<ActionButtons post={post} />
 			</div>

@@ -39,8 +39,6 @@ export const NotificationProvider = ({ children }) => {
 	const handleWebSocketMessage = useCallback((event) => {
 		try {
 			const newNotification = JSON.parse(event.data);
-			console.log(newNotification);
-
 			setNotifications((prev) => {
 				const updatedNotifications = [newNotification, ...prev];
 				countUnreadMessages(updatedNotifications);

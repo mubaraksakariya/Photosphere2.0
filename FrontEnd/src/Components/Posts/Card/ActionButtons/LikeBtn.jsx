@@ -2,23 +2,11 @@ import React, { useState } from 'react';
 import useToggleLike from '../../../../CustomHooks/useToggleLike';
 
 function Like({ post }) {
-	const [isLiked, setIsLiked] = useState(post?.is_liked);
-	const [likeCount, setLikeCount] = useState(post?.likes_count);
-
+	const { is_liked: isLiked, likes_count: likeCount } = post;
 	const { mutate: toggleLike, isLoading } = useToggleLike();
 
 	const onLike = () => {
-		toggleLike(post.id, {
-			onSuccess: (message) => {
-				setIsLiked(message?.data?.is_liked);
-				message?.data?.is_liked
-					? setLikeCount((old) => old + 1)
-					: setLikeCount((old) => old - 1);
-			},
-			onError: (error) => {
-				console.log('Error liking post:', error);
-			},
-		});
+		toggleLike(post.id);
 	};
 	return (
 		<div className='relative'>

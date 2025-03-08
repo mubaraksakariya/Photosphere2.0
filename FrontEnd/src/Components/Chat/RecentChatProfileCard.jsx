@@ -18,7 +18,17 @@ function RecentChatProfileCard({ chatRoom }) {
 	const manageSelectChat = useCallback(() => {
 		selectChat(chatRoom);
 	}, [selectChat, chatRoom]);
-
+	const getLastMessage = () => {
+		if (unreadMessages[unreadMessages.length - 1].type === 'text') {
+			return unreadMessages[unreadMessages.length - 1].content.text;
+		}
+		if (unreadMessages[unreadMessages.length - 1].type === 'shared-post') {
+			return 'shared a post';
+		}
+		if (unreadMessages[unreadMessages.length - 1].type === 'file') {
+			return 'shared a file';
+		}
+	};
 	return (
 		<div
 			className='relative bg-lightMode-section dark:bg-darkMode-section p-4 rounded-lg shadow-light dark:shadow-dark hover:bg-lightMode-highlight dark:hover:bg-darkMode-highlight flex items-center gap-4 cursor-pointer transition-transform duration-150 ease-in-out transform hover:scale-105'
@@ -42,7 +52,7 @@ function RecentChatProfileCard({ chatRoom }) {
 				{/* Last Message Preview */}
 				{unreadMessages.length > 0 && (
 					<p className='text-sm text-lightMode-textSecondary dark:text-darkMode-textSecondary truncate'>
-						{unreadMessages[unreadMessages.length - 1].content}
+						{getLastMessage()}
 					</p>
 				)}
 			</div>

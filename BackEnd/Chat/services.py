@@ -89,7 +89,6 @@ def save_message(current_user, chat_room_id, content, type='text'):
                 MessageStatus(user=member.user, message=message, is_read=False)
                 for member in members
             ])
-
             return MessageSerializer(message).data
 
     except ChatRoom.DoesNotExist:

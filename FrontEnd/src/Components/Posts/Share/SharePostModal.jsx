@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import UsersList from './UsersList';
 import { useChatSocket } from '../../../Contexts/ChatSocketContext';
-import useUserChatRoom from '../../../CustomHooks/useUserChatRoom';
+import { useDispatch } from 'react-redux';
+import { closeSharePostModal } from '../../../Store/Slices/ModalSlice';
 
 function SharePostModal({ sharedPost = {}, onShare, onClose }) {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [selectedUsers, setSelectedUsers] = useState([]);
+	const dispatch = useDispatch();
 
 	const { sendChatMessage } = useChatSocket();
 
@@ -31,11 +33,11 @@ function SharePostModal({ sharedPost = {}, onShare, onClose }) {
 				chat_room_id: chatRoomId,
 			};
 			sendChatMessage(message);
-			console.log({ userId, chatRoomId, message });
 		});
 
 		if (onShare) onShare(sharedPost, selectedUsers);
 		if (onClose) onClose();
+		dispatch(closeSharePostModal());
 	};
 
 	const handleCopyLink = () => {
@@ -76,7 +78,10 @@ function SharePostModal({ sharedPost = {}, onShare, onClose }) {
 						Share
 					</button>
 					<button
-						onClick={onClose}
+						onClick={() => {
+							onClose;
+							dispatch(closeSharePostModal());
+						}}
 						className='px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md'>
 						Cancel
 					</button>

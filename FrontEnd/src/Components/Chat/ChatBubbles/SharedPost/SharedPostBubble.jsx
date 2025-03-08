@@ -26,14 +26,15 @@ function SharedPostBubble({ message }) {
 		user,
 	} = content.shared_post || {};
 
-	if (!id || !user) return null;
+	if (!id || !user) return <div>shared post unable to show now</div>;
 
 	return (
 		<div className={`flex ${align} my-2`}>
 			<div
 				className='bg-lightMode-highlight dark:bg-darkMode-highlight text-lightMode-textPrimary dark:text-darkMode-textPrimary 
                 p-3 rounded-lg shadow-light dark:shadow-dark 
-                w-full sm:w-72 md:w-80 min-h-[24rem] flex flex-col justify-between'>
+                w-full sm:w-72 md:w-80 min-h-[24rem] flex flex-col justify-between'
+				onClick={() => console.log(message)}>
 				{/* User Info */}
 				<UserInfo user={user} />
 

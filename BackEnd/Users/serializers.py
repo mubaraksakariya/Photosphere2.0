@@ -1,3 +1,4 @@
+import os
 from rest_framework import serializers
 from datetime import date
 import re
@@ -18,7 +19,8 @@ class UserSettingsSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     is_followed = serializers.SerializerMethodField()
     is_own_profile = serializers.SerializerMethodField()
-    follow_status = serializers.SerializerMethodField()  # Updated field
+    follow_status = serializers.SerializerMethodField()
+    BACK_END_BASE_URL = os.environ.get("BACK_END_BASE_URL")
 
     class Meta:
         model = Profile
@@ -67,6 +69,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
             if FollowRequest.objects.filter(requester=request.user, target=obj.user, status='pending').exists():
                 return "requested"
         return "none"
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if instance.profile_image and not self.context.get("request"):
+            representation['profile_image'] = f"{self.BACK_END_BASE_URL}{instance.profile_image.url}"
+        return representation
 
 
 class UserSerializer(serializers.ModelSerializer):

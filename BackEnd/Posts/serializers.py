@@ -1,3 +1,4 @@
+import os
 from rest_framework import serializers
 
 from Users.serializers import UserSerializer
@@ -34,7 +35,7 @@ class PostSerializer(serializers.ModelSerializer):
         required=False,
         write_only=True
     )
-
+    BACK_END_BASE_URL = os.environ.get("BACK_END_BASE_URL")
     user = UserSerializer(read_only=True)
 
     class Meta:
@@ -73,4 +74,6 @@ class PostSerializer(serializers.ModelSerializer):
         representation['likes_count'] = likes_count
         representation['is_liked'] = is_liked
         representation['comments_count'] = comments_count
+        if instance.media and not self.context.get("request"):
+            representation['media'] = f"{self.BACK_END_BASE_URL}{instance.media.url}"
         return representation

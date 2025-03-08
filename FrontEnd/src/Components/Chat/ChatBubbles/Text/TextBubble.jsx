@@ -1,5 +1,5 @@
 import React from 'react';
-import { useChat } from '../../../Contexts/ChatContext';
+import { useChat } from '../../../../Contexts/ChatContext';
 
 function TextBubble({ message }) {
 	const { currentChat } = useChat();
@@ -10,7 +10,7 @@ function TextBubble({ message }) {
 			: 'justify-end';
 	const { content } = message;
 	return (
-		<div className={`flex ${align}`}>
+		<div className={`flex ${align}`} onClick={() => console.log(message)}>
 			<div className='bg-lightMode-highlight dark:bg-darkMode-highlight text-lightMode-textPrimary dark:text-darkMode-textPrimary p-3 rounded-lg max-w-sm shadow-light dark:shadow-dark'>
 				{content.text}
 			</div>

@@ -36,7 +36,7 @@ function Notifications() {
 
 	return (
 		<div
-			className='absolute right-0 mt-2 w-80 bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark rounded-lg overflow-hidden transition-all duration-200'
+			className='absolute right-0 z-50 mt-2 w-80 bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark rounded-lg overflow-hidden transition-all duration-200'
 			onClick={(e) => e.stopPropagation()} // Prevent accidental closing
 		>
 			{/* Header */}

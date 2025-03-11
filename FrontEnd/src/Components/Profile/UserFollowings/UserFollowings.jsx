@@ -13,8 +13,16 @@ const UserFollowings = ({ userId }) => {
 
 	if (error) {
 		return (
-			<div className='text-red-500 text-center p-4'>
-				Error loading followings: {error.message}
+			<div>
+				{error.response?.data?.error ? (
+					<p className='text-red-500 text-center p-4'>
+						{error.response?.data?.error}
+					</p>
+				) : (
+					<p className='text-red-500 text-center p-4'>
+						Error loading followings: {error.message}
+					</p>
+				)}
 			</div>
 		);
 	}

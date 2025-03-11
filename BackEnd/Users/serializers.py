@@ -19,6 +19,7 @@ class UserSettingsSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     is_followed = serializers.SerializerMethodField()
     is_own_profile = serializers.SerializerMethodField()
+    is_follower = serializers.SerializerMethodField()
     follow_status = serializers.SerializerMethodField()
     BACK_END_BASE_URL = os.environ.get("BACK_END_BASE_URL")
 
@@ -36,8 +37,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'post_count',
             'bio',
             'is_own_profile',
+            'is_follower',
             'follow_status',
         ]
+
+    def get_is_follower(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return Follow.objects.filter(follower=obj.user, followed=request.user).values_list('id', flat=True).exists()
+        return False
 
     def validate_date_of_birth(self, value):
         today = date.today()

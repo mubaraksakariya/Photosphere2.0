@@ -4,6 +4,7 @@ import useCheckFollow from '../../../CustomHooks/useCheckFollow';
 import { Hourglass, Loader, Plus, UserMinus, UserPlus } from 'lucide-react';
 
 function FollowButton({ user }) {
+	if (!user) return null;
 	const { data, isLoading, error } = useCheckFollow(user.id);
 	const { mutate: toggleFollow, isLoading: toggleLoading } =
 		useToggleFollow();

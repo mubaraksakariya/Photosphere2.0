@@ -54,7 +54,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message_object = {}
 
         if message["type"] == "text" or message['type'] == 'shared-post':
-            print(message)
             message_object = await save_message(
                 current_user=current_user, chat_room_id=chat_room_id, content=message[
                     "data"], type=message["type"]

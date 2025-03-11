@@ -10,11 +10,10 @@ function Notifications() {
 	useEffect(() => {
 		return () => {
 			if (unreadCount > 0) {
-				console.log('Marked as read on unmount');
 				markAsRead();
 			}
 		};
-	}, [unreadCount, markAsRead]);
+	}, []);
 
 	const getNotificationType = (notification) => {
 		if (notification.action_object_type === 'followrequest') {

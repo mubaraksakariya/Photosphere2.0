@@ -14,7 +14,6 @@ export const useRemoveFollowerMutation = () => {
 		onSuccess: () => {
 			// Invalidate and refetch followers list
 			queryClient.invalidateQueries(['followers']);
-			queryClient.invalidateQueries(['followerCount']);
 		},
 		onError: (error) => {
 			console.error('Error removing follower:', error);

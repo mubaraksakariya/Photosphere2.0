@@ -2,7 +2,7 @@ import os
 from rest_framework import serializers
 
 from Users.serializers import UserSerializer
-from .models import Like, Post, Hashtag, PostHashtag, Comment
+from .models import Like, Post, Hashtag, PostHashtag, Comment, Share
 from django.db import transaction
 from rest_framework.exceptions import ValidationError
 
@@ -67,6 +67,7 @@ class PostSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         hashtags = instance.posthashtag_set.all().select_related('hashtag')
         likes_count = Like.objects.filter(post=instance).count()
+        share_count = Share.objects.filter(post=instance).count()
         comments_count = Comment.objects.filter(post=instance).count()
         representation['hashtags'] = [
             {'id': h.hashtag.id, 'tag': h.hashtag.tag} for h in hashtags
@@ -74,6 +75,7 @@ class PostSerializer(serializers.ModelSerializer):
         representation['likes_count'] = likes_count
         representation['is_liked'] = is_liked
         representation['comments_count'] = comments_count
+        representation['share_count'] = share_count
         if instance.media and not self.context.get("request"):
             representation['media'] = f"{self.BACK_END_BASE_URL}{instance.media.url}"
         return representation

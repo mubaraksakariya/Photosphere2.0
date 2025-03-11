@@ -134,13 +134,14 @@ class ResendOTPView(APIView):
 
 
 class GoogleSignInView(APIView):
+    serializer_class = UserSerializer
+
     def post(self, request):
         try:
             token = self.get_token(request)
             id_info = self.verify_token(token)
             if not id_info:
                 return self.invalid_token_response()
-
             email, first_name, last_name, profile_image_url, birthdate = self.extract_user_info(
                 id_info)
             user, profile = get_or_create_google_user(
@@ -149,9 +150,9 @@ class GoogleSignInView(APIView):
             self.update_user_verified_status(user, id_info)
 
             refresh = RefreshToken.for_user(user)
-            serializedUser = UserSerializer(
-                user, context={'request': request}).data
-            print(user.profile)
+            print(user)
+            serializedUser = self.serializer_class(user).data
+            print(serializedUser)
             return Response({
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),

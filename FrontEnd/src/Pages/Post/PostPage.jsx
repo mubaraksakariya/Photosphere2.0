@@ -8,6 +8,7 @@ import PostOwner from '../../Components/Posts/ViewPost/PostOwner';
 import { X } from 'lucide-react';
 import LoadingRing from '../../Components/Loading/LoadingRing';
 import Hashtags from '../../Components/Posts/ViewPost/Hashtags';
+import PostDescription from '../../Components/Posts/Description/PostDescription';
 
 function PostPage() {
 	const { postId } = useParams();
@@ -63,12 +64,8 @@ function PostPage() {
 					<PostOwner user={user} />
 
 					{/* Description */}
-					<div className='my-3'>
-						<p className='text-sm text-lightMode-textPrimary dark:text-darkMode-textPrimary  leading-relaxed'>
-							{description}
-						</p>
-						<Hashtags hashtags={hashtags} />
-					</div>
+
+					<PostDescription post={post} />
 					{/* Post Actions */}
 					<PostActions post={post} />
 

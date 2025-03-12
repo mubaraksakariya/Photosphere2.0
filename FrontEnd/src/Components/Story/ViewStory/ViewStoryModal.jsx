@@ -23,7 +23,6 @@ function ViewStoryModal() {
 				{
 					onSuccess: (response) => {
 						const updatedStory = response?.story;
-						console.log('Story view recorded:', updatedStory);
 						if (!updatedStory) {
 							console.warn(
 								'No updated story data returned from API.'
@@ -52,19 +51,23 @@ function ViewStoryModal() {
 	if (!story) return null;
 	return (
 		<div className='fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50'>
-			<div className='bg-lightMode-background dark:bg-darkMode-background p-4 rounded-lg shadow-light dark:shadow-dark max-w-lg w-full h-[90dvh] flex flex-col'>
+			<div className='relative bg-lightMode-background dark:bg-darkMode-background p-4 rounded-lg shadow-light dark:shadow-dark max-w-lg w-full h-full md:h-[90dvh] flex flex-col overflow-y-auto'>
 				{/* Header */}
-				<UserHeader
-					profileImage={story.user.profile.profile_image}
-					username={story.user.username}
-					email={story.user.email}
-					onClose={handleClose}
-				/>
+				<UserHeader user={story.user} />
+				<div className='absolute top-2 right-2'>
+					<button
+						className='text-red-600 hover:text-red-800 transition-colors text-xl shrink-0'
+						onClick={handleClose}
+						aria-label='Close Modal'>
+						&times;
+					</button>
+				</div>
 
 				{/* Media Content */}
 				<MediaContent
 					mediaFile={story.media_file}
 					caption={story.caption}
+					type={story.media_type}
 				/>
 
 				{/* Interaction Section */}

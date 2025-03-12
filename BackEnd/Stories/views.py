@@ -13,7 +13,7 @@ from django.db.models import Exists, OuterRef
 
 
 class StoryViewSet(ModelViewSet):
-    # queryset = Story.objects.all()
+    queryset = Story.objects.all()
     serializer_class = StorySerializer
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
@@ -26,14 +26,11 @@ class StoryViewSet(ModelViewSet):
             viewer=user, story=OuterRef('pk')
         )
 
-        return Story.objects.filter(
+        return self.queryset.filter(
             expires_at__gte=timezone.now(), is_active=True
         ).annotate(
             has_viewed=Exists(viewed_subquery)
         ).order_by('has_viewed', '-created_at')  # Unviewed stories come first, then newest
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated], url_path='view')
     def register_view(self, request, pk=None):
@@ -43,7 +40,7 @@ class StoryViewSet(ModelViewSet):
         StoryView.objects.get_or_create(story=story, viewer=request.user)
 
         # Fetch the updated story object
-        updated_story = Story.objects.get(id=story.id)
+        updated_story = self.queryset.get(id=story.id)
 
         # Return the response with the serialized story data
         return Response(
@@ -80,7 +77,7 @@ class StoryViewSet(ModelViewSet):
             story = self.get_object()
         except ObjectDoesNotExist:
             return Response({"error": "Story not found."}, status=status.HTTP_404_NOT_FOUND)
-        print(request.data)
+
         # Validate the request data using the serializer
         serializer = StoryCommentSerializer(data=request.data)
         try:
@@ -89,8 +86,6 @@ class StoryViewSet(ModelViewSet):
             serializer.save(story=story, user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except ValidationError as ve:
-            print(f"Validation error for comment on story {pk}: {ve}")
             return Response({"error": "Invalid data.", "details": ve.detail}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            print(f"An unexpected error occurred: {e}")
             return Response({"error": "Something went wrong."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

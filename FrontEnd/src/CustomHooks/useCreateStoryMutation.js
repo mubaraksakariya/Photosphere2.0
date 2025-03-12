@@ -2,7 +2,7 @@ import { useApi } from '../Contexts/ApiContext';
 import { useMutation } from '@tanstack/react-query';
 
 const createPost = async (postData, api) => {
-	console.log(postData.media.original);
+	console.log(postData.media.type);
 	const formData = new FormData();
 
 	// Append description, hashtags, and file to FormData

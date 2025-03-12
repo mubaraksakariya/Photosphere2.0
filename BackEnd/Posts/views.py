@@ -101,9 +101,6 @@ class PostViewSet(viewsets.ModelViewSet):
         mutable_data = request.data.dict()
         mutable_data['hashtags'] = cleaned_hashtags
 
-        # Include files separately
-        files = request.FILES
-
         serializer = self.get_serializer(
             data=mutable_data, context={'request': request})
 

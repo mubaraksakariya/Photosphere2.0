@@ -4,12 +4,13 @@ import { useChatSocket } from '../../Contexts/ChatSocketContext';
 import { useDispatch } from 'react-redux';
 import { closeSharePostModal } from '../../Store/Slices/ModalSlice';
 import { X } from 'lucide-react';
+import { useAlert } from '../../Contexts/AlertContext';
 
 function SharePostModal({ sharedPost = {}, onShare, onClose }) {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [selectedUsers, setSelectedUsers] = useState({});
 	const dispatch = useDispatch();
-
+	const { showSuccessAlert } = useAlert();
 	const { sendChatMessage } = useChatSocket();
 
 	const toggleUserSelection = (userId, chatRoomId) => {
@@ -39,13 +40,14 @@ function SharePostModal({ sharedPost = {}, onShare, onClose }) {
 		if (onShare) onShare(sharedPost, selectedUsers);
 		if (onClose) onClose();
 		dispatch(closeSharePostModal());
+		showSuccessAlert('Post shared successfully!');
 	};
 
 	const handleCopyLink = () => {
 		navigator.clipboard.writeText(
 			`${window.location.origin}/post/${sharedPost.id}`
 		);
-		alert('Link copied!');
+		showSuccessAlert('Link copied to clipboard!');
 	};
 
 	return (

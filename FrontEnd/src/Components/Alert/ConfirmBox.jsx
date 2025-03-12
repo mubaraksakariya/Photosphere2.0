@@ -3,7 +3,7 @@ import { CheckCircle, AlertTriangle } from 'lucide-react';
 
 function ConfirmBox({ message, onConfirm, onCancel }) {
 	return (
-		<div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-lg'>
+		<div className='fixed z-50 inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-lg'>
 			<div className='p-6 bg-lightMode-section dark:bg-darkMode-section rounded-2xl shadow-xl border border-lightMode-border dark:border-darkMode-border w-[90%] max-w-md'>
 				<div className='flex items-center gap-3 mb-4'>
 					<AlertTriangle className='text-yellow-500' size={30} />

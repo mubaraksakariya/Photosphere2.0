@@ -1,9 +1,9 @@
 import os
+from django.db import transaction
 from rest_framework import serializers
 
 from Users.serializers import UserSerializer
 from .models import Like, Post, Hashtag, PostHashtag, Comment, Share
-from django.db import transaction
 from rest_framework.exceptions import ValidationError
 
 
@@ -35,8 +35,8 @@ class PostSerializer(serializers.ModelSerializer):
         required=False,
         write_only=True
     )
-    BACK_END_BASE_URL = os.environ.get("BACK_END_BASE_URL")
     user = UserSerializer(read_only=True)
+    BACK_END_BASE_URL = os.environ.get("BACK_END_BASE_URL")
 
     class Meta:
         model = Post
@@ -50,7 +50,6 @@ class PostSerializer(serializers.ModelSerializer):
             raise ValidationError("User is not authenticated")
 
         hashtags = validated_data.pop('hashtags', [])
-        print(hashtags)
         with transaction.atomic():
             post = Post.objects.create(user=user, **validated_data)
 

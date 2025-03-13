@@ -1,9 +1,12 @@
 import { MessageCircle } from 'lucide-react';
 import React from 'react';
 
-function CommentBtn({ post }) {
+function CommentBtn({ post, onComment }) {
 	const { comments_count: commentCount } = post;
-	const handleComment = () => console.log('Commenting...');
+	const handleComment = () => {
+		console.log('Commenting...');
+		if (onComment) onComment();
+	};
 	return (
 		<span
 			onClick={handleComment}

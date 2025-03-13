@@ -13,12 +13,16 @@ const MediaContent = ({ mediaFile, caption, type }) => {
 					Your browser does not support the video tag.
 				</video>
 			) : null}
-			<div
-				className={`${
-					type == 'image' ? 'absolute bottom-0 left-0 right-0' : ''
-				} bg-black bg-opacity-70 text-white p-4 rounded-b-lg`}>
-				<p className='text-sm mb-2 text-center'>{caption}</p>
-			</div>
+			{caption && (
+				<div
+					className={`${
+						type == 'image'
+							? 'absolute bottom-0 left-0 right-0'
+							: ''
+					} bg-black bg-opacity-70 text-white p-4 rounded-b-lg`}>
+					<p className='text-sm mb-2 text-center'>{caption}</p>
+				</div>
+			)}
 		</div>
 	);
 };

@@ -1,22 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import PostContent from '../../Components/Posts/ViewPost/PostContent';
 import PostActions from '../../Components/Posts/ViewPost/PostActions';
-import CommentsSection from '../../Components/Posts/ViewPost/CommentsSection';
 import usePost from '../../CustomHooks/usePost';
-import PostOwner from '../../Components/Posts/ViewPost/PostOwner';
-import { X } from 'lucide-react';
 import LoadingRing from '../../Components/Loading/LoadingRing';
-import Hashtags from '../../Components/Posts/ViewPost/Hashtags';
-import PostDescription from '../../Components/Posts/Description/PostDescription';
+import PostDetails from '../../Components/Posts/ViewPost/PostDetails';
+import ClosBtn from '../../Components/Posts/ViewPost/ClosBtn';
+import PostOwner from '../../Components/Posts/ViewPost/PostOwner';
 
 function PostPage() {
 	const { postId } = useParams();
-
+	const [showComments, setShowComments] = useState(false);
 	const navigate = useNavigate();
 	const { data: post, isLoading, error } = usePost(postId);
 
-	// Handle loading and errors
 	if (isLoading)
 		return (
 			<div className='text-center mt-10 text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
@@ -36,43 +33,56 @@ function PostPage() {
 			</div>
 		);
 
-	// Extract post details
-	const { user, description, hashtags } = post;
+	const handleComments = () => setShowComments(!showComments);
 	const handleClose = () => navigate(-1);
 
 	return (
-		<div className='h-screen w-screen bg-lightMode-background dark:bg-darkMode-background flex items-center justify-center'>
-			{/* Main Content */}
-			<div className='flex justify-between max-w-5xl w-full h-[90dvh] bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark rounded-lg'>
-				{/* Media Section */}
-				<div className='flex-1 w-1/2 p-5'>
-					<PostContent post={post} />
-				</div>
-
-				{/* Post Details Section */}
-				<div className='flex flex-col p-5'>
-					{/* Close Button */}
-					<div className='flex justify-end pb-2'>
-						<button
-							onClick={handleClose}
-							className='text-lightMode-textPrimary dark:text-darkMode-textPrimary hover:text-red-500 transition'>
-							<X size={24} />
-						</button>
+		<div className='min-h-screen w-full flex items-center justify-center max-h-dvh bg-lightMode-background dark:bg-darkMode-background p-3 md:p-4'>
+			{/* Main Container */}
+			<div className='flex flex-col md:flex-row max-w-5xl w-full md:max-h-[95dvh] bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark rounded-lg overflow-hidden'>
+				{/* Media Section (Mobile) */}
+				<div className='w-full md:w-1/2 flex flex-col md:p-5 relative'>
+					{/* Close Button (Mobile) */}
+					<div className='absolute top-2 right-2 md:hidden'>
+						<ClosBtn handleClose={handleClose} />
 					</div>
 
-					{/* Owner */}
-					<PostOwner user={user} />
+					{/* Post Owner (Mobile) */}
+					<div className='md:hidden mb-3'>
+						<PostOwner user={post?.user} />
+					</div>
 
-					{/* Description */}
+					<PostContent post={post} />
 
-					<PostDescription post={post} />
-					{/* Post Actions */}
-					<PostActions post={post} />
-
-					{/* Comments Section */}
-
-					<CommentsSection post={post} />
+					{/* Actions (Mobile) */}
+					<div className='md:hidden mt-3'>
+						<PostActions post={post} onComment={handleComments} />
+					</div>
 				</div>
+
+				{/* Post Details (Desktop) */}
+				<div className='hidden md:flex flex-col p-5 w-1/2'>
+					{/* Close Button (Desktop) */}
+					<div className='flex justify-end'>
+						<ClosBtn handleClose={handleClose} />
+					</div>
+					{/* Post Details */}
+					<PostDetails post={post} />
+				</div>
+
+				{/* Comments Section (Mobile) */}
+				{showComments && (
+					<div className='md:hidden fixed inset-0 bg-lightMode-section dark:bg-darkMode-section p-1 px-3 flex flex-col z-50'>
+						{/* Close Button */}
+						<div className='absolute top-4 right-4 md:hidden'>
+							<ClosBtn
+								handleClose={() => setShowComments(false)}
+							/>
+						</div>
+						{/* Post Details */}
+						<PostDetails post={post} />
+					</div>
+				)}
 			</div>
 		</div>
 	);

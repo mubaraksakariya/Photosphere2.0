@@ -15,12 +15,9 @@ const UserDetails = ({ user }) => {
 
 	return (
 		<div className='p-6 md:p-8 bg-lightMode-section dark:bg-darkMode-section rounded-2xl max-w-lg mx-auto'>
-			<h2 className='text-3xl font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-2 text-center'>
-				{first_name} {last_name}
+			<h2 className='text-xl font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-4 text-center'>
+				User Details
 			</h2>
-			<p className='text-center text-lightMode-accent dark:text-darkMode-accent mb-4 text-sm'>
-				{bio || 'No bio available'}
-			</p>
 
 			{/* Follow Button Centered Below Username */}
 			<div className='flex justify-center mb-6'>

@@ -99,7 +99,7 @@ const UserDetailsEdit = ({ user }) => {
 	}
 
 	return (
-		<div className=' bg-lightMode-section dark:bg-darkMode-section rounded-2xl '>
+		<div className=' bg-lightMode-section dark:bg-darkMode-section rounded-2xl p-5'>
 			<h2 className='text-xl font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-4 text-center'>
 				User Details
 			</h2>
@@ -133,21 +133,23 @@ const UserDetailsEdit = ({ user }) => {
 						<label className='block text-gray-700 dark:text-gray-300'>
 							Profile Image
 						</label>
-						{imagePreview && (
-							<div className='relative w-32 h-32 mb-2'>
-								<img
-									src={imagePreview}
-									alt='Profile'
-									className='w-full h-full object-cover rounded-md'
-								/>
-								<button
-									type='button'
-									onClick={handleRemoveImage}
-									className='absolute top-0 right-0 flex justify-center items-center size-6 bg-red-500 text-white px-2 py-1 text-sm rounded-full'>
-									X
-								</button>
-							</div>
-						)}
+						<div className='flex justify-center items-center'>
+							{imagePreview && (
+								<div className='relative w-32 h-32 mb-2'>
+									<img
+										src={imagePreview}
+										alt='Profile'
+										className='w-full h-full object-cover rounded-md'
+									/>
+									<button
+										type='button'
+										onClick={handleRemoveImage}
+										className='absolute top-0 right-0 flex justify-center items-center size-6 bg-red-500 text-white px-2 py-1 text-sm rounded-full'>
+										X
+									</button>
+								</div>
+							)}
+						</div>
 						<input
 							type='file'
 							accept='image/*'

@@ -28,8 +28,8 @@ const UserFollowers = ({ userId }) => {
 	}
 
 	return (
-		<div>
-			<h2 className='text-xl text-center font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-4'>
+		<div className=' bg-lightMode-section dark:bg-darkMode-section rounded-2xl p-5'>
+			<h2 className='text-xl font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-4 text-center'>
 				Followers
 			</h2>
 

@@ -4,7 +4,7 @@ import ProfileImage from './ProfileImage';
 import FollowButton from './FollowButton';
 
 function Header({ user }) {
-	// const user = useSelector((state) => state.auth.user);
+	const username = user?.username;
 	const followers_count = user?.profile?.followers_count || 0;
 	const following_count = user?.profile?.following_count || 0;
 	const post_count = user?.profile?.post_count || 0;
@@ -13,16 +13,16 @@ function Header({ user }) {
 
 	return (
 		<div className=' bg-lightMode-section dark:bg-darkMode-section rounded-lg'>
-			<div className='flex items-center gap-4 rounded-md max-w-5xl mx-auto py-2'>
-				<div className='flex-shrink-0 px-3'>
+			<div className='flex items-center gap-0 md:gap-4 rounded-md max-w-5xl mx-auto p-2'>
+				<div className='md:px-3 '>
 					<ProfileImage user={user} />
 				</div>
-				<div className='w-full mx-3'>
+				<div className='w-full ms-3 md:mx-3'>
 					{/* Username and follow button */}
 					<div className='flex flex-col md:flex-row md:items-center justify-between'>
-						<div className=' text-base sm:text-xl font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
-							{user.username}
-						</div>
+						<h1 className='text-sm md:text-xl font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary truncate'>
+							{username}
+						</h1>
 						{!isOwnProfile && (
 							<div className='hidden md:block'>
 								<FollowButton user={user} />
@@ -36,25 +36,30 @@ function Header({ user }) {
 							<span className='block font-medium text-lightMode-accent dark:text-darkMode-accent'>
 								{followers_count}
 							</span>
-							<span>Followers</span>
+							<span className='text-xs md:text-base font-semibold'>
+								Followers
+							</span>
 						</div>
 						<div className='text-center'>
 							<span className='block font-medium text-lightMode-accent dark:text-darkMode-accent'>
 								{post_count}
 							</span>
-							<span>Posts</span>
+							<span className='text-xs md:text-base font-semibold'>
+								Posts
+							</span>
 						</div>
 						<div className='text-center'>
 							<span className='block font-medium text-lightMode-accent dark:text-darkMode-accent'>
 								{following_count}
 							</span>
-							<span>Following</span>
+							<span className='text-xs md:text-base font-semibold'>
+								Following
+							</span>
 						</div>
 					</div>
 
 					{/* Bio */}
 					<div className='mt-4 text-sm text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
-						<span className='font-semibold'>About: </span>
 						{bio || 'No bio available.'}
 					</div>
 

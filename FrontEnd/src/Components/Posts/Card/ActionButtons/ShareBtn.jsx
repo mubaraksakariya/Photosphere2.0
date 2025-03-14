@@ -3,13 +3,14 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { openSharePostModal } from '../../../../Store/Slices/ModalSlice';
 
-function ShareBtn({ post }) {
+function ShareBtn({ post, onShare }) {
 	const { share_count: shareCount } = post;
 	const dispatch = useDispatch();
 
 	const handleShare = () => {
 		console.log('Sharing...');
 		dispatch(openSharePostModal({ post }));
+		if (onShare) onShare();
 	};
 	return (
 		<span

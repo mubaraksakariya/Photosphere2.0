@@ -13,15 +13,23 @@ const UserFollowers = ({ userId }) => {
 
 	if (error) {
 		return (
-			<div className='text-red-500 text-center p-4'>
-				Error loading followers: {error.message}
+			<div>
+				{error.response?.data?.error ? (
+					<p className='text-red-500 text-center p-4'>
+						{error.response?.data?.error}
+					</p>
+				) : (
+					<p className='text-red-500 text-center p-4'>
+						Error loading followers: {error.message}
+					</p>
+				)}
 			</div>
 		);
 	}
 
 	return (
-		<div>
-			<h2 className='text-xl text-center font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-4'>
+		<div className=' bg-lightMode-section dark:bg-darkMode-section rounded-2xl p-5'>
+			<h2 className='text-xl font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-4 text-center'>
 				Followers
 			</h2>
 

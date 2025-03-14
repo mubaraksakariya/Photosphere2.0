@@ -134,13 +134,14 @@ class ResendOTPView(APIView):
 
 
 class GoogleSignInView(APIView):
+    serializer_class = UserSerializer
+
     def post(self, request):
         try:
             token = self.get_token(request)
             id_info = self.verify_token(token)
             if not id_info:
                 return self.invalid_token_response()
-
             email, first_name, last_name, profile_image_url, birthdate = self.extract_user_info(
                 id_info)
             user, profile = get_or_create_google_user(
@@ -149,9 +150,9 @@ class GoogleSignInView(APIView):
             self.update_user_verified_status(user, id_info)
 
             refresh = RefreshToken.for_user(user)
-            serializedUser = UserSerializer(
-                user, context={'request': request}).data
-            print(user.profile)
+            print(user)
+            serializedUser = self.serializer_class(user).data
+            print(serializedUser)
             return Response({
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
@@ -348,7 +349,12 @@ class UserViewSet(ModelViewSet):
             else:
                 user = User.objects.get(id=request.user.id)
         except User.DoesNotExist:
-            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'The requested user profile could not be found'}, status=status.HTTP_404_NOT_FOUND)
+        if user != request.user and user.settings.is_profile_public == False and not Follow.objects.filter(follower=request.user, followed=user).exists():
+            return Response({
+                'error': 'This profile is private. You need to follow this user to view their followers',
+                'profile_status': 'private'
+            }, status=status.HTTP_403_FORBIDDEN)
 
         followers = get_all_followers(user)
         serialized_followers = self.get_serializer(followers, many=True).data
@@ -363,7 +369,15 @@ class UserViewSet(ModelViewSet):
             else:
                 user = User.objects.get(id=request.user.id)
         except User.DoesNotExist:
-            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({
+                'error': 'The requested user profile could not be found'
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        if user != request.user and user.settings.is_profile_public == False and not Follow.objects.filter(follower=request.user, followed=user).exists():
+            return Response({
+                'error': 'This profile is private. You need to follow this user to view their followings',
+                'profile_status': 'private'
+            }, status=status.HTTP_403_FORBIDDEN)
 
         followings = get_all_followings(user)
         serialized_followings = self.get_serializer(followings, many=True).data
@@ -417,3 +431,16 @@ class UserViewSet(ModelViewSet):
             return Response({"detail": "Password changed successfully."}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['POST'], url_path='remove-follower')
+    def remove_follower(self, request, pk=None):
+        """
+        Removes a follower.
+        """
+        follow = Follow.objects.filter(
+            follower_id=pk, followed_id=request.user.id).first()  # pk is the follower's ID
+        if not follow:
+            return Response({"error": "You are not following this user."}, status=status.HTTP_400_BAD_REQUEST)
+
+        follow.delete()
+        return Response({"message": "Follower removed."}, status=status.HTTP_200_OK)

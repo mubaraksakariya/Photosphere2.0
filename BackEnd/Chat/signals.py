@@ -26,7 +26,6 @@ def send_message_to_consumer(sender, instance, created, **kwargs):
 
         # Create message payload to send
         serialized_message = MessageSerializer(instance).data
-        serialized_message['type'] = 'text'
         message_data = {
             "type": "chat_message",  # Event type handled in the consumer
             "message": serialized_message

@@ -1,5 +1,5 @@
 from Chat.serializers import MessageSerializer
-from Posts.models import Post
+from Posts.models import Post, Share
 from .models import ChatRoom, ChatRoomMember, MessageContent
 from Chat.models import ChatRoom, ChatRoomMember
 from django.db import transaction
@@ -64,6 +64,7 @@ def save_message(current_user, chat_room_id, content, type='text'):
                 content_obj = MessageContent.objects.create(text=content)
             elif type == 'shared-post':
                 post = Post.objects.get(id=content)
+                share = Share.objects.create(user=current_user, post=post)
                 content_obj = MessageContent.objects.create(shared_post=post)
             else:
                 raise ValueError("Invalid message type")
@@ -89,7 +90,6 @@ def save_message(current_user, chat_room_id, content, type='text'):
                 MessageStatus(user=member.user, message=message, is_read=False)
                 for member in members
             ])
-
             return MessageSerializer(message).data
 
     except ChatRoom.DoesNotExist:

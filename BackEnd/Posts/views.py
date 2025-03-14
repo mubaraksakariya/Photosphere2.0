@@ -68,16 +68,42 @@ class PostViewSet(viewsets.ModelViewSet):
         return queryset.distinct().order_by('-created_at')
 
     def create(self, request, *args, **kwargs):
+        """
+        Creates a new post with hashtags and media files.
+
+        This method overrides the default create behavior to handle hashtags and file uploads.
+        It processes the hashtags, creates a mutable copy of the request data, and handles
+        file uploads separately.
+
+        Args:
+            request: The HTTP request object containing post data and files
+            *args: Variable length argument list
+            **kwargs: Arbitrary keyword arguments
+
+        Returns:
+            Response: HTTP response with:
+                - 201 Created and serialized post data on success
+                - 400 Bad Request with error details on validation failure
+
+        Example request data:
+            {
+                'description': 'Post text',
+                'media_type': 'image',
+                'media': [file],
+                'hashtags': ['tag1', 'tag2']
+            }
+        """
         hashtags_data = request.data.getlist('hashtags')
         cleaned_hashtags = [tag.strip()
                             for tag in hashtags_data if tag.strip()]
 
         # Create a mutable copy of request.data
-        mutable_data = request.data.copy()
-        mutable_data.setlist('hashtags', cleaned_hashtags)
+        mutable_data = request.data.dict()
+        mutable_data['hashtags'] = cleaned_hashtags
 
         serializer = self.get_serializer(
             data=mutable_data, context={'request': request})
+
         if serializer.is_valid():
             post = serializer.save()
             update_post_count(request.user)

@@ -38,7 +38,7 @@ class StorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Story
         fields = [
-            'id', 'user', 'caption', 'media_file', 'created_at',
+            'id', 'user', 'caption', 'media_file', 'media_type', 'created_at',
             'expires_at', 'likes_count', 'comments_count', 'views_count', 'is_viewed', 'is_liked'
         ]
         read_only_fields = [

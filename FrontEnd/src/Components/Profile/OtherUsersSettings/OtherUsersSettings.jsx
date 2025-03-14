@@ -4,8 +4,8 @@ import BlockButton from './BlockButton';
 
 const OtherUsersSettings = ({ user }) => {
 	return (
-		<div className='p-4 md:p-6 bg-lightMode-section dark:bg-darkMode-section rounded-2xl shadow-md'>
-			<h2 className='text-xl font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-4'>
+		<div className=' bg-lightMode-section dark:bg-darkMode-section rounded-2xl p-5'>
+			<h2 className='text-xl font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-4 text-center'>
 				User Settings
 			</h2>
 			<div className='flex items-center justify-between'>

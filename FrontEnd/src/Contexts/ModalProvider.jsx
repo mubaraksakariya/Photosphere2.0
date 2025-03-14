@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import CreatePostModal from '../Components/Posts/CreatePost/CreatePostModal';
 import CreateStoryModal from '../Components/Story/CreateStory/CreateStoryModal';
 import ViewStoryModal from '../Components/Story/ViewStory/ViewStoryModal';
-import SharePostModal from '../Components/Posts/Share/SharePostModal';
+import SharePostModal from '../Components/Models/SharePostModal';
 
 // Create a ModalContext
 const ModalContext = createContext();

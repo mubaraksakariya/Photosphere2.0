@@ -154,9 +154,9 @@ function User() {
 			<Route
 				path='/post/:postId'
 				element={
-					// <PrivateRoute>
-					<PostPage />
-					// </PrivateRoute>
+					<PrivateRoute>
+						<PostPage />
+					</PrivateRoute>
 				}
 			/>
 		</Routes>

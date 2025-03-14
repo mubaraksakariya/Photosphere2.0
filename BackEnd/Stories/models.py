@@ -7,7 +7,9 @@ from django.utils.timezone import now
 class Story(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='stories')
-    media_file = models.FileField(upload_to='stories/')
+    media_file = models.FileField(upload_to='stories/', blank=True)
+    media_type = models.CharField(max_length=10, choices=[
+        ('image', 'Image'), ('video', 'Video')], default='image')
     caption = models.CharField(max_length=200, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()

@@ -2,11 +2,12 @@ import React from 'react';
 import useToggleLike from '../../../../CustomHooks/useToggleLike';
 import { Heart } from 'lucide-react';
 
-function LikeBtnHeart({ post }) {
+function LikeBtnHeart({ post, onLike }) {
 	const { is_liked: isLiked, likes_count: LikeCount } = post;
 	const { mutate: toggleLike } = useToggleLike();
 	const handleLike = () => {
 		toggleLike(post?.id);
+		if (onLike) onLike();
 	};
 	return (
 		<span

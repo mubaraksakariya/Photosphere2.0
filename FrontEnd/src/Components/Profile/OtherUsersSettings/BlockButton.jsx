@@ -4,11 +4,12 @@ import {
 	useUnblockUser,
 } from '../../../CustomHooks/useBlockUsers';
 import LoadingRing from '../../Loading/LoadingRing';
+import { useAlert } from '../../../Contexts/AlertContext';
 
 function BlockButton({ user }) {
 	// Extract userId from the user prop
-	const userId = user.id;
-
+	const userId = user?.id;
+	const { showConfirm, showSuccessAlert } = useAlert();
 	// State to track if the user is blocked
 	const [isBlocked, setIsBlocked] = useState();
 
@@ -26,21 +27,25 @@ function BlockButton({ user }) {
 
 	// Handler to block the user
 	const handleBlock = () => {
-		blockUser(userId, {
-			onSuccess: (response) => {
-				setIsBlocked(true);
-				console.log(response);
-			},
+		showConfirm('Are you sure you want to block this user?', () => {
+			blockUser(userId, {
+				onSuccess: (response) => {
+					setIsBlocked(true);
+					showSuccessAlert('User blocked successfully');
+				},
+			});
 		});
 	};
 
 	// Handler to unblock the user
 	const handleUnblock = () => {
-		unblockUser(userId, {
-			onSuccess: (response) => {
-				setIsBlocked(false);
-				console.log(response);
-			},
+		showConfirm('Are you sure you want to unblock this user?', () => {
+			unblockUser(userId, {
+				onSuccess: (response) => {
+					setIsBlocked(false);
+					showSuccessAlert('User unblocked successfully');
+				},
+			});
 		});
 	};
 

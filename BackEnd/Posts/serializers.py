@@ -1,8 +1,9 @@
+import os
+from django.db import transaction
 from rest_framework import serializers
 
 from Users.serializers import UserSerializer
-from .models import Like, Post, Hashtag, PostHashtag, Comment
-from django.db import transaction
+from .models import Like, Post, Hashtag, PostHashtag, Comment, Share
 from rest_framework.exceptions import ValidationError
 
 
@@ -34,8 +35,8 @@ class PostSerializer(serializers.ModelSerializer):
         required=False,
         write_only=True
     )
-
     user = UserSerializer(read_only=True)
+    BACK_END_BASE_URL = os.environ.get("BACK_END_BASE_URL")
 
     class Meta:
         model = Post
@@ -49,7 +50,6 @@ class PostSerializer(serializers.ModelSerializer):
             raise ValidationError("User is not authenticated")
 
         hashtags = validated_data.pop('hashtags', [])
-        print(hashtags)
         with transaction.atomic():
             post = Post.objects.create(user=user, **validated_data)
 
@@ -66,6 +66,7 @@ class PostSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         hashtags = instance.posthashtag_set.all().select_related('hashtag')
         likes_count = Like.objects.filter(post=instance).count()
+        share_count = Share.objects.filter(post=instance).count()
         comments_count = Comment.objects.filter(post=instance).count()
         representation['hashtags'] = [
             {'id': h.hashtag.id, 'tag': h.hashtag.tag} for h in hashtags
@@ -73,4 +74,7 @@ class PostSerializer(serializers.ModelSerializer):
         representation['likes_count'] = likes_count
         representation['is_liked'] = is_liked
         representation['comments_count'] = comments_count
+        representation['share_count'] = share_count
+        if instance.media and not self.context.get("request"):
+            representation['media'] = f"{self.BACK_END_BASE_URL}{instance.media.url}"
         return representation

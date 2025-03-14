@@ -33,27 +33,30 @@ function CreateStoryModal() {
 	};
 
 	return (
-		<div className='fixed inset-0 bg-lightMode-shadow dark:bg-darkMode-shadow bg-opacity-50 flex justify-center items-center z-50'>
-			<div className='bg-lightMode-background dark:bg-darkMode-background p-4 rounded-lg shadow-light dark:shadow-dark max-w-lg w-full h-[95vh]'>
-				<h2 className='text-xl font-semibold mb-1 text-center text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
+		<div className='fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50'>
+			<div className='bg-lightMode-background dark:bg-darkMode-background p-4 rounded-lg shadow-light dark:shadow-dark max-w-lg w-full md:h-[90dvh] h-full flex flex-col'>
+				<h2 className='text-xl font-semibold mb-2 text-center text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
 					Create Story
 				</h2>
 
-				<div className='flex flex-col justify-between gap-4 h-[97%]'>
+				{/* Modal Content: Using flex to prevent overflow */}
+				<div className='flex flex-col justify-between gap-4 flex-grow overflow-hidden'>
 					{/* File Upload Section */}
-					<FileUploadSection
-						file={file}
-						handleFileChange={handleFileChange}
-						handleRemoveFile={handleRemoveFile}
-					/>
+					<div className='flex-grow'>
+						<FileUploadSection
+							file={file}
+							handleFileChange={handleFileChange}
+							handleRemoveFile={handleRemoveFile}
+						/>
+					</div>
 
 					{/* Text Input Section */}
 					<TextInputSection
 						label='Story Caption'
-						value={storyCaption} // Use the correct state variable
+						value={storyCaption}
 						onChange={(e) => setStoryCaption(e.target.value)}
 						placeholder='Write your story caption...'
-						isTextArea={true} // For multiline input
+						isTextArea={true}
 					/>
 
 					{/* Submit Section */}

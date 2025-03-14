@@ -12,7 +12,6 @@ function CreatePostModal() {
 	const { file, handleFileChange, handleRemoveFile } = useFileUpload();
 	const [description, setDescription] = useState('');
 	const [hashtags, setHashtags] = useState('');
-
 	const { mutate } = useCreatePostMutation();
 
 	const handleSubmit = (e) => {
@@ -24,30 +23,26 @@ function CreatePostModal() {
 		};
 
 		mutate(postData, {
-			onSuccess: (data) => {
-				console.log('Post created successfully', data);
-				dispatch(closeCreatePostModal());
-			},
-			onError: (e) => {
-				console.log('Error creating post', e);
-			},
+			onSuccess: () => dispatch(closeCreatePostModal()),
+			onError: (e) => console.error('Error creating post:', e),
 		});
 	};
 
 	return (
-		<div className='fixed inset-0 bg-lightMode-shadow dark:bg-darkMode-shadow bg-opacity-50 flex justify-center items-center z-50'>
-			<div className='bg-lightMode-background dark:bg-darkMode-background p-4 rounded-lg shadow-light dark:shadow-dark max-w-lg w-full h-[95vh]'>
-				<h2 className='text-xl font-semibold mb-1 text-center text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
+		<div className='fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50'>
+			<div className='bg-lightMode-background dark:bg-darkMode-background p-4 rounded-lg shadow-light dark:shadow-dark w-full max-w-lg h-screen md:h-[90dvh] flex flex-col justify-between'>
+				<h2 className='text-xl font-semibold text-center text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
 					Create Post
 				</h2>
 
-				<div className='flex flex-col justify-between gap-4 h-[97%]'>
+				{/* Container with flexible height distribution */}
+				<div className='flex flex-col gap-1 flex-grow overflow-hidden'>
 					<FileUploadSection
 						file={file}
 						handleFileChange={handleFileChange}
 						handleRemoveFile={handleRemoveFile}
 					/>
-					<div>
+					<div className='flex flex-col gap-2 flex-grow'>
 						<TextInputSection
 							label='Description'
 							value={description}
@@ -62,12 +57,12 @@ function CreatePostModal() {
 							onChange={(e) => setHashtags(e.target.value)}
 							placeholder='#hashtag1 #hashtag2'
 						/>
-
-						<SubmitSection
-							onSubmit={handleSubmit}
-							onCancel={() => dispatch(closeCreatePostModal())}
-						/>
 					</div>
+
+					<SubmitSection
+						onSubmit={handleSubmit}
+						onCancel={() => dispatch(closeCreatePostModal())}
+					/>
 				</div>
 			</div>
 		</div>

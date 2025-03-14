@@ -37,9 +37,10 @@ const CommentSection = ({ story }) => {
 				type='text'
 				name='comment'
 				placeholder='Add a comment...'
-				className='flex-grow px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-lightMode-accent dark:focus:ring-darkMode-accent'
+				className='w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-lightMode-accent dark:focus:ring-darkMode-accent'
 				aria-label='Add a comment'
 			/>
+
 			<button
 				type='submit'
 				className='bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg'

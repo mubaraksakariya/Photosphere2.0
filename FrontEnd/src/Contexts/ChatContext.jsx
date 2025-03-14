@@ -121,20 +121,25 @@ export const ChatProvider = ({ children }) => {
 					}
 				);
 			} else {
-				// Notify the user of a new message if it's not in the current chat
-				const notification = {
-					id: `message-${newMessage?.id}`,
-					user: newMessage?.user,
-					sender: newMessage?.sender,
-					message: `You have a new message from ${newMessage?.sender?.email}`,
-					created_at: newMessage?.timestamp,
-					notification_type: 'message',
-					chat_room: newMessage?.chat_room,
-					content: newMessage?.content,
-					is_read: false,
-				};
-				addNotification(notification);
-				// console.log('New message:', newMessage);
+				// Notify the user of a new message if it's not in the current chat or not an acknowledgement
+				const doCreateNotification = newMessage.is_acknowledgement
+					? false
+					: true;
+
+				if (doCreateNotification) {
+					const notification = {
+						id: `message-${newMessage?.id}`,
+						user: newMessage?.user,
+						sender: newMessage?.sender,
+						message: `You have a new message from ${newMessage?.sender?.email}`,
+						created_at: newMessage?.timestamp,
+						notification_type: 'message',
+						chat_room: newMessage?.chat_room,
+						content: newMessage?.content,
+						is_read: false,
+					};
+					addNotification(notification);
+				}
 
 				// Add the message to the noneChatRoomMessages state for other chats
 				setNoneChatRoomMessages((prevMessages) => {

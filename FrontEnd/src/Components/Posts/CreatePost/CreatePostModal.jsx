@@ -30,13 +30,13 @@ function CreatePostModal() {
 
 	return (
 		<div className='fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50'>
-			<div className='bg-lightMode-background dark:bg-darkMode-background p-4 rounded-lg shadow-light dark:shadow-dark w-full max-w-lg h-screen md:h-[90dvh] flex flex-col justify-between'>
-				<h2 className='text-xl font-semibold text-center text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
+			<div className='bg-lightMode-background dark:bg-darkMode-background p-4 rounded-lg shadow-light dark:shadow-dark max-w-lg w-full md:h-[90dvh] h-full flex flex-col'>
+				<h2 className='text-xl font-semibold mb-2 text-center text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
 					Create Post
 				</h2>
 
 				{/* Container with flexible height distribution */}
-				<div className='flex flex-col gap-1 flex-grow overflow-hidden'>
+				<div className='flex flex-col justify-between gap-4 flex-grow overflow-hidden'>
 					<FileUploadSection
 						file={file}
 						handleFileChange={handleFileChange}

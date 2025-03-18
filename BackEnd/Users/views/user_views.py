@@ -87,9 +87,9 @@ class VerifyOTPView(APIView):
 
             if not email or not code:
                 raise ValidationError("Email and OTP are required.")
-
             # Fetch user by email
             user = get_user(email)
+            print(email)
             if user.is_verified:
                 raise ValidationError("User is already verified.")
             # Validate OTP

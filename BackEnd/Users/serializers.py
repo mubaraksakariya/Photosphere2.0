@@ -70,12 +70,20 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_follow_status(self, obj):
         """Returns 'followed', 'requested', or 'none' based on the follow state"""
+
         request = self.context.get('request')
-        if request and request.user:
-            if Follow.objects.filter(follower=request.user, followed=obj.user).exists():
-                return "followed"
-            if FollowRequest.objects.filter(requester=request.user, target=obj.user, status='pending').exists():
-                return "requested"
+
+        if not request or not hasattr(request, "user") or not request.user.is_authenticated:
+            return "none"
+
+        user = request.user
+
+        if Follow.objects.filter(follower=user, followed=obj.user).exists():
+            return "followed"
+
+        if FollowRequest.objects.filter(requester=user, target=obj.user, status='pending').exists():
+            return "requested"
+
         return "none"
 
     def to_representation(self, instance):
@@ -127,8 +135,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_is_blocked_by_current_user(self, obj):
         request = self.context.get("request")
-        if not request or not hasattr(request, "user"):
-            return None  # Return None if there's no valid request or user
+        if not request or not hasattr(request, "user") or request.user.is_anonymous:
+            return False
 
         return UserBlock.objects.filter(blocker=request.user, blocked=obj).exists()
 

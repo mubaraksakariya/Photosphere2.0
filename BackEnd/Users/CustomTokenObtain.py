@@ -25,9 +25,11 @@ class CustomTokenObtainPairSerializer(serializers.Serializer):
             user = User.objects.filter(email=username).first()
         else:
             user = User.objects.filter(username=username).first()
+        print(user)
         if not user or not user.check_password(password):
             raise AuthenticationFailed('Invalid credentials....')
-
+        if not user.is_active:
+            raise AuthenticationFailed('User is not active')
         refresh = RefreshToken.for_user(user)
 
         return {

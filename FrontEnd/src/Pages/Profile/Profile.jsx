@@ -83,7 +83,7 @@ function Profile() {
 	}
 
 	return (
-		<div className='min-h-[100dvh] max-h-dvh bg-lightMode-background dark:bg-darkMode-background text-lightMode-textPrimary dark:text-darkMode-textPrimary flex flex-col md:pb-2'>
+		<div className='min-h-dvh max-h-dvh bg-lightMode-background dark:bg-darkMode-background text-lightMode-textPrimary dark:text-darkMode-textPrimary flex flex-col md:pb-2'>
 			{/* Header Section */}
 			<div className='md:px-6 lg:px-8 px-0 pb-0'>
 				<Header user={user} />
@@ -97,7 +97,7 @@ function Profile() {
 				</div>
 
 				{/* Profile Content - Scrollable */}
-				<div className=' max-h-full overflow-auto md:flex-[4] flex-1 bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark rounded-lg md:p-6'>
+				<div className='max-h-full overflow-auto md:flex-[4] flex-1 bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark rounded-lg md:p-6'>
 					{selectedTab()}
 				</div>
 			</div>

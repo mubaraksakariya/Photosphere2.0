@@ -1,13 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router';
-import {
-	CornerUpLeft,
-	User,
-	Lock,
-	Bell,
-	Settings,
-	Settings2,
-} from 'lucide-react'; // Icons
+import { CornerUpLeft, Lock, Bell, Settings, Settings2 } from 'lucide-react'; // Icons
 
 const SidebarNav = () => {
 	return (

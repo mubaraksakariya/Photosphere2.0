@@ -3,11 +3,20 @@ import useUserDetails from '../../../CustomHooks/useUserDetails';
 import useUpdateUserDetails from '../../../CustomHooks/useUpdateUserDetails';
 import LoadingRing from '../../Loading/LoadingRing';
 import { validateProfileForm } from './validateProfileForm';
+import { useAlert } from '../../../Contexts/AlertContext';
 
 const UserDetailsEdit = ({ user }) => {
 	const { data: userDetails, isLoading, error } = useUserDetails(user?.id);
-	const { mutate: updateUserDetails } = useUpdateUserDetails(user?.id);
-
+	const { mutate: updateUserDetails, isLoading: isUpdating } =
+		useUpdateUserDetails(user?.id);
+	const { showSuccessAlert } = useAlert();
+	if (!user) {
+		return (
+			<div className='text-center text-lg text-red-500'>
+				No user details available.
+			</div>
+		);
+	}
 	const [formState, setFormState] = useState({
 		first_name: '',
 		last_name: '',
@@ -82,7 +91,8 @@ const UserDetailsEdit = ({ user }) => {
 			result.append('remove_image', 'true');
 		updateUserDetails(result, {
 			onSuccess: (result) => {
-				console.log(result);
+				// console.log(result);
+				showSuccessAlert('User details updated successfully');
 			},
 			onError: (error) => {
 				console.error(error);
@@ -90,7 +100,7 @@ const UserDetailsEdit = ({ user }) => {
 		}); // `result` is FormData
 	};
 
-	if (isLoading) {
+	if (isLoading || isUpdating) {
 		return <LoadingRing />;
 	}
 

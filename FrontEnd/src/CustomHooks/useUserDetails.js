@@ -11,6 +11,7 @@ const useUserDetails = (userId) => {
 	return useQuery({
 		queryKey: ['userDetails', userId],
 		queryFn: () => fetchUserDetails(api, userId),
+		enabled: !!userId,
 	});
 };
 

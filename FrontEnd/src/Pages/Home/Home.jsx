@@ -15,7 +15,7 @@ function Home() {
 			{/* Main Content */}
 			<div className='flex flex-1 flex-col md:flex-row gap-4 pt-4 md:px-6 lg:px-8 pb-0 max-h-[85dvh] overflow-y-auto'>
 				{/* Left Navigation - Hidden on smaller screens */}
-				<div className='md:flex-[1] hidden md:block bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark rounded-lg p-3'>
+				<div className='md:flex-[1] hidden md:flex justify-center bg-lightMode-section dark:bg-darkMode-section shadow-light dark:shadow-dark rounded-lg p-3'>
 					<LeftNav />
 				</div>
 

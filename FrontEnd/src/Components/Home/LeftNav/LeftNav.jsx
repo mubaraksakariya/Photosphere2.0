@@ -21,7 +21,7 @@ function LeftNav() {
 		unreadCount > 0 ? 'text-red-500' : 'text-inherit';
 
 	return (
-		<div className='md:flex md:flex-col justify-center items-center h-full md:w-60 bg-lightMode-section dark:bg-darkMode-section text-lightMode-textPrimary dark:text-darkMode-textPrimary shadow-light dark:shadow-dark md:p-4'>
+		<div className='md:flex md:flex-col justify-center items-center h-full md:w-60 bg-lightMode-section dark:bg-darkMode-section text-lightMode-textPrimary dark:text-darkMode-textPrimary md:p-4'>
 			{/* Logo */}
 			<div className='hidden md:block mb-8'>
 				<h4 className='font-titan text-xl text-lightMode-accent dark:text-darkMode-accent'>

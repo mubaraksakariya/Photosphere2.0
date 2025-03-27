@@ -26,7 +26,7 @@ export const validateProfileForm = (formState, imageFile) => {
 	// Validate image file (MIME type & size limit)
 	if (imageFile) {
 		const validImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
-		const maxSize = 2 * 1024 * 1024; // 2MB
+		const maxSize = 3 * 1024 * 1024; // 2MB
 
 		if (!validImageTypes.includes(imageFile.type)) {
 			errors.profile_image =
@@ -34,7 +34,7 @@ export const validateProfileForm = (formState, imageFile) => {
 		}
 
 		if (imageFile.size > maxSize) {
-			errors.profile_image = 'Image size exceeds 2MB.';
+			errors.profile_image = 'Image size exceeds 3MB.';
 		}
 
 		if (!errors.profile_image) {

@@ -9,7 +9,7 @@ const UserDetailsEdit = ({ user }) => {
 	const { data: userDetails, isLoading, error } = useUserDetails(user?.id);
 	const { mutate: updateUserDetails, isLoading: isUpdating } =
 		useUpdateUserDetails(user?.id);
-	const { showSuccessAlert } = useAlert();
+	const { showSuccessAlert, showErrorAlert, showError } = useAlert();
 	if (!user) {
 		return (
 			<div className='text-center text-lg text-red-500'>
@@ -77,25 +77,26 @@ const UserDetailsEdit = ({ user }) => {
 			JSON.stringify(formState) === JSON.stringify(initialFormState) &&
 			!imageFile
 		) {
-			console.log('No changes detected');
+			showErrorAlert('No changes detected');
 			return;
 		}
 
 		const result = validateProfileForm(formState, imageFile);
 
 		if (result.errors) {
-			console.error('Form validation failed:', result.errors);
+			const firstError = Object.values(result.errors)[0];
+			showError(firstError);
 			return;
 		}
 		if (formState.profile_image === '')
 			result.append('remove_image', 'true');
 		updateUserDetails(result, {
 			onSuccess: (result) => {
-				// console.log(result);
 				showSuccessAlert('User details updated successfully');
 			},
 			onError: (error) => {
-				console.error(error);
+				console.log(error);
+				showError(error?.response?.data?.detail || error.message);
 			},
 		}); // `result` is FormData
 	};

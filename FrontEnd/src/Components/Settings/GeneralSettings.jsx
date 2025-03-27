@@ -1,7 +1,10 @@
 import React from 'react';
 import DarkModeToggle from '../Theme/DarkModeToggle';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../Store/Slices/AuthSlice';
 
 const GeneralSettings = ({ currentUser }) => {
+	const dispatch = useDispatch();
 	return (
 		<div className='p-6 md:p-8 bg-lightMode-section dark:bg-darkMode-section rounded-2xl dark:shadow-xl max-w-3xl mx-auto'>
 			<h2 className='text-xl font-bold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-6 text-center'>
@@ -13,6 +16,13 @@ const GeneralSettings = ({ currentUser }) => {
 						Theme
 					</span>
 					<DarkModeToggle />
+				</div>
+				<div className=' flex justify-end pt-4'>
+					<button
+						className='bg-lightMode-accent dark:bg-darkMode-accent text-white py-2 px-4 rounded-md text-sm hover:opacity-90 transition-all'
+						onClick={() => dispatch(logout())}>
+						Logout
+					</button>
 				</div>
 				{/* <div
 						key={name}

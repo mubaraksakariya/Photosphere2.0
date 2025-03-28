@@ -105,7 +105,7 @@ const UserDetailsEdit = ({ user }) => {
 	 * Handle form submission
 	 * @param {Event} e - The submit event
 	 */
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 
 		// Check if form has any changes
@@ -118,7 +118,7 @@ const UserDetailsEdit = ({ user }) => {
 		}
 
 		// Validate form
-		const result = validateProfileForm(formState, imageFile);
+		const result = await validateProfileForm(formState, imageFile);
 
 		if (result.errors) {
 			setErrors(result.errors);
@@ -236,7 +236,7 @@ const UserDetailsEdit = ({ user }) => {
 						/>
 						{errors.profile_image && (
 							<p className='text-red-500 text-sm'>
-								{errors.profile_image}
+								{errors.profile_image.join('\n')}
 							</p>
 						)}
 					</div>

@@ -1,19 +1,20 @@
-export const validateProfileForm = (formState, imageFile) => {
+export const validateProfileForm = async (formState, imageFile) => {
 	const formData = new FormData();
 	const errors = {};
 
-	// Helper function to append non-empty values
+	// Helper function to append non-empty values to FormData.
 	const addToFormData = (key, value) => {
-		if (value && value.trim() !== '') {
+		if (value?.trim()) {
 			formData.append(key, value);
 		}
 	};
 
-	addToFormData('first_name', formState.first_name);
-	addToFormData('last_name', formState.last_name);
-	addToFormData('bio', formState.bio);
+	// Append form fields
+	['first_name', 'last_name', 'bio'].forEach((field) =>
+		addToFormData(field, formState[field])
+	);
 
-	// Validate date_of_birth (YYYY-MM-DD format)
+	// Validate date_of_birth
 	if (formState.date_of_birth) {
 		const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 		if (!dateRegex.test(formState.date_of_birth)) {
@@ -23,25 +24,50 @@ export const validateProfileForm = (formState, imageFile) => {
 		}
 	}
 
-	// Validate image file (MIME type & size limit)
+	// Validate Image (if provided)
 	if (imageFile) {
-		const validImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
-		const maxSize = 3 * 1024 * 1024; // 2MB
-
-		if (!validImageTypes.includes(imageFile.type)) {
-			errors.profile_image =
-				'Invalid image format. Only JPEG, PNG, and WEBP allowed.';
-		}
-
-		if (imageFile.size > maxSize) {
-			errors.profile_image = 'Image size exceeds 3MB.';
-		}
-
-		if (!errors.profile_image) {
+		const imageErrors = await validateImage(imageFile);
+		if (imageErrors.length) {
+			errors.profile_image = imageErrors;
+		} else {
 			formData.append('profile_image', imageFile);
 		}
 	}
 
-	// Return FormData if no errors, else return errors
+	// Return FormData if no errors, otherwise return errors
 	return Object.keys(errors).length === 0 ? formData : { errors };
+};
+
+// Separate function for image validation
+const validateImage = async (imageFile) => {
+	const validImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
+	const maxSize = 3 * 1024 * 1024; // 3MB
+	const maxWidth = 5000;
+	const maxHeight = 5000;
+	const errors = [];
+
+	if (!validImageTypes.includes(imageFile.type)) {
+		errors.push('Invalid format. Only JPEG, PNG, and WEBP are allowed.');
+	}
+
+	if (imageFile.size > maxSize) {
+		errors.push('Image size exceeds 3MB. Try compressing it.');
+	}
+
+	// Check image dimensions
+	await new Promise((resolve) => {
+		const img = new Image();
+		img.src = URL.createObjectURL(imageFile);
+		img.onload = () => {
+			if (img.width > maxWidth || img.height > maxHeight) {
+				errors.push(
+					`Image dimensions must be within ${maxWidth}x${maxHeight}px.`
+				);
+			}
+			URL.revokeObjectURL(img.src);
+			resolve();
+		};
+	});
+
+	return errors;
 };

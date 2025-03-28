@@ -3,6 +3,7 @@ import MessageBubble from './MessageBubble';
 import { useChat } from '../../Contexts/ChatContext';
 import { useInView } from 'react-intersection-observer';
 import TypingIndicator from './TypingIndicator';
+import LoadingRing from '../Loading/LoadingRing';
 
 function ChatMessages() {
 	const {
@@ -60,10 +61,15 @@ function ChatMessages() {
 		}
 	}, []);
 
-	if (isLoading && !data) return <p>Loading...</p>;
+	if (isLoading && !data)
+		return (
+			<div className='flex justify-center items-center h-full'>
+				<LoadingRing />
+			</div>
+		);
 	if (isError)
 		return (
-			<p className='text-red-500'>
+			<p className='text-red-500 flex justify-center items-center h-full'>
 				Failed to load messages. Please try again later.
 			</p>
 		);
@@ -76,7 +82,7 @@ function ChatMessages() {
 			<TypingIndicator userId={userId} />
 
 			{/* Render messages */}
-			{data.pages.map((page) =>
+			{data?.pages?.map((page) =>
 				page.results.map((message) => (
 					<MessageBubble key={message.id} message={message} />
 				))

@@ -5,7 +5,7 @@ import LoadingRing from '../../Loading/LoadingRing';
 
 const UserFollowings = ({ userId }) => {
 	const { data, isLoading, error } = useFollowings(userId);
-	const followings = data?.followings;
+	const followings = data?.followings || [];
 
 	if (isLoading) {
 		return (
@@ -30,6 +30,12 @@ const UserFollowings = ({ userId }) => {
 			</div>
 		);
 	}
+	if (followings?.length === 0)
+		return (
+			<div className='text-gray-500 flex justify-center items-center h-full'>
+				No followings yet.
+			</div>
+		);
 
 	return (
 		<div className=' bg-lightMode-section dark:bg-darkMode-section rounded-2xl p-5'>
@@ -37,15 +43,11 @@ const UserFollowings = ({ userId }) => {
 				Followings
 			</h2>
 
-			{followings?.length === 0 ? (
-				<p className='text-gray-500 text-center'>No followings yet.</p>
-			) : (
-				<div className='flex flex-wrap justify-center gap-4'>
-					{followings.map((following) => (
-						<ProfileCard user={following} key={following.id} />
-					))}
-				</div>
-			)}
+			<div className='flex flex-wrap justify-center gap-4'>
+				{followings.map((following) => (
+					<ProfileCard user={following} key={following.id} />
+				))}
+			</div>
 		</div>
 	);
 };

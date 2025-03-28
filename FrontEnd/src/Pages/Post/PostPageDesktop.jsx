@@ -13,7 +13,7 @@ function PostPageDesktop() {
 
 	if (isLoading)
 		return (
-			<div className='flex justify-center items-center h-full'>
+			<div className='flex justify-center items-center h-dvh'>
 				<LoadingRing />
 			</div>
 		);

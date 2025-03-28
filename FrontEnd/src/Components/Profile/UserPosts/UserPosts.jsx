@@ -32,13 +32,17 @@ function UserPosts({ user }) {
 	}
 	if (isError)
 		return (
-			<p className='text-red-500'>
+			<p className='text-red-500 flex justify-center items-center h-full'>
 				Failed to load posts. Please try again later.
 			</p>
 		);
 
 	if (data?.pages[0].count < 1)
-		return <p className='text-gray-500'>No posts available.</p>;
+		return (
+			<p className='text-gray-500 flex justify-center items-center h-full'>
+				No posts available.
+			</p>
+		);
 
 	return (
 		<div className='max-h-[73vh] md:overflow-y-auto'>

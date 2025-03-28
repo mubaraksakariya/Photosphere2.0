@@ -6,6 +6,7 @@ import LikeNotificationCard from '../../Components/Notifications/LikeNotificatio
 import CommentNotificationCard from '../../Components/Notifications/CommentNotificationCard';
 import FollowNotificationCard from '../../Components/Notifications/FollowNotificationCard';
 import DefaultNotificationCard from '../../Components/Notifications/DefaultNotificationCard';
+import LoadingRing from '../../Components/Loading/LoadingRing';
 
 function NotificationsFullPage() {
 	const { ref, inView } = useInView();
@@ -69,8 +70,8 @@ function NotificationsFullPage() {
 
 	if (isLoading)
 		return (
-			<div className='flex justify-center items-center min-h-screen text-lightMode-textPrimary dark:text-darkMode-textPrimary'>
-				Loading...
+			<div className='flex justify-center items-center h-dvh'>
+				<LoadingRing />
 			</div>
 		);
 

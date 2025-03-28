@@ -70,7 +70,11 @@ function Profile() {
 
 	// Show loading indicator while fetching data
 	if (isLoading) {
-		return <LoadingRing />;
+		return (
+			<div className='flex justify-center items-center h-dvh'>
+				<LoadingRing />
+			</div>
+		);
 	}
 
 	// Show error message if there is an error fetching data

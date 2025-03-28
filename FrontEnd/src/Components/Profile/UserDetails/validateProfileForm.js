@@ -20,7 +20,21 @@ export const validateProfileForm = async (formState, imageFile) => {
 		if (!dateRegex.test(formState.date_of_birth)) {
 			errors.date_of_birth = 'Invalid date format. Use YYYY-MM-DD.';
 		} else {
-			formData.append('date_of_birth', formState.date_of_birth);
+			const birthDate = new Date(formState.date_of_birth);
+			const today = new Date();
+			let age = today.getFullYear() - birthDate.getFullYear();
+			const monthDiff = today.getMonth() - birthDate.getMonth();
+			if (
+				monthDiff < 0 ||
+				(monthDiff === 0 && today.getDate() < birthDate.getDate())
+			) {
+				age--;
+			}
+			if (age < 18) {
+				errors.date_of_birth = 'You must be at least 18 years old.';
+			} else {
+				formData.append('date_of_birth', formState.date_of_birth);
+			}
 		}
 	}
 

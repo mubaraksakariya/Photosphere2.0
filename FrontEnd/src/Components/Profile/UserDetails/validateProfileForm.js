@@ -55,7 +55,7 @@ export const validateProfileForm = async (formState, imageFile) => {
 // Separate function for image validation
 const validateImage = async (imageFile) => {
 	const validImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
-	const maxSize = 10 * 1024 * 1024; // 10MB
+	const maxSize = 5 * 1024 * 1024; // 5MB
 	const maxWidth = 5000;
 	const maxHeight = 5000;
 	const errors = [];
@@ -65,7 +65,7 @@ const validateImage = async (imageFile) => {
 	}
 
 	if (imageFile.size > maxSize) {
-		errors.push('Image size exceeds 10MB. Try compressing it.');
+		errors.push('Image size exceeds 5MB. Try compressing it.');
 	}
 
 	// Check image dimensions

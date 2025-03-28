@@ -25,7 +25,7 @@ const UserDetailsEdit = ({ user }) => {
 	const { data: userDetails, isLoading, error } = useUserDetails(user?.id);
 
 	// Mutation hook for updating user details
-	const { mutate: updateUserDetails, isLoading: isUpdating } =
+	const { mutate: updateUserDetails, isPending: isUpdating } =
 		useUpdateUserDetails(user?.id);
 
 	// Alert context for showing notifications

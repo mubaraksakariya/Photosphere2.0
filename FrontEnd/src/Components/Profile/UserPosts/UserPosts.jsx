@@ -24,7 +24,11 @@ function UserPosts({ user }) {
 	}, [inView, hasNextPage, fetchNextPage]);
 
 	if (isLoading && !data) {
-		return <LoadingRing />;
+		return (
+			<div className='flex justify-center items-center h-full'>
+				<LoadingRing />
+			</div>
+		);
 	}
 	if (isError)
 		return (

@@ -33,7 +33,7 @@ function CommentsSection({ post }) {
 				<div className='flex flex-1 flex-col-reverse overflow-y-auto p-3'>
 					{/* Show loading state initially */}
 					{isLoading && (
-						<div className='flex justify-center py-4 text-lightMode-textSecondary dark:text-darkMode-textSecondary'>
+						<div className='flex justify-center items-center h-full'>
 							<LoadingRing />
 						</div>
 					)}

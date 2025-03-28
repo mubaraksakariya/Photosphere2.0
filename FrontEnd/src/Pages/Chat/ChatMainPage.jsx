@@ -7,7 +7,6 @@ import SearchedUsers from '../../Components/Chat/SearchedUsers';
 import ChatList from '../../Components/Chat/ChatList';
 import { useChat } from '../../Contexts/ChatContext';
 import NoChatSelected from '../../Components/Chat/NoChatSelected';
-import { useChatSocket } from '../../Contexts/ChatSocketContext';
 import WebSocketStatus from '../../Components/WebSocket/WebSocketStatus';
 
 function ChatMainPage() {

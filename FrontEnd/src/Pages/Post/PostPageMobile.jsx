@@ -16,7 +16,7 @@ function PostPageMobile() {
 
 	if (isLoading)
 		return (
-			<div className='text-center mt-10'>
+			<div className='flex justify-center items-center h-full'>
 				<LoadingRing />
 			</div>
 		);

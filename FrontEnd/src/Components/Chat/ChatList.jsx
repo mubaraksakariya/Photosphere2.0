@@ -2,13 +2,18 @@ import React from 'react';
 import ChatProfileThumpnail from './ChatProfileThumpnail';
 import RecentChatProfileCard from './RecentChatProfileCard';
 import { useChat } from '../../Contexts/ChatContext';
+import LoadingRing from '../Loading/LoadingRing';
 
 function ChatList() {
 	const { chatRooms, chatRoomsLoading, chatRoomsError, chatRoomsRefetch } =
 		useChat();
 
 	if (chatRoomsLoading) {
-		return <div>Loading...</div>;
+		return (
+			<div className='flex justify-center items-center h-full'>
+				<LoadingRing />
+			</div>
+		);
 	}
 
 	if (chatRoomsError) {

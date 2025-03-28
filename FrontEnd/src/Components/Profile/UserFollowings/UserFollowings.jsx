@@ -8,7 +8,11 @@ const UserFollowings = ({ userId }) => {
 	const followings = data?.followings;
 
 	if (isLoading) {
-		return <LoadingRing />;
+		return (
+			<div className='flex justify-center items-center h-full'>
+				<LoadingRing />
+			</div>
+		);
 	}
 
 	if (error) {

@@ -102,7 +102,11 @@ const UserDetailsEdit = ({ user }) => {
 	};
 
 	if (isLoading || isUpdating) {
-		return <LoadingRing />;
+		return (
+			<div className='flex justify-center items-center h-full'>
+				<LoadingRing />
+			</div>
+		);
 	}
 
 	if (error) {

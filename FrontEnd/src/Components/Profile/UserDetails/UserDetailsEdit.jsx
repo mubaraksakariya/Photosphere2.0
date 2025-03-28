@@ -86,6 +86,7 @@ const UserDetailsEdit = ({ user }) => {
 			const imageUrl = URL.createObjectURL(file);
 			setImageFile(file);
 			setImagePreview(imageUrl);
+			setErrors((prevErrors) => ({ ...prevErrors, profile_image: [] }));
 		}
 	};
 
@@ -99,6 +100,7 @@ const UserDetailsEdit = ({ user }) => {
 			...prevState,
 			profile_image: '',
 		}));
+		setErrors((prevErrors) => ({ ...prevErrors, profile_image: [] }));
 	};
 
 	/**

@@ -50,7 +50,11 @@ export const SettingsProvider = ({ children }) => {
 	};
 
 	if (isLoading) {
-		return <LoadingRing />;
+		return (
+			<div className='flex justify-center items-center h-dvh'>
+				<LoadingRing />
+			</div>
+		);
 	}
 
 	if (error) {

@@ -6,7 +6,7 @@ import { useChatSocket } from '../../Contexts/ChatSocketContext';
 const useUserOnlineStatus = (user, chatRoom) => {
 	const { isOnline, onlineUsers } = useChat();
 	const [userOnline, setUserOnline] = useState(false);
-	const { sendChatMessage } = useChatSocket();
+	const { sendChatMessage, isConnected } = useChatSocket();
 	useEffect(() => {
 		if (user) setUserOnline(isOnline(user?.id));
 	}, [onlineUsers, user]);
@@ -16,8 +16,9 @@ const useUserOnlineStatus = (user, chatRoom) => {
 			type: 'isOnline',
 			chat_room_id: chatRoom.id,
 		};
+		if (!isConnected) return;
 		sendChatMessage(message);
-	}, []);
+	}, [isConnected]);
 
 	return userOnline;
 };

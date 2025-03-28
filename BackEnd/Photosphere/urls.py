@@ -25,6 +25,7 @@ from rest_framework_simplejwt.views import (
 )
 
 from Chat.views.chat import GetOrCreateChatRoomView, MessageViewSet
+from Chat.views.chat_room_messages import MessageListCreateView
 from Chat.views.favorites import FavoriteChatListView
 from Chat.views.recent_chats import RecentChatUsersView
 from Notification.views import NotificationViewSet
@@ -44,8 +45,8 @@ router.register(r'api/posts', PostViewSet, basename='post')
 router.register(r'api/likes', LikeViewSet, basename='like')
 router.register(r'api/comments', CommentViewSet, basename='comment')
 router.register(r'api/stories', StoryViewSet, basename='story')
-router.register(r'chat/(?P<chat_room_id>\d+)/messages',
-                MessageViewSet, basename='message')
+# router.register(r'chat/(?P<chat_room_id>\d+)/messages',
+#                 MessageViewSet, basename='message')
 router.register(r'api/notifications', NotificationViewSet,
                 basename='notifications')
 router.register(r'api/profiles', ProfileViewSet, basename='profile')
@@ -72,6 +73,9 @@ urlpatterns = [
          name='recent-chats'),
     path('api/chat/get-or-create-room/<int:user_id>/',
          GetOrCreateChatRoomView.as_view(), name='get-or-create-chat-room'),
+    path('api/chat/<int:chat_room_id>/messages/',
+         MessageListCreateView.as_view(), name='message-list-create'),
+
     path("api/password-reset/", PasswordResetRequestView.as_view(),
          name="password_reset"),
     path("api/password-reset-confirm/", PasswordResetConfirmView.as_view(),

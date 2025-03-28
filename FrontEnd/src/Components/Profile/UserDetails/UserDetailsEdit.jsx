@@ -5,18 +5,33 @@ import LoadingRing from '../../Loading/LoadingRing';
 import { validateProfileForm } from './validateProfileForm';
 import { useAlert } from '../../../Contexts/AlertContext';
 
+/**
+ * Component for editing user profile details
+ * @param {Object} props
+ * @param {Object} props.user - The user object containing basic user information
+ *
+ * Features:
+ * - Edit first name, last name, profile image, bio, and date of birth
+ * - Image preview and removal
+ * - Form validation
+ * - Loading states
+ * - Success/error alerts
+ */
 const UserDetailsEdit = ({ user }) => {
+	// State for form validation errors
+	const [errors, setErrors] = useState({});
+
+	// Fetch user details using custom hook
 	const { data: userDetails, isLoading, error } = useUserDetails(user?.id);
+
+	// Mutation hook for updating user details
 	const { mutate: updateUserDetails, isLoading: isUpdating } =
 		useUpdateUserDetails(user?.id);
+
+	// Alert context for showing notifications
 	const { showSuccessAlert, showErrorAlert, showError } = useAlert();
-	if (!user) {
-		return (
-			<div className='text-center text-lg text-red-500'>
-				No user details available.
-			</div>
-		);
-	}
+
+	// Form state management
 	const [formState, setFormState] = useState({
 		first_name: '',
 		last_name: '',
@@ -24,10 +39,15 @@ const UserDetailsEdit = ({ user }) => {
 		bio: '',
 		date_of_birth: '',
 	});
+
+	// Track initial form state to detect changes
 	const [initialFormState, setInitialFormState] = useState(null);
+
+	// State for handling image upload
 	const [imageFile, setImageFile] = useState(null);
 	const [imagePreview, setImagePreview] = useState('');
 
+	// Initialize form with user data when available
 	useEffect(() => {
 		if (userDetails) {
 			const { profile } = userDetails.user;
@@ -44,6 +64,10 @@ const UserDetailsEdit = ({ user }) => {
 		}
 	}, [userDetails]);
 
+	/**
+	 * Handle form input changes
+	 * @param {Event} e - The change event
+	 */
 	const handleChange = (e) => {
 		const { name, value } = e.target;
 		setFormState((prevState) => ({
@@ -52,6 +76,10 @@ const UserDetailsEdit = ({ user }) => {
 		}));
 	};
 
+	/**
+	 * Handle profile image file selection
+	 * @param {Event} e - The file input change event
+	 */
 	const handleImageChange = (e) => {
 		const file = e.target.files[0];
 		if (file) {
@@ -61,6 +89,9 @@ const UserDetailsEdit = ({ user }) => {
 		}
 	};
 
+	/**
+	 * Remove the selected profile image
+	 */
 	const handleRemoveImage = () => {
 		setImageFile(null);
 		setImagePreview('');
@@ -70,9 +101,14 @@ const UserDetailsEdit = ({ user }) => {
 		}));
 	};
 
+	/**
+	 * Handle form submission
+	 * @param {Event} e - The submit event
+	 */
 	const handleSubmit = (e) => {
 		e.preventDefault();
 
+		// Check if form has any changes
 		if (
 			JSON.stringify(formState) === JSON.stringify(initialFormState) &&
 			!imageFile
@@ -81,26 +117,37 @@ const UserDetailsEdit = ({ user }) => {
 			return;
 		}
 
+		// Validate form
 		const result = validateProfileForm(formState, imageFile);
 
 		if (result.errors) {
-			const firstError = Object.values(result.errors)[0];
-			showError(firstError);
+			setErrors(result.errors);
 			return;
 		}
-		if (formState.profile_image === '')
+		setErrors({});
+
+		// Handle image removal
+		if (formState.profile_image === '') {
 			result.append('remove_image', 'true');
+		}
+
+		// Submit form data
 		updateUserDetails(result, {
-			onSuccess: (result) => {
-				showSuccessAlert('User details updated successfully');
+			onSuccess: () => {
+				showSuccessAlert('Profile updated successfully');
 			},
 			onError: (error) => {
 				console.log(error);
-				showError(error?.response?.data?.detail || error.message);
+
+				showError(
+					error?.response?.data?.detail ||
+						'Something went wrong, try again later.'
+				);
 			},
-		}); // `result` is FormData
+		});
 	};
 
+	// Render loading state
 	if (isLoading || isUpdating) {
 		return (
 			<div className='flex justify-center items-center h-full'>
@@ -109,12 +156,18 @@ const UserDetailsEdit = ({ user }) => {
 		);
 	}
 
+	// Render error state
 	if (error) {
-		return <div>Error loading user details: {error.message}</div>;
+		return (
+			<div className='text-center text-lg text-red-500 flex justify-center items-center h-full'>
+				Error loading user details: {error.message}
+			</div>
+		);
 	}
 
+	// Render form
 	return (
-		<div className=' bg-lightMode-section dark:bg-darkMode-section rounded-2xl p-5'>
+		<div className='bg-lightMode-section dark:bg-darkMode-section rounded-2xl p-5'>
 			<h2 className='text-xl font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-4 text-center'>
 				User Details
 			</h2>
@@ -131,6 +184,11 @@ const UserDetailsEdit = ({ user }) => {
 							onChange={handleChange}
 							className='w-full p-2 border border-gray-300 rounded-md'
 						/>
+						{errors.first_name && (
+							<p className='text-red-500 text-sm'>
+								{errors.first_name}
+							</p>
+						)}
 					</div>
 					<div className='mb-4'>
 						<label className='block text-gray-700 dark:text-gray-300'>
@@ -143,6 +201,11 @@ const UserDetailsEdit = ({ user }) => {
 							onChange={handleChange}
 							className='w-full p-2 border border-gray-300 rounded-md'
 						/>
+						{errors.last_name && (
+							<p className='text-red-500 text-sm'>
+								{errors.last_name}
+							</p>
+						)}
 					</div>
 					<div className='mb-4'>
 						<label className='block text-gray-700 dark:text-gray-300'>
@@ -171,6 +234,11 @@ const UserDetailsEdit = ({ user }) => {
 							onChange={handleImageChange}
 							className='w-full p-2 border border-gray-300 rounded-md'
 						/>
+						{errors.profile_image && (
+							<p className='text-red-500 text-sm'>
+								{errors.profile_image}
+							</p>
+						)}
 					</div>
 					<div className='mb-4'>
 						<label className='block text-gray-700 dark:text-gray-300'>
@@ -182,6 +250,9 @@ const UserDetailsEdit = ({ user }) => {
 							onChange={handleChange}
 							className='w-full p-2 border border-gray-300 rounded-md'
 						/>
+						{errors.bio && (
+							<p className='text-red-500 text-sm'>{errors.bio}</p>
+						)}
 					</div>
 					<div className='mb-4'>
 						<label className='block text-gray-700 dark:text-gray-300'>
@@ -194,6 +265,11 @@ const UserDetailsEdit = ({ user }) => {
 							onChange={handleChange}
 							className='w-full p-2 border border-gray-300 rounded-md'
 						/>
+						{errors.date_of_birth && (
+							<p className='text-red-500 text-sm'>
+								{errors.date_of_birth}
+							</p>
+						)}
 					</div>
 					<button
 						type='submit'

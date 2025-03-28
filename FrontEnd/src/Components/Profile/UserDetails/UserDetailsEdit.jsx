@@ -141,10 +141,21 @@ const UserDetailsEdit = ({ user }) => {
 			onError: (error) => {
 				console.log(error);
 
-				showError(
-					error?.response?.data?.detail ||
-						'Something went wrong, try again later.'
-				);
+				if (error?.response?.data) {
+					const apiErrors = error.response.data;
+					let formattedErrors = {};
+
+					// Loop through each error field and store it in state
+					Object.keys(apiErrors).forEach((field) => {
+						formattedErrors[field] = apiErrors[field][0]; // Get the first error message for each field
+					});
+
+					setErrors(formattedErrors);
+				} else {
+					setErrors({
+						general: 'Something went wrong. Please try again.',
+					});
+				}
 			},
 		});
 	};
@@ -238,7 +249,7 @@ const UserDetailsEdit = ({ user }) => {
 						/>
 						{errors.profile_image && (
 							<p className='text-red-500 text-sm'>
-								{errors.profile_image.join('\n')}
+								{errors.profile_image}
 							</p>
 						)}
 					</div>

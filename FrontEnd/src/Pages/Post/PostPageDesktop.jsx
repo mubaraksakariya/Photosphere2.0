@@ -13,7 +13,7 @@ function PostPageDesktop() {
 
 	if (isLoading)
 		return (
-			<div className='flex justify-center items-center h-full'>
+			<div className='flex justify-center items-center h-dvh'>
 				<LoadingRing />
 			</div>
 		);
@@ -33,7 +33,7 @@ function PostPageDesktop() {
 	const handleClose = () => navigate(-1);
 
 	return (
-		<div className='min-h-screen w-full flex items-center justify-center p-4 bg-lightMode-background dark:bg-darkMode-background'>
+		<div className='min-h-dvh w-full flex items-center justify-center p-4 bg-lightMode-background dark:bg-darkMode-background'>
 			{/* Desktop Layout */}
 			<div className='flex flex-row max-w-5xl w-full h-[90dvh] bg-lightMode-section dark:bg-darkMode-section rounded-lg shadow-lg overflow-hidden'>
 				{/* Media Section */}

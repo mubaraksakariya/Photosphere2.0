@@ -5,7 +5,7 @@ import LoadingRing from '../../Loading/LoadingRing';
 
 const UserFollowers = ({ userId }) => {
 	const { data, isLoading, error } = useFollowers(userId);
-	const followers = data?.followers;
+	const followers = data?.followers || [];
 
 	if (isLoading) {
 		return (
@@ -17,7 +17,7 @@ const UserFollowers = ({ userId }) => {
 
 	if (error) {
 		return (
-			<div>
+			<div className='flex justify-center items-center h-full'>
 				{error.response?.data?.error ? (
 					<p className='text-red-500 text-center p-4'>
 						{error.response?.data?.error}
@@ -30,6 +30,12 @@ const UserFollowers = ({ userId }) => {
 			</div>
 		);
 	}
+	if (followers?.length === 0)
+		return (
+			<div className='text-gray-500 flex justify-center items-center h-full'>
+				No followers yet.
+			</div>
+		);
 
 	return (
 		<div className=' bg-lightMode-section dark:bg-darkMode-section rounded-2xl p-5'>
@@ -37,15 +43,11 @@ const UserFollowers = ({ userId }) => {
 				Followers
 			</h2>
 
-			{followers?.length === 0 ? (
-				<p className='text-gray-500 text-center'>No followers yet.</p>
-			) : (
-				<div className='flex flex-wrap justify-center gap-4'>
-					{followers.map((follower) => (
-						<ProfileCard user={follower} key={follower.id} />
-					))}
-				</div>
-			)}
+			<div className='flex flex-wrap justify-center gap-4'>
+				{followers.map((follower) => (
+					<ProfileCard user={follower} key={follower.id} />
+				))}
+			</div>
 		</div>
 	);
 };

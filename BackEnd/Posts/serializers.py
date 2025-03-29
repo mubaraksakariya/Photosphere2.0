@@ -1,5 +1,5 @@
 import os
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from rest_framework import serializers
 
 from Users.serializers import UserSerializer
@@ -55,7 +55,10 @@ class PostSerializer(serializers.ModelSerializer):
 
             for tag in hashtags:
                 hashtag_obj, _ = Hashtag.objects.get_or_create(tag=tag)
-                PostHashtag.objects.create(post=post, hashtag=hashtag_obj)
+                try:
+                    PostHashtag.objects.create(post=post, hashtag=hashtag_obj)
+                except IntegrityError:
+                    pass
 
         return post
 

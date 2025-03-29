@@ -26,8 +26,8 @@ export const useCreatePostMutation = () => {
 	return useMutation({
 		mutationFn: (postData) => createPost(postData, api),
 		onSuccess: (response) => {
-			console.log('Post created successfully');
-			console.log(response);
+			// console.log('Post created successfully');
+			// console.log(response);
 		},
 		onError: (error) => {
 			console.error(

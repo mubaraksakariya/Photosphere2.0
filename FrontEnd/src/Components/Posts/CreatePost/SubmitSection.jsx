@@ -1,5 +1,5 @@
 import React from 'react';
-import LoadingRing from '../../Loading/LoadingRing';
+import { LoaderCircle } from 'lucide-react';
 
 const SubmitSection = ({ onSubmit, onCancel, isLoading }) => {
 	return (
@@ -8,7 +8,11 @@ const SubmitSection = ({ onSubmit, onCancel, isLoading }) => {
 				onClick={onSubmit}
 				disabled={isLoading}
 				className='py-2 px-4 rounded-md bg-lightMode-accent dark:bg-darkMode-accent text-lightMode-background dark:text-darkMode-background font-medium shadow-light dark:shadow-dark hover:opacity-90 focus:ring-2 focus:ring-lightMode-accent dark:focus:ring-darkMode-accent focus:outline-none transition-all'>
-				{isLoading ? <LoadingRing /> : 'Submit'}
+				{isLoading ? (
+					<LoaderCircle className='w-5 h-5 animate-spin' />
+				) : (
+					'Submit'
+				)}
 			</button>
 			<button
 				onClick={onCancel}

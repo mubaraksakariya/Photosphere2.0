@@ -55,10 +55,8 @@ class PostSerializer(serializers.ModelSerializer):
 
             for tag in hashtags:
                 hashtag_obj, _ = Hashtag.objects.get_or_create(tag=tag)
-                try:
-                    PostHashtag.objects.create(post=post, hashtag=hashtag_obj)
-                except IntegrityError:
-                    pass
+                PostHashtag.objects.get_or_create(
+                    post=post, hashtag=hashtag_obj)
 
         return post
 

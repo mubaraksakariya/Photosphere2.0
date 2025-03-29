@@ -12,7 +12,7 @@ function CreatePostModal() {
 	const { file, handleFileChange, handleRemoveFile } = useFileUpload();
 	const [description, setDescription] = useState('');
 	const [hashtags, setHashtags] = useState('');
-	const { mutate } = useCreatePostMutation();
+	const { mutate, error, isPending } = useCreatePostMutation();
 
 	const handleSubmit = (e) => {
 		e.preventDefault();

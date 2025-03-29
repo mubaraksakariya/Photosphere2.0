@@ -53,10 +53,15 @@ class PostSerializer(serializers.ModelSerializer):
         with transaction.atomic():
             post = Post.objects.create(user=user, **validated_data)
 
+            hashtag_objects = set()
             for tag in hashtags:
                 hashtag_obj, _ = Hashtag.objects.get_or_create(tag=tag)
-                PostHashtag.objects.get_or_create(
-                    post=post, hashtag=hashtag_obj)
+                hashtag_objects.add(PostHashtag(
+                    post=post, hashtag=hashtag_obj))
+
+            # Bulk insert to reduce database hits
+            PostHashtag.objects.bulk_create(
+                hashtag_objects, ignore_conflicts=True)
 
         return post
 

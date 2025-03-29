@@ -62,6 +62,7 @@ function CreatePostModal() {
 					<SubmitSection
 						onSubmit={handleSubmit}
 						onCancel={() => dispatch(closeCreatePostModal())}
+						isLoading={isPending}
 					/>
 				</div>
 			</div>

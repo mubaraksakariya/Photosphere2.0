@@ -30,6 +30,9 @@ class PostHashtag(models.Model):
     def __str__(self):
         return self.hashtag.tag
 
+    class Meta:
+        unique_together = ('post', 'hashtag')
+
 
 class Hashtag(models.Model):
     tag = models.CharField(max_length=50)

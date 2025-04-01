@@ -77,7 +77,7 @@ function ChatMessages() {
 	return (
 		<div
 			ref={chatContainerRef}
-			className='flex-1 flex flex-col-reverse gap-4 p-4 overflow-y-auto space-y-4'
+			className='h-full flex flex-col-reverse gap-4 p-4 overflow-y-auto space-y-4'
 			onScroll={checkIfAtBottom}>
 			<TypingIndicator userId={userId} />
 

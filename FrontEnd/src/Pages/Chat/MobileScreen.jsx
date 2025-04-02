@@ -13,7 +13,7 @@ function MobileScreen() {
 	};
 	if (currentChat) return <CurrentChat />;
 	return (
-		<div className='flex flex-col h-dvh md:h-full'>
+		<div className='flex flex-col max-h-dvh h-dvh'>
 			<ChatSelectionNav
 				searchQuery={searchQuery}
 				handleSearch={handleSearch}

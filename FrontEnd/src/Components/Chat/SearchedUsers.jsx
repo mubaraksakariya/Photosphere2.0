@@ -13,18 +13,22 @@ function SearchedUsers({ searchQuery }) {
 		fetchNextPage,
 		error,
 	} = useInfiniteSearchUsers(searchQuery);
+
 	const { ref, inView } = useInView();
+
 	React.useEffect(() => {
 		if (inView && hasNextPage) {
 			fetchNextPage();
 		}
 		if (error) console.error(error);
 	}, [inView, hasNextPage, fetchNextPage, error]);
+
 	return (
-		<div className='flex flex-col min-h-full max-h-full'>
+		<div className='flex flex-col'>
 			<h2 className='text-lg font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-2'>
 				Searched
 			</h2>
+
 			{isLoading && (
 				<div className='flex justify-center py-4'>
 					<LoadingRing />
@@ -42,17 +46,22 @@ function SearchedUsers({ searchQuery }) {
 					</span>
 				</div>
 			)}
-			<div className='flex flex-1 flex-col space-y-2 overflow-y-auto'>
+
+			{/* Ensuring only this part scrolls */}
+			<div className='flex-1 overflow-y-auto space-y-2'>
 				{data?.pages?.map((page) =>
 					page.results.map((user) => (
 						<SearchedChatProfileCard key={user.id} user={user} />
 					))
 				)}
+
 				{isFetchingNextPage && (
 					<div className='flex justify-center py-4'>
 						<LoadingRing />
 					</div>
 				)}
+
+				{/* Infinite Scroll Trigger */}
 				<div ref={ref} className='h-10'></div>
 			</div>
 		</div>

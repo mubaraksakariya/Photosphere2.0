@@ -5,7 +5,7 @@ import FavoriteChats from './FavoriteChats';
 
 function ChatSelectionNav({ searchQuery, handleSearch }) {
 	return (
-		<div className=' flex-1 flex flex-col bg-lightMode-section dark:bg-darkMode-section  p-4 border-r border-lightMode-shadow dark:border-darkMode-shadow md:h-full w-full'>
+		<div className='flex flex-col max-h-[93%] h-full bg-lightMode-section dark:bg-darkMode-section p-4 border-r border-lightMode-shadow dark:border-darkMode-shadow w-full'>
 			<h1 className='text-2xl font-bold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-2'>
 				Chats
 			</h1>
@@ -21,7 +21,9 @@ function ChatSelectionNav({ searchQuery, handleSearch }) {
 				/>
 			</div>
 			<FavoriteChats />
-			<div className='flex-1 overflow-auto'>
+
+			{/* Ensure this section takes up remaining space */}
+			<div className='flex-1 overflow-y-auto '>
 				{searchQuery ? (
 					<SearchedUsers searchQuery={searchQuery} />
 				) : (

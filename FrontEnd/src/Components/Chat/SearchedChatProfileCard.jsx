@@ -1,21 +1,16 @@
 import React from 'react';
 import useUserChatRoom from '../../CustomHooks/useUserChatRoom';
 import { useChat } from '../../Contexts/ChatContext';
-// import { useDispatch } from 'react-redux';
-// import { selectChat } from '../../Store/Slices/ChatSlice';
 
-function SearchedChatProfileCard({ message, user }) {
+function SearchedChatProfileCard({ user }) {
 	if (!user) return null;
-	// const dispatch = useDispatch();
 	const { selectChat } = useChat();
-	const { mutate, isLoading, isError, data } = useUserChatRoom(user?.id);
+	const { mutate, isPending, isError, data } = useUserChatRoom(user?.id);
 	const manageSelectChat = () => {
 		mutate(
 			{},
 			{
 				onSuccess: (data) => {
-					// console.log(data);
-					// dispatch(selectChat(data.chat_room));
 					selectChat(data.chat_room);
 				},
 			}
@@ -26,13 +21,13 @@ function SearchedChatProfileCard({ message, user }) {
 
 	return (
 		<div
-			className='bg-lightMode-section dark:bg-darkMode-section p-4 rounded-lg shadow-light dark:shadow-dark hover:bg-lightMode-highlight dark:hover:bg-darkMode-highlight flex items-center gap-4 cursor-pointer'
+			className='bg-lightMode-section dark:bg-darkMode-section p-4 rounded-lg shadow-light dark:shadow-dark hover:bg-lightMode-highlight dark:hover:bg-darkMode-highlight flex items-center gap-4 cursor-pointer transition-transform duration-150 ease-in-out transform scale-95 hover:scale-100'
 			onClick={manageSelectChat}>
 			{/* Profile Image */}
 			<img
 				src={profile_image || '/default-avatar.png'}
 				alt={`${first_name || username}'s profile`}
-				className='w-16 h-16 rounded-full object-cover border border-lightMode-textSecondary dark:border-darkMode-textSecondary'
+				className='w-12 h-12 rounded-full object-cover border border-lightMode-textSecondary dark:border-darkMode-textSecondary'
 			/>
 			<div>
 				{/* User Details */}
@@ -41,8 +36,6 @@ function SearchedChatProfileCard({ message, user }) {
 						{first_name ? `${first_name} ${last_name}` : username}
 					</p>
 				</div>
-				{/* recent message */}
-				<div>{message}</div>
 			</div>
 		</div>
 	);

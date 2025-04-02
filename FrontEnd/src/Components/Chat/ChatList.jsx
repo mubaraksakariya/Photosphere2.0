@@ -1,5 +1,4 @@
 import React from 'react';
-import ChatProfileThumpnail from './ChatProfileThumpnail';
 import RecentChatProfileCard from './RecentChatProfileCard';
 import { useChat } from '../../Contexts/ChatContext';
 import LoadingRing from '../Loading/LoadingRing';
@@ -21,33 +20,18 @@ function ChatList() {
 	}
 
 	return (
-		<div className='flex flex-col'>
-			{/* Favorite Chats */}
-			<div className='mb-6'>
-				<h2 className='text-lg font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-2'>
-					Favorite Chats
-				</h2>
-				<div className='flex space-x-2'>
-					{/* Replace with dynamic favorite chats when available */}
-					<ChatProfileThumpnail />
-					<ChatProfileThumpnail />
-				</div>
-			</div>
-
-			{/* Recent Chats */}
-			<div>
-				<h2 className='text-lg font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-2'>
-					Recent Chats
-				</h2>
-				<div className='flex flex-col space-y-2'>
-					{/* Map through recent chat rooms */}
-					{chatRooms?.map((chatRoom) => (
-						<RecentChatProfileCard
-							key={chatRoom.id}
-							chatRoom={chatRoom}
-						/>
-					))}
-				</div>
+		<div className='flex flex-col min-h-full max-h-full'>
+			<h2 className='text-lg font-semibold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-2'>
+				Recent Chats
+			</h2>
+			<div className='flex-1 flex flex-col space-y-2 overflow-y-auto'>
+				{/* Map through recent chat rooms */}
+				{chatRooms?.map((chatRoom) => (
+					<RecentChatProfileCard
+						key={chatRoom.id}
+						chatRoom={chatRoom}
+					/>
+				))}
 			</div>
 		</div>
 	);

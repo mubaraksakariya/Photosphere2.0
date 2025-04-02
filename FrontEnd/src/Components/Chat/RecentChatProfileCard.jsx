@@ -31,7 +31,7 @@ function RecentChatProfileCard({ chatRoom }) {
 	};
 	return (
 		<div
-			className='relative bg-lightMode-section dark:bg-darkMode-section p-4 rounded-lg shadow-light dark:shadow-dark hover:bg-lightMode-highlight dark:hover:bg-darkMode-highlight flex items-center gap-4 cursor-pointer transition-transform duration-150 ease-in-out transform hover:scale-105'
+			className='relative bg-lightMode-section dark:bg-darkMode-section p-4 rounded-lg shadow-light dark:shadow-dark hover:bg-lightMode-highlight dark:hover:bg-darkMode-highlight flex items-center gap-4 cursor-pointer transition-transform duration-150 ease-in-out transform scale-95 hover:scale-100'
 			onClick={manageSelectChat}>
 			{/* Profile Image with Online Indicator */}
 			<div className='relative'>

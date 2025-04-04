@@ -5,7 +5,7 @@ import FavoriteChats from './FavoriteChats';
 
 function ChatSelectionNav({ searchQuery, handleSearch }) {
 	return (
-		<div className='flex flex-col max-h-[93%] h-full bg-lightMode-section dark:bg-darkMode-section p-4 border-r border-lightMode-shadow dark:border-darkMode-shadow w-full'>
+		<div className='flex flex-col max-h-[93%] md:max-h-full bg-lightMode-section dark:bg-darkMode-section p-4 border-r border-lightMode-shadow dark:border-darkMode-shadow w-full'>
 			<h1 className='text-2xl font-bold text-lightMode-textPrimary dark:text-darkMode-textPrimary mb-2'>
 				Chats
 			</h1>

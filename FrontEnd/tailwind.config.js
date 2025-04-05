@@ -5,20 +5,21 @@ export default {
 		extend: {
 			colors: {
 				lightMode: {
-					background: '#E4E0E1',
+					background: '#F5F5F5',
 					section: '#D6C0B3',
-					textPrimary: '#AB886D',
-					accent: '#493628',
-					highlight: '#FFF4E0', // Light cream highlight
-					shadow: 'rgba(0, 0, 0, 0.1)',
+					textPrimary: '#3B2F2F',
+					accent: '#5B3E2B',
+					highlight: '#FFF4E0',
+					shadow: 'rgba(0, 0, 0, 0.15)',
 				},
+
 				darkMode: {
-					background: '#2E2B2C',
-					section: '#4F4038',
-					textPrimary: '#7C5E4E',
-					accent: '#B89C8B',
-					highlight: '#A68A6D', // Muted champagne highlight
-					shadow: 'rgba(0, 0, 0, 0.5)',
+					background: '#1F1C1C',
+					section: '#3A2E29',
+					textPrimary: '#E0C9B9',
+					accent: '#D1B6A2',
+					highlight: '#A68A6D',
+					shadow: 'rgba(0, 0, 0, 0.7)',
 				},
 			},
 			boxShadow: {
